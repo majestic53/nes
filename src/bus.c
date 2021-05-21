@@ -93,6 +93,10 @@ nes_bus_load(
 	TRACE(LEVEL_VERBOSE, "%s", "Bus loading");
 
 	/* TODO: LOAD SUBSYSTEMS */
+	nes_cartridge_t cart = {};
+	result = nes_cartridge_load(configuration, &cart);
+	nes_cartridge_unload(&cart);
+	/* --- */
 
 	TRACE(LEVEL_VERBOSE, "%s", "Bus loaded");
 
@@ -101,16 +105,35 @@ nes_bus_load(
 
 uint8_t
 nes_bus_read(
+	__in int bus,
 	__in uint16_t address
 	)
 {
 	uint8_t result = 0;
 
-	switch(address) {
+	switch(bus) {
+		case BUS_PROCESSOR:
 
-		/* TODO: READ DATA FROM ADDRESS */
+			switch(address) {
 
+				/* TODO: READ DATA FROM ADDRESS */
+
+				default:
+					break;
+			}
+			break;
+		case BUS_VIDEO:
+
+			switch(address) {
+
+				/* TODO: READ DATA FROM ADDRESS */
+
+				default:
+					break;
+			}
+			break;
 		default:
+
 			break;
 	}
 
@@ -130,16 +153,35 @@ nes_bus_unload(void)
 
 void
 nes_bus_write(
+	__in int bus,
 	__in uint16_t address,
 	__in uint8_t data
 	)
 {
 
-	switch(address) {
+	switch(bus) {
+		case BUS_PROCESSOR:
 
-		/* TODO: WRITE DATA TO ADDRESS */
+			switch(address) {
 
+				/* TODO: READ DATA FROM ADDRESS */
+
+				default:
+					break;
+			}
+			break;
+		case BUS_VIDEO:
+
+			switch(address) {
+
+				/* TODO: READ DATA FROM ADDRESS */
+
+				default:
+					break;
+			}
+			break;
 		default:
+
 			break;
 	}
 }

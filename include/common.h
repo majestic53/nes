@@ -22,6 +22,7 @@
 #ifndef NES_COMMON_H_
 #define NES_COMMON_H_
 
+#include <limits.h>
 #include <stdarg.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -29,6 +30,7 @@
 #include <string.h>
 #include <time.h>
 #include "./common/buffer.h"
+#include "./common/cartridge.h"
 #include "./common/error.h"
 #include "./common/trace.h"
 

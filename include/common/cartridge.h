@@ -19,27 +19,75 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef NES_BUS_H_
-#define NES_BUS_H_
+#ifndef NES_CARTRIDGE_H_
+#define NES_CARTRIDGE_H_
 
-#include "./common.h"
+#include "./define.h"
 
-enum {
-	BUS_PROCESSOR = 0,
-	BUS_VIDEO,
-};
+#define INES_VERSION_1 1
+#define INES_VERSION INES_VERSION_1
+
+typedef struct {
+#if INES_VERSION >= INES_VERSION_1
+	uint8_t magic[4];
+	uint8_t rom_program_count;
+	uint8_t rom_character_count;
+
+	struct {
+		uint8_t mirroring : 1;
+		uint8_t battery : 1;
+		uint8_t trainer : 1;
+		uint8_t four_screen : 1;
+		uint8_t mapper_low : 4;
+	} flag_6;
+
+	struct {
+		uint8_t unused : 2;
+		uint8_t version : 2;
+		uint8_t mapper_high : 4;
+	} flag_7;
+
+	uint8_t ram_program_count;
+#endif /* INES_VERSION >= INES_VERSION_1 */
+} nes_cartridge_header_t;
+
+typedef struct {
+	const nes_cartridge_header_t *header;
+	int mapper;
+	nes_buffer_t ram;
+	size_t ram_count;
+	nes_buffer_t rom;
+	size_t rom_count;
+} nes_cartridge_t;
 
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
 
-uint8_t nes_bus_read(
-	__in int bus,
+int nes_cartridge_load(
+	__in const nes_t *configuration,
+	__inout nes_cartridge_t *cartridge
+	);
+
+uint8_t nes_cartridge_read_ram(
+	__in const nes_cartridge_t *cartridge,
+	__in size_t bank,
 	__in uint16_t address
 	);
 
-void nes_bus_write(
-	__in int bus,
+uint8_t nes_cartridge_read_rom(
+	__in const nes_cartridge_t *cartridge,
+	__in size_t bank,
+	__in uint16_t address
+	);
+
+void nes_cartridge_unload(
+	__inout nes_cartridge_t *cartridge
+	);
+
+void nes_cartridge_write_ram(
+	__inout nes_cartridge_t *cartridge,
+	__in size_t bank,
 	__in uint16_t address,
 	__in uint8_t data
 	);
@@ -48,4 +96,4 @@ void nes_bus_write(
 }
 #endif /* __cplusplus */
 
-#endif /* NES_BUS_H_ */
+#endif /* NES_CARTRIDGE_H_ */

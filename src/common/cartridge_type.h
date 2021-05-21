@@ -19,56 +19,14 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef NES_SDL_TYPE_H_
-#define NES_SDL_TYPE_H_
+#ifndef NES_CARTRIDGE_TYPE_H_
+#define NES_CARTRIDGE_TYPE_H_
 
-#ifdef SDL
+#include "../../include/common.h"
 
-#include <SDL2/SDL.h>
-#include <libgen.h>
-#include "../../include/service.h"
+#define HEADER_MAGIC "NES\x1a\0"
 
-#define KEY_FULLSCREEN SDL_SCANCODE_F11
+#define RAM_BANK_WIDTH (8 * BYTES_PER_KBYTE)
+#define ROM_BANK_WIDTH (16 * BYTES_PER_KBYTE)
 
-#define SCALE 2
-
-#define TITLE_MAX 128
-
-#define WINDOW_HEIGHT 240
-#define WINDOW_WIDTH 256
-
-typedef struct {
-#ifndef NDEBUG
-	char format[FORMAT_MAX];
-#endif /* NDEBUG */
-	uint32_t frame;
-	uint32_t frame_begin;
-	float framerate;
-	uint32_t framerate_begin;
-	bool fullscreen;
-	nes_color_t pixel[WINDOW_HEIGHT][WINDOW_WIDTH];
-	SDL_Renderer *renderer;
-	SDL_Texture *texture;
-	char title[TITLE_MAX];
-	SDL_version version;
-	SDL_Window *window;
-} nes_sdl_t;
-
-static const nes_color_t BACKGROUND = {{ 0x00, 0x00, 0x00, 0xff }};
-static const nes_color_t FOREGROUND = {{ 0x10, 0x10, 0x10, 0xff }};
-
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
-int nes_service_clear(void);
-
-int nes_service_fullscreen(void);
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
-
-#endif /* SDL */
-
-#endif /* NES_SDL_TYPE_H_ */
+#endif /* NES_CARTRIDGE_TYPE_H_ */
