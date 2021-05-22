@@ -31,6 +31,8 @@ nes_cartridge_load(
 	__inout nes_cartridge_t *cartridge
 	)
 {
+	uint8_t *data;
+	size_t length = 0;
 	int result = NES_OK;
 
 	if(configuration->rom.length < sizeof(*cartridge->header)) {
@@ -47,7 +49,50 @@ nes_cartridge_load(
 
 	cartridge->mapper = (cartridge->header->flag_7.mapper_high << CHAR_BIT) | cartridge->header->flag_6.mapper_low;
 
-	/* TODO */
+	switch(cartridge->mapper) {
+		case MAPPER_NROM:
+			break;
+		default:
+			result = ERROR(NES_ERR, "cartridge mapper unsupported -- %i", cartridge->mapper);
+			goto exit;
+	}
+
+	data = (configuration->rom.data + sizeof(*cartridge->header));
+	length += sizeof(*cartridge->header);
+
+	if(cartridge->header->flag_6.trainer) {
+		data += TRAINER_WIDTH;
+		length += TRAINER_WIDTH;
+	}
+
+	cartridge->rom_count[ROM_PROGRAM] = cartridge->header->rom_program_count;
+	cartridge->rom[ROM_PROGRAM].length = cartridge->rom_count[ROM_PROGRAM] * ROM_PROGRAM_BANK_WIDTH;
+	length += cartridge->rom[ROM_PROGRAM].length;
+	cartridge->rom_count[ROM_CHARACTER] = cartridge->header->rom_character_count;
+	cartridge->rom[ROM_CHARACTER].length = cartridge->rom_count[ROM_CHARACTER] * ROM_CHARACTER_BANK_WIDTH;
+	length += cartridge->rom[ROM_CHARACTER].length;
+
+	if(length != configuration->rom.length) {
+		result = ERROR(NES_ERR, "cartridge length mismatch -- expecting %.02f KB (%u bytes), found %.02f KB (%u bytes)", length / (float)BYTES_PER_KBYTE, length,
+				cartridge->rom->length / (float)BYTES_PER_KBYTE, cartridge->rom->length);
+		goto exit;
+	}
+
+	cartridge->rom[ROM_PROGRAM].data = data;
+	data += cartridge->rom[ROM_PROGRAM].length;
+	cartridge->rom[ROM_CHARACTER].data = data;
+	cartridge->ram_count = cartridge->header->ram_program_count ? cartridge->header->ram_program_count : 1;
+
+	if((result = nes_buffer_allocate(&cartridge->ram, cartridge->ram_count * RAM_BANK_WIDTH)) != NES_OK) {
+		goto exit;
+	}
+
+	TRACE(LEVEL_VERBOSE, "Cartridge mapper: %i (%s)", cartridge->mapper, MAPPER[cartridge->mapper]);
+	TRACE(LEVEL_VERBOSE, "Cartridge program rom: %u, %.02f KB (%u bytes)", cartridge->rom_count[ROM_PROGRAM], cartridge->rom[ROM_PROGRAM].length / (float)BYTES_PER_KBYTE,
+		cartridge->rom[ROM_PROGRAM].length);
+	TRACE(LEVEL_VERBOSE, "Cartridge character rom: %u, %.02f KB (%u bytes)", cartridge->rom_count[ROM_CHARACTER], cartridge->rom[ROM_CHARACTER].length / (float)BYTES_PER_KBYTE,
+		cartridge->rom[ROM_CHARACTER].length);
+	TRACE(LEVEL_VERBOSE, "Cartridge ram: %u, %.02f KB (%u bytes)", cartridge->ram_count, cartridge->ram.length / (float)BYTES_PER_KBYTE, cartridge->ram.length);
 
 exit:
 	return result;
@@ -66,11 +111,12 @@ nes_cartridge_read_ram(
 uint8_t
 nes_cartridge_read_rom(
 	__in const nes_cartridge_t *cartridge,
+	__in int type,
 	__in size_t bank,
 	__in uint16_t address
 	)
 {
-	return cartridge->rom.data[(bank * ROM_BANK_WIDTH) + address];
+	return cartridge->rom[type].data[(bank * (type == ROM_PROGRAM ? ROM_PROGRAM_BANK_WIDTH : ROM_CHARACTER_BANK_WIDTH)) + address];
 }
 
 void
@@ -78,6 +124,7 @@ nes_cartridge_unload(
 	__inout nes_cartridge_t *cartridge
 	)
 {
+	nes_buffer_free(&cartridge->ram);
 	memset(cartridge, 0, sizeof(*cartridge));
 }
 
@@ -89,7 +136,7 @@ nes_cartridge_write_ram(
 	__in uint8_t data
 	)
 {
-	cartridge->rom.data[(bank * ROM_BANK_WIDTH) + address] = data;
+	cartridge->ram.data[(bank * RAM_BANK_WIDTH) + address] = data;
 }
 
 #ifdef __cplusplus

@@ -27,6 +27,17 @@
 #define HEADER_MAGIC "NES\x1a\0"
 
 #define RAM_BANK_WIDTH (8 * BYTES_PER_KBYTE)
-#define ROM_BANK_WIDTH (16 * BYTES_PER_KBYTE)
+#define ROM_CHARACTER_BANK_WIDTH (8 * BYTES_PER_KBYTE)
+#define ROM_PROGRAM_BANK_WIDTH (16 * BYTES_PER_KBYTE)
+
+#define TRAINER_WIDTH 512
+
+#ifndef NDEBUG
+
+const char *MAPPER[] = {
+	"NROM", /* MAPPER_NROM */
+	};
+
+#endif /* NDEBUG */
 
 #endif /* NES_CARTRIDGE_TYPE_H_ */

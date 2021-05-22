@@ -19,47 +19,35 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "./buffer_type.h"
+#ifndef NES_TEST_CARTRIDGE_TYPE_H_
+#define NES_TEST_CARTRIDGE_TYPE_H_
+
+#include "../common.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
 
-int
-nes_buffer_allocate(
-	__inout nes_buffer_t *buffer,
-	__in size_t length
-	)
-{
-	int result = NES_OK;
+int nes_test_cartridge_load(void);
 
-	if(!(buffer->data = calloc(length, sizeof(uint8_t)))) {
-		result = ERROR(NES_ERR, "failed to allocate buffer -- %.02f KB (%u bytes)", length / (float)BYTES_PER_KBYTE, length);
-		goto exit;
-	}
+int nes_test_cartridge_read_ram(void);
 
-	buffer->length = length;
-	memset(buffer->data, BUFFER_FILL, buffer->length);
-	TRACE(LEVEL_VERBOSE, "Buffer allocate %p, %.02f KB (%u bytes)", buffer->data, buffer->length / (float)BYTES_PER_KBYTE, buffer->length);
+int nes_test_cartridge_read_rom(void);
 
-exit:
-	return result;
-}
+int nes_test_cartridge_unload(void);
 
-void
-nes_buffer_free(
-	__inout nes_buffer_t *buffer
-	)
-{
+int nes_test_cartridge_write_ram(void);
 
-	if(buffer->data) {
-		free(buffer->data);
-		TRACE(LEVEL_VERBOSE, "Buffer free %p", buffer->data);
-	}
-
-	memset(buffer, 0, sizeof(*buffer));
-}
+static const nes_test TEST[] = {
+	nes_test_cartridge_load,
+	nes_test_cartridge_read_ram,
+	nes_test_cartridge_read_rom,
+	nes_test_cartridge_unload,
+	nes_test_cartridge_write_ram,
+	};
 
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
+
+#endif /* NES_TEST_CARTRIDGE_TYPE_H_ */

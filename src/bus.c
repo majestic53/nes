@@ -93,10 +93,6 @@ nes_bus_load(
 	TRACE(LEVEL_VERBOSE, "%s", "Bus loading");
 
 	/* TODO: LOAD SUBSYSTEMS */
-	nes_cartridge_t cart = {};
-	result = nes_cartridge_load(configuration, &cart);
-	nes_cartridge_unload(&cart);
-	/* --- */
 
 	TRACE(LEVEL_VERBOSE, "%s", "Bus loaded");
 

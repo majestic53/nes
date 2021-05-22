@@ -19,45 +19,88 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "./buffer_type.h"
+#include "./cartridge_type.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
 
 int
-nes_buffer_allocate(
-	__inout nes_buffer_t *buffer,
-	__in size_t length
+nes_test_cartridge_load(void)
+{
+	int result = NES_OK;
+
+	/* TODO */
+
+	TEST_TRACE(result);
+
+	return result;
+}
+
+int
+nes_test_cartridge_read_ram(void)
+{
+	int result = NES_OK;
+
+	/* TODO */
+
+	TEST_TRACE(result);
+
+	return result;
+}
+
+int
+nes_test_cartridge_read_rom(void)
+{
+	int result = NES_OK;
+
+	/* TODO */
+
+	TEST_TRACE(result);
+
+	return result;
+}
+
+int
+nes_test_cartridge_unload(void)
+{
+	int result = NES_OK;
+
+	/* TODO */
+
+	TEST_TRACE(result);
+
+	return result;
+}
+
+int
+nes_test_cartridge_write_ram(void)
+{
+	int result = NES_OK;
+
+	/* TODO */
+
+	TEST_TRACE(result);
+
+	return result;
+}
+
+int
+main(
+	__in int argc,
+	__in char *argv[]
 	)
 {
 	int result = NES_OK;
 
-	if(!(buffer->data = calloc(length, sizeof(uint8_t)))) {
-		result = ERROR(NES_ERR, "failed to allocate buffer -- %.02f KB (%u bytes)", length / (float)BYTES_PER_KBYTE, length);
-		goto exit;
+	for(size_t test = 0; test < TEST_COUNT(TEST); ++test) {
+
+		if(TEST[test]() != NES_OK) {
+			result = NES_ERR;
+		}
 	}
 
-	buffer->length = length;
-	memset(buffer->data, BUFFER_FILL, buffer->length);
-	TRACE(LEVEL_VERBOSE, "Buffer allocate %p, %.02f KB (%u bytes)", buffer->data, buffer->length / (float)BYTES_PER_KBYTE, buffer->length);
-
-exit:
 	return result;
-}
-
-void
-nes_buffer_free(
-	__inout nes_buffer_t *buffer
-	)
-{
-
-	if(buffer->data) {
-		free(buffer->data);
-		TRACE(LEVEL_VERBOSE, "Buffer free %p", buffer->data);
-	}
-
-	memset(buffer, 0, sizeof(*buffer));
 }
 
 #ifdef __cplusplus

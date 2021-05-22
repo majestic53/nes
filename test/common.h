@@ -19,47 +19,37 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "./buffer_type.h"
+#ifndef NES_TEST_COMMON_H_
+#define NES_TEST_COMMON_H_
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+#include "../include/common.h"
 
-int
-nes_buffer_allocate(
-	__inout nes_buffer_t *buffer,
-	__in size_t length
-	)
-{
-	int result = NES_OK;
+#define ASSERT(_CONDITION_) \
+	(_CONDITION_) ? NES_OK : NES_ERR
 
-	if(!(buffer->data = calloc(length, sizeof(uint8_t)))) {
-		result = ERROR(NES_ERR, "failed to allocate buffer -- %.02f KB (%u bytes)", length / (float)BYTES_PER_KBYTE, length);
-		goto exit;
-	}
+#ifdef COLOR
 
-	buffer->length = length;
-	memset(buffer->data, BUFFER_FILL, buffer->length);
-	TRACE(LEVEL_VERBOSE, "Buffer allocate %p, %.02f KB (%u bytes)", buffer->data, buffer->length / (float)BYTES_PER_KBYTE, buffer->length);
+static const char *LEVEL_COL[] = {
+	"\x1b[0m", /* LEVEL_NONE */
+	"\x1b[91m", /* LEVEL_ERROR */
+	"\x1b[93m", /* LEVEL_WARNING */
+	"\x1b[94m", /* LEVEL_INFORMATION */
+	"\x1b[90m", /* LEVEL_VERBOSE */
+};
 
-exit:
-	return result;
-}
+#define LEVEL_COLOR(_LEVEL_) \
+	LEVEL_COL[((_LEVEL_) < LEVEL_MAX) ? (_LEVEL_) : LEVEL_NONE]
+#else
+#define LEVEL_COLOR(_LEVEL_) ""
+#endif /* COLOR */
 
-void
-nes_buffer_free(
-	__inout nes_buffer_t *buffer
-	)
-{
+#define TEST_COUNT(_TESTS_) \
+	sizeof(_TESTS_) / sizeof(*(_TESTS_))
 
-	if(buffer->data) {
-		free(buffer->data);
-		TRACE(LEVEL_VERBOSE, "Buffer free %p", buffer->data);
-	}
+#define TEST_TRACE(_RESULT_) \
+	fprintf(((_RESULT_) != NES_OK) ? stderr : stdout, "[%s%s%s] %s\n", LEVEL_COLOR(((_RESULT_) != NES_OK) ? LEVEL_ERROR : LEVEL_INFORMATION), \
+		((_RESULT_) != NES_OK) ? "FAIL" : "PASS", LEVEL_COLOR(LEVEL_MAX), __FUNCTION__)
 
-	memset(buffer, 0, sizeof(*buffer));
-}
+typedef int (*nes_test)(void);
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+#endif /* NES_TEST_COMMON_H_ */

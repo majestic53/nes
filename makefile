@@ -26,6 +26,7 @@ DIR_BIN_LIB=./bin/lib/
 DIR_BUILD=./build/
 DIR_ROOT=./
 DIR_SRC=./src/
+DIR_TEST_CARTRIDGE=./test/cartridge/
 DIR_TOOL=./tool/
 
 COLOR?=COLOR
@@ -37,8 +38,8 @@ SERVICE?=SDL
 SLOTS?=12
 
 all: release
-debug: clean setup library_debug tool_debug
-release: clean setup library_release tool_release
+debug: clean setup library_debug test_debug tool_debug
+release: clean setup library_release test_release tool_release
 
 analyze:
 	@echo ''
@@ -62,6 +63,12 @@ library_debug:
 library_release:
 	cd $(DIR_SRC) && make $(BUILD_RELEASE) build -j$(SLOTS)
 	cd $(DIR_SRC) && make archive
+
+test_debug:
+	cd $(DIR_TEST_CARTRIDGE) && make $(BUILD_DEBUG)$(LEVEL) build
+
+test_release:
+	cd $(DIR_TEST_CARTRIDGE) && make $(BUILD_RELEASE) build
 
 tool_debug:
 	cd $(DIR_TOOL) && make $(BUILD_DEBUG)$(LEVEL) build

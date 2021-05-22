@@ -27,6 +27,16 @@
 #define INES_VERSION_1 1
 #define INES_VERSION INES_VERSION_1
 
+enum {
+	MAPPER_NROM = 0,
+};
+
+enum {
+	ROM_PROGRAM = 0,
+	ROM_CHARACTER,
+	ROM_MAX,
+};
+
 typedef struct {
 #if INES_VERSION >= INES_VERSION_1
 	uint8_t magic[4];
@@ -49,6 +59,9 @@ typedef struct {
 
 	uint8_t ram_program_count;
 #endif /* INES_VERSION >= INES_VERSION_1 */
+#if INES_VERSION == INES_VERSION_1
+	uint8_t unused[7];
+#endif /* INES_VERSION == INES_VERSION_1 */
 } nes_cartridge_header_t;
 
 typedef struct {
@@ -56,8 +69,8 @@ typedef struct {
 	int mapper;
 	nes_buffer_t ram;
 	size_t ram_count;
-	nes_buffer_t rom;
-	size_t rom_count;
+	nes_buffer_t rom[ROM_MAX];
+	size_t rom_count[ROM_MAX];
 } nes_cartridge_t;
 
 #ifdef __cplusplus
@@ -77,6 +90,7 @@ uint8_t nes_cartridge_read_ram(
 
 uint8_t nes_cartridge_read_rom(
 	__in const nes_cartridge_t *cartridge,
+	__in int type,
 	__in size_t bank,
 	__in uint16_t address
 	);
