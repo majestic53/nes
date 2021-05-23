@@ -29,6 +29,7 @@
 
 enum {
 	MAPPER_NROM = 0,
+	MAPPER_MAX,
 };
 
 enum {

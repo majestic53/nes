@@ -21,6 +21,14 @@
 
 #include "./cartridge_type.h"
 
+#ifndef NDEBUG
+
+const char *MAPPER[] = {
+	"NROM", /* MAPPER_NROM */
+	};
+
+#endif /* NDEBUG */
+
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */

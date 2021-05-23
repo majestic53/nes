@@ -32,12 +32,4 @@
 
 #define TRAINER_WIDTH 512
 
-#ifndef NDEBUG
-
-const char *MAPPER[] = {
-	"NROM", /* MAPPER_NROM */
-	};
-
-#endif /* NDEBUG */
-
 #endif /* NES_CARTRIDGE_TYPE_H_ */

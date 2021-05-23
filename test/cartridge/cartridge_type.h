@@ -22,11 +22,20 @@
 #ifndef NES_TEST_CARTRIDGE_TYPE_H_
 #define NES_TEST_CARTRIDGE_TYPE_H_
 
+#include "../../src/common/cartridge_type.h"
 #include "../common.h"
+
+typedef struct {
+	nes_t configuration;
+	nes_cartridge_t cartridge;
+	nes_cartridge_header_t header;
+} nes_test_cartridge_t;
 
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
+
+void nes_test_cartridge_initialize(void);
 
 int nes_test_cartridge_load(void);
 
