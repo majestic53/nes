@@ -27,6 +27,7 @@ DIR_BUILD=./build/
 DIR_ROOT=./
 DIR_SRC=./src/
 DIR_TEST_CARTRIDGE=./test/cartridge/
+DIR_TEST_MAPPER=./test/mapper/
 DIR_TOOL=./tool/
 
 COLOR?=COLOR
@@ -66,9 +67,11 @@ library_release:
 
 test_debug:
 	cd $(DIR_TEST_CARTRIDGE) && make $(BUILD_DEBUG)$(LEVEL) build
+	cd $(DIR_TEST_MAPPER) && make $(BUILD_DEBUG)$(LEVEL) build
 
 test_release:
 	cd $(DIR_TEST_CARTRIDGE) && make $(BUILD_RELEASE) build
+	cd $(DIR_TEST_MAPPER) && make $(BUILD_RELEASE) build
 
 tool_debug:
 	cd $(DIR_TOOL) && make $(BUILD_DEBUG)$(LEVEL) build

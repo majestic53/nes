@@ -19,18 +19,101 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef NES_COMMON_H_
-#define NES_COMMON_H_
+#include "./mapper_type.h"
 
-#include <limits.h>
-#include <stdarg.h>
-#include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
-#include "./common/error.h"
-#include "./common/mapper.h"
-#include "./common/trace.h"
+static nes_test_mapper_t g_test = {};
 
-#endif /* NES_COMMON_H_ */
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
+
+void
+nes_test_mapper_initialize(void)
+{
+
+	/* TODO */
+
+	memset(&g_test, 0, sizeof(g_test));
+}
+
+int
+nes_test_mapper_load(void)
+{
+	int result = NES_OK;
+
+	/* TODO */
+
+	TEST_TRACE(result);
+
+	return result;
+}
+
+int
+nes_test_mapper_read_ram(void)
+{
+	int result = NES_OK;
+
+	/* TODO */
+
+	TEST_TRACE(result);
+
+	return result;
+}
+
+int
+nes_test_mapper_read_rom(void)
+{
+	int result = NES_OK;
+
+	/* TODO */
+
+	TEST_TRACE(result);
+
+	return result;
+}
+
+int
+nes_test_mapper_unload(void)
+{
+	int result = NES_OK;
+
+	/* TODO */
+
+	TEST_TRACE(result);
+
+	return result;
+}
+
+int
+nes_test_mapper_write_ram(void)
+{
+	int result = NES_OK;
+
+	/* TODO */
+
+	TEST_TRACE(result);
+
+	return result;
+}
+
+int
+main(
+	__in int argc,
+	__in char *argv[]
+	)
+{
+	int result = NES_OK;
+
+	for(size_t test = 0; test < TEST_COUNT(TEST); ++test) {
+
+		if(TEST[test]() != NES_OK) {
+			result = NES_ERR;
+		}
+	}
+
+	return result;
+}
+
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */

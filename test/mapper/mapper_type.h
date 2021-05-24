@@ -19,18 +19,44 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef NES_COMMON_H_
-#define NES_COMMON_H_
+#ifndef NES_TEST_MAPPER_TYPE_H_
+#define NES_TEST_MAPPER_TYPE_H_
 
-#include <limits.h>
-#include <stdarg.h>
-#include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
-#include "./common/error.h"
-#include "./common/mapper.h"
-#include "./common/trace.h"
+#include "../../src/common/mapper_type.h"
+#include "../common.h"
 
-#endif /* NES_COMMON_H_ */
+typedef struct {
+
+	/* TODO */
+
+} nes_test_mapper_t;
+
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
+
+void nes_test_mapper_initialize(void);
+
+int nes_test_mapper_load(void);
+
+int nes_test_mapper_read_ram(void);
+
+int nes_test_mapper_read_rom(void);
+
+int nes_test_mapper_unload(void);
+
+int nes_test_mapper_write_ram(void);
+
+static const nes_test TEST[] = {
+	nes_test_mapper_load,
+	nes_test_mapper_read_ram,
+	nes_test_mapper_read_rom,
+	nes_test_mapper_unload,
+	nes_test_mapper_write_ram,
+	};
+
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
+
+#endif /* NES_TEST_MAPPER_TYPE_H_ */

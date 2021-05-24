@@ -19,18 +19,14 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef NES_COMMON_H_
-#define NES_COMMON_H_
+#include "./mapper_type.h"
 
-#include <limits.h>
-#include <stdarg.h>
-#include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
-#include "./common/error.h"
-#include "./common/mapper.h"
-#include "./common/trace.h"
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
 
-#endif /* NES_COMMON_H_ */
+/* TODO */
+
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */

@@ -19,18 +19,72 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef NES_COMMON_H_
-#define NES_COMMON_H_
+#include "./nrom_type.h"
 
-#include <limits.h>
-#include <stdarg.h>
-#include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
-#include "./common/error.h"
-#include "./common/mapper.h"
-#include "./common/trace.h"
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
 
-#endif /* NES_COMMON_H_ */
+int
+nes_mapper_nrom_initialize(
+	__inout nes_mapper_t *mapper
+	)
+{
+	int result = NES_OK;
+
+	/* TODO */
+
+	return result;
+}
+
+uint8_t
+nes_mapper_read_ram(
+	__in const nes_mapper_t *mapper,
+	__in uint16_t address
+	)
+{
+	uint8_t result = 0;
+
+	/* TODO */
+
+	return result;
+}
+
+uint8_t
+nes_mapper_read_rom(
+	__in const nes_mapper_t *mapper,
+	__in int type,
+	__in uint16_t address
+	)
+{
+	uint8_t result = 0;
+
+	/* TODO */
+
+	return result;
+}
+
+void
+nes_mapper_write_ram(
+	__inout nes_mapper_t *mapper,
+	__in uint16_t address,
+	__in uint8_t data
+	)
+{
+	/* TODO */
+}
+
+void
+nes_mapper_write_rom(
+	__inout nes_mapper_t *mapper,
+	__in int type,
+	__in uint16_t address,
+	__in uint8_t data
+	)
+{
+	/* TODO */
+}
+
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */

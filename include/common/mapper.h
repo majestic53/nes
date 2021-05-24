@@ -19,90 +19,82 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef NES_CARTRIDGE_H_
-#define NES_CARTRIDGE_H_
+#ifndef NES_MAPPER_H_
+#define NES_MAPPER_H_
 
-#include "./buffer.h"
-
-#define INES_VERSION_1 1
-#define INES_VERSION INES_VERSION_1
+#include "./cartridge.h"
 
 enum {
-	MAPPER_NROM = 0,
-	MAPPER_MAX,
+	ROM_BANK_0 = 0,
+	ROM_BANK_1,
+	ROM_BANK_MAX,
 };
 
-enum {
-	ROM_PROGRAM = 0,
-	ROM_CHARACTER,
-	ROM_MAX,
-};
+typedef struct nes_mapper_s {
+	nes_cartridge_t cartridge;
+	size_t ram;
+	bool ram_enable;
+	size_t rom_program[ROM_BANK_MAX];
+	size_t rom_character;
 
-typedef struct {
-#if INES_VERSION >= INES_VERSION_1
-	uint8_t magic[4];
-	uint8_t rom_program_count;
-	uint8_t rom_character_count;
+	uint8_t (*read_ram)(
+			__in const struct nes_mapper_s *mapper,
+			__in uint16_t address
+			);
 
-	struct {
-		uint8_t mirroring : 1;
-		uint8_t battery : 1;
-		uint8_t trainer : 1;
-		uint8_t four_screen : 1;
-		uint8_t mapper_low : 4;
-	} flag_6;
+	uint8_t (*read_rom)(
+			__in const struct nes_mapper_s *mapper,
+			__in int type,
+			__in uint16_t address
+			);
 
-	struct {
-		uint8_t unused : 2;
-		uint8_t version : 2;
-		uint8_t mapper_high : 4;
-	} flag_7;
+	void (*write_ram)(
+			__inout struct nes_mapper_s *mapper,
+			__in uint16_t address,
+			__in uint8_t data
+			);
 
-	uint8_t ram_program_count;
-#endif /* INES_VERSION >= INES_VERSION_1 */
-#if INES_VERSION == INES_VERSION_1
-	uint8_t unused[7];
-#endif /* INES_VERSION == INES_VERSION_1 */
-} nes_cartridge_header_t;
-
-typedef struct {
-	const nes_cartridge_header_t *header;
-	int mapper;
-	nes_buffer_t ram;
-	size_t ram_count;
-	nes_buffer_t rom[ROM_MAX];
-	size_t rom_count[ROM_MAX];
-} nes_cartridge_t;
+	void (*write_rom)(
+			__inout struct nes_mapper_s *mapper,
+			__in int type,
+			__in uint16_t address,
+			__in uint8_t data
+			);
+} nes_mapper_t;
 
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
 
-int nes_cartridge_load(
+int nes_mapper_load(
 	__in const nes_t *configuration,
-	__inout nes_cartridge_t *cartridge
+	__inout nes_mapper_t *mapper
 	);
 
-uint8_t nes_cartridge_read_ram(
-	__in const nes_cartridge_t *cartridge,
-	__in size_t bank,
+uint8_t nes_mapper_read_ram(
+	__in const nes_mapper_t *mapper,
 	__in uint16_t address
 	);
 
-uint8_t nes_cartridge_read_rom(
-	__in const nes_cartridge_t *cartridge,
+uint8_t nes_mapper_read_rom(
+	__in const nes_mapper_t *mapper,
 	__in int type,
-	__in size_t bank,
 	__in uint16_t address
 	);
 
-void nes_cartridge_unload(
-	__inout nes_cartridge_t *cartridge
+void nes_mapper_unload(
+	__inout nes_mapper_t *mapper
 	);
 
-void nes_cartridge_write_ram(
-	__inout nes_cartridge_t *cartridge,
-	__in size_t bank,
+void nes_mapper_write_ram(
+	__inout nes_mapper_t *mapper,
+	__in uint16_t address,
+	__in uint8_t data
+	);
+
+void nes_mapper_write_rom(
+	__inout nes_mapper_t *mapper,
+	__in int type,
 	__in uint16_t address,
 	__in uint8_t data
 	);
@@ -111,4 +103,4 @@ void nes_cartridge_write_ram(
 }
 #endif /* __cplusplus */
 
-#endif /* NES_CARTRIDGE_H_ */
+#endif /* NES_MAPPER_H_ */

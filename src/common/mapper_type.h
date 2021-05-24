@@ -19,18 +19,9 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef NES_COMMON_H_
-#define NES_COMMON_H_
+#ifndef NES_MAPPER_TYPE_H_
+#define NES_MAPPER_TYPE_H_
 
-#include <limits.h>
-#include <stdarg.h>
-#include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
-#include "./common/error.h"
-#include "./common/mapper.h"
-#include "./common/trace.h"
+#include "../mapper/nrom_type.h"
 
-#endif /* NES_COMMON_H_ */
+#endif /* NES_MAPPER_TYPE_H_ */
