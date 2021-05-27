@@ -109,22 +109,20 @@ exit:
 uint8_t
 nes_cartridge_read_ram(
 	__in const nes_cartridge_t *cartridge,
-	__in size_t bank,
-	__in uint16_t address
+	__in size_t address
 	)
 {
-	return cartridge->ram.data[(bank * RAM_BANK_WIDTH) + address];
+	return cartridge->ram.data[address];
 }
 
 uint8_t
 nes_cartridge_read_rom(
 	__in const nes_cartridge_t *cartridge,
 	__in int type,
-	__in size_t bank,
-	__in uint16_t address
+	__in size_t address
 	)
 {
-	return cartridge->rom[type].data[(bank * (type == ROM_PROGRAM ? ROM_PROGRAM_BANK_WIDTH : ROM_CHARACTER_BANK_WIDTH)) + address];
+	return cartridge->rom[type].data[address];
 }
 
 void
@@ -139,12 +137,11 @@ nes_cartridge_unload(
 void
 nes_cartridge_write_ram(
 	__inout nes_cartridge_t *cartridge,
-	__in size_t bank,
-	__in uint16_t address,
+	__in size_t address,
 	__in uint8_t data
 	)
 {
-	cartridge->ram.data[(bank * RAM_BANK_WIDTH) + address] = data;
+	cartridge->ram.data[address] = data;
 }
 
 #ifdef __cplusplus

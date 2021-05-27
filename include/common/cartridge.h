@@ -85,15 +85,13 @@ int nes_cartridge_load(
 
 uint8_t nes_cartridge_read_ram(
 	__in const nes_cartridge_t *cartridge,
-	__in size_t bank,
-	__in uint16_t address
+	__in size_t address
 	);
 
 uint8_t nes_cartridge_read_rom(
 	__in const nes_cartridge_t *cartridge,
 	__in int type,
-	__in size_t bank,
-	__in uint16_t address
+	__in size_t address
 	);
 
 void nes_cartridge_unload(
@@ -102,8 +100,7 @@ void nes_cartridge_unload(
 
 void nes_cartridge_write_ram(
 	__inout nes_cartridge_t *cartridge,
-	__in size_t bank,
-	__in uint16_t address,
+	__in size_t address,
 	__in uint8_t data
 	);
 

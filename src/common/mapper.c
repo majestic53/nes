@@ -25,7 +25,74 @@
 extern "C" {
 #endif /* __cplusplus */
 
-/* TODO */
+int
+nes_mapper_load(
+	__in const nes_t *configuration,
+	__inout nes_mapper_t *mapper
+	)
+{
+	int result = NES_OK;
+
+	/* TODO */
+
+	return result;
+}
+
+uint8_t
+nes_mapper_read_ram(
+	__in const nes_mapper_t *mapper,
+	__in uint16_t address
+	)
+{
+	uint8_t result = 0;
+
+	/* TODO */
+
+	return result;
+}
+
+uint8_t
+nes_mapper_read_rom(
+	__in const nes_mapper_t *mapper,
+	__in int type,
+	__in uint16_t address
+	)
+{
+	uint8_t result = 0;
+
+	/* TODO */
+
+	return result;
+}
+
+void
+nes_mapper_unload(
+	__inout nes_mapper_t *mapper
+	)
+{
+	/* TODO */
+}
+
+void
+nes_mapper_write_ram(
+	__inout nes_mapper_t *mapper,
+	__in uint16_t address,
+	__in uint8_t data
+	)
+{
+	/* TODO */
+}
+
+void
+nes_mapper_write_rom(
+	__inout nes_mapper_t *mapper,
+	__in int type,
+	__in uint16_t address,
+	__in uint8_t data
+	)
+{
+	/* TODO */
+}
 
 #ifdef __cplusplus
 }
