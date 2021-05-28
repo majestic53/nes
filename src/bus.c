@@ -41,7 +41,8 @@ nes(
 
 	TRACE(LEVEL_INFORMATION, "%s ver.%i.%i.%i", NES, nes_version()->major, nes_version()->minor, nes_version()->patch);
 	TRACE(LEVEL_VERBOSE, "Configuration path: \"%s\"", configuration->path);
-	TRACE(LEVEL_VERBOSE, "Configuration rom: %p, %.02f KB (%u bytes)", configuration->rom.data, configuration->rom.length / (float)BYTES_PER_KBYTE, configuration->rom.length);
+	TRACE(LEVEL_VERBOSE, "Configuration rom: %p, %.02f KB (%u bytes)", configuration->rom.data, configuration->rom.length / (float)BYTES_PER_KBYTE,
+		configuration->rom.length);
 
 	if((result = nes_bus_load(configuration)) != NES_OK) {
 		goto exit;
@@ -55,7 +56,7 @@ nes(
 	TRACE_RESET();
 
 	for(;;) {
-		//uint16_t cycle = 0;
+		uint16_t cycle = 0;
 
 		if(nes_service_poll() != NES_OK) {
 			result = (result == NES_EVT) ? NES_OK : result;
@@ -63,10 +64,10 @@ nes(
 		}
 
 		/* TODO: STEP SUBSYSTEMS */
-		/*do {
-			nes_processor_step(&g_bus.processor);
+		do {
+			//nes_processor_step(&g_bus.processor);
 			TRACE_STEP();
-		} while(cycle++ < CYCLES_PER_FRAME);*/
+		} while(cycle++ < CYCLES_PER_FRAME);
 		/* --- */
 
 		if((result = nes_service_show()) != NES_OK) {
@@ -92,10 +93,15 @@ nes_bus_load(
 
 	TRACE(LEVEL_VERBOSE, "%s", "Bus loading");
 
+	if((result = nes_mapper_load(configuration, &g_bus.mapper)) != NES_OK) {
+		goto exit;
+	}
+
 	/* TODO: LOAD SUBSYSTEMS */
 
 	TRACE(LEVEL_VERBOSE, "%s", "Bus loaded");
 
+exit:
 	return result;
 }
 
@@ -143,6 +149,7 @@ nes_bus_unload(void)
 
 	/* TODO: UNLOAD SUBSYSTEMS */
 
+	nes_mapper_unload(&g_bus.mapper);
 	memset(&g_bus, 0, sizeof(g_bus));
 	TRACE(LEVEL_VERBOSE, "%s", "Bus unloaded");
 }

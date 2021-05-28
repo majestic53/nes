@@ -33,8 +33,23 @@ nes_mapper_load(
 {
 	int result = NES_OK;
 
-	/* TODO */
+	TRACE(LEVEL_VERBOSE, "%s", "Mapper loading");
 
+	if((result = nes_cartridge_load(configuration, &mapper->cartridge)) != NES_OK) {
+		goto exit;
+	}
+
+	if((result = MAPPER_LOAD[mapper->cartridge.mapper](mapper)) != NES_OK) {
+		goto exit;
+	}
+
+	TRACE(LEVEL_VERBOSE, "%s", "Mapper loaded");
+	TRACE(LEVEL_VERBOSE, "Mapper program rom[0]: %zu", mapper->rom_program[ROM_BANK_0]);
+	TRACE(LEVEL_VERBOSE, "Mapper program rom[1]: %zu", mapper->rom_program[ROM_BANK_1]);
+	TRACE(LEVEL_VERBOSE, "Mapper character rom: %zu", mapper->rom_character);
+	TRACE(LEVEL_VERBOSE, "Mapper ram: %zu (%s)", mapper->ram, mapper->ram_enabled ? "Enabled" : "Disabled");
+
+exit:
 	return result;
 }
 
@@ -44,11 +59,7 @@ nes_mapper_read_ram(
 	__in uint16_t address
 	)
 {
-	uint8_t result = 0;
-
-	/* TODO */
-
-	return result;
+	return mapper->read_ram(mapper, address);
 }
 
 uint8_t
@@ -58,11 +69,7 @@ nes_mapper_read_rom(
 	__in uint16_t address
 	)
 {
-	uint8_t result = 0;
-
-	/* TODO */
-
-	return result;
+	return mapper->read_rom(mapper, type, address);
 }
 
 void
@@ -70,7 +77,12 @@ nes_mapper_unload(
 	__inout nes_mapper_t *mapper
 	)
 {
-	/* TODO */
+	TRACE(LEVEL_VERBOSE, "%s", "Mapper unloading");
+
+	nes_cartridge_unload(&mapper->cartridge);
+	memset(mapper, 0, sizeof(*mapper));
+
+	TRACE(LEVEL_VERBOSE, "%s", "Mapper unloaded");
 }
 
 void
@@ -80,7 +92,7 @@ nes_mapper_write_ram(
 	__in uint8_t data
 	)
 {
-	/* TODO */
+	mapper->write_ram(mapper, address, data);
 }
 
 void
@@ -91,7 +103,7 @@ nes_mapper_write_rom(
 	__in uint8_t data
 	)
 {
-	/* TODO */
+	mapper->write_rom(mapper, type, address, data);
 }
 
 #ifdef __cplusplus

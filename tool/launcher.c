@@ -59,8 +59,8 @@ nes_launcher_load(void)
 	}
 
 	if(fread(g_launcher.configuration.rom.data, sizeof(uint8_t), g_launcher.configuration.rom.length, file) != g_launcher.configuration.rom.length) {
-		fprintf(stderr, "%s: file read error -- %s {%.02f KB (%zu bytes)}\n", g_launcher.path, g_launcher.configuration.path, g_launcher.configuration.rom.length / (float)BYTES_PER_KBYTE,
-			g_launcher.configuration.rom.length);
+		fprintf(stderr, "%s: file read error -- %s {%.02f KB (%zu bytes)}\n", g_launcher.path, g_launcher.configuration.path,
+			g_launcher.configuration.rom.length / (float)BYTES_PER_KBYTE, g_launcher.configuration.rom.length);
 		result = NES_ERR;
 		goto exit;
 	}

@@ -17,7 +17,7 @@
 # AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-BIN=test-mapper
+BIN_NROM=test-mapper-nrom
 
 DIR_BUILD=../../build/
 DIR_ROOT=./
@@ -26,23 +26,24 @@ FLAGS=-std=c11 -Wall -Werror
 
 build: build_test link run
 
-build_test: test_mapper.o
+build_test: test_mapper_nrom.o
 
-test_mapper.o: $(DIR_ROOT)mapper.c
-	$(CC) $(FLAGS) $(BUILD_FLAGS) -c $(DIR_ROOT)mapper.c -o $(DIR_BUILD)test_mapper.o
+test_mapper_nrom.o: $(DIR_ROOT)nrom.c
+	$(CC) $(FLAGS) $(BUILD_FLAGS) -c $(DIR_ROOT)nrom.c -o $(DIR_BUILD)test_mapper_nrom.o
 
 link:
 	@echo ''
-	@echo '--- BUILDING MAPPER TEST ------------------------------------------------------'
-	$(CC) $(FLAGS) $(BUILD_FLAGS) $(DIR_BUILD)test_mapper.o \
-		$(DIR_BUILD)common_mapper.o \
-		-o $(DIR_BUILD)$(BIN)
+	@echo '--- BUILDING MAPPER TESTS -----------------------------------------------------'
+	$(CC) $(FLAGS) $(BUILD_FLAGS) $(DIR_BUILD)test_mapper_nrom.o \
+		$(DIR_BUILD)common_buffer.o $(DIR_BUILD)common_cartridge.o $(DIR_BUILD)common_error.o $(DIR_BUILD)common_mapper.o $(DIR_BUILD)common_trace.o \
+			$(DIR_BUILD)mapper_nrom.o \
+		-o $(DIR_BUILD)$(BIN_NROM)
 	@echo '--- DONE ----------------------------------------------------------------------'
 	@echo ''
 
 run:
-	@echo '--- RUNNING MAPPER TEST -------------------------------------------------------'
-	@cd $(DIR_BUILD) && if ./$(BIN); \
+	@echo '--- RUNNING NROM MAPPER TEST --------------------------------------------------'
+	@cd $(DIR_BUILD) && if ./$(BIN_NROM); \
 	then \
 		echo '--- PASSED --------------------------------------------------------------------'; \
 	else \

@@ -24,4 +24,12 @@
 
 #include "../mapper/nrom_type.h"
 
+typedef int (*mapper_load)(
+        __inout nes_mapper_t *
+        );
+
+static const mapper_load MAPPER_LOAD[] = {
+        nes_mapper_nrom_load, /* MAPPER_NROM */
+        };
+
 #endif /* NES_MAPPER_TYPE_H_ */

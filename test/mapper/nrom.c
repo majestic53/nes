@@ -19,44 +19,101 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef NES_TEST_MAPPER_TYPE_H_
-#define NES_TEST_MAPPER_TYPE_H_
+#include "./nrom_type.h"
 
-#include "../../src/common/mapper_type.h"
-#include "../common.h"
-
-typedef struct {
-
-	/* TODO */
-
-} nes_test_mapper_t;
+static nes_test_mapper_nrom_t g_test = {};
 
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
 
-void nes_test_mapper_initialize(void);
+void
+nes_test_mapper_nrom_initialize(void)
+{
 
-int nes_test_mapper_load(void);
+	/* TODO */
 
-int nes_test_mapper_read_ram(void);
+	memset(&g_test, 0, sizeof(g_test));
+}
 
-int nes_test_mapper_read_rom(void);
+int
+nes_test_mapper_nrom_load(void)
+{
+	int result = NES_OK;
 
-int nes_test_mapper_unload(void);
+	/* TODO */
 
-int nes_test_mapper_write_ram(void);
+	TEST_TRACE(result);
 
-static const nes_test TEST[] = {
-	nes_test_mapper_load,
-	nes_test_mapper_read_ram,
-	nes_test_mapper_read_rom,
-	nes_test_mapper_unload,
-	nes_test_mapper_write_ram,
-	};
+	return result;
+}
+
+int
+nes_test_mapper_nrom_read_ram(void)
+{
+	int result = NES_OK;
+
+	/* TODO */
+
+	TEST_TRACE(result);
+
+	return result;
+}
+
+int
+nes_test_mapper_nrom_read_rom(void)
+{
+	int result = NES_OK;
+
+	/* TODO */
+
+	TEST_TRACE(result);
+
+	return result;
+}
+
+int
+nes_test_mapper_nrom_write_ram(void)
+{
+	int result = NES_OK;
+
+	/* TODO */
+
+	TEST_TRACE(result);
+
+	return result;
+}
+
+int
+nes_test_mapper_nrom_write_rom(void)
+{
+	int result = NES_OK;
+
+	/* TODO */
+
+	TEST_TRACE(result);
+
+	return result;
+}
+
+int
+main(
+	__in int argc,
+	__in char *argv[]
+	)
+{
+	int result = NES_OK;
+
+	for(size_t test = 0; test < TEST_COUNT(TEST); ++test) {
+
+		if(TEST[test]() != NES_OK) {
+			result = NES_ERR;
+		}
+	}
+
+	return result;
+}
 
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
-
-#endif /* NES_TEST_MAPPER_TYPE_H_ */

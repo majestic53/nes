@@ -93,7 +93,8 @@ nes_service_load(
 		goto exit;
 	}
 
-	if(!(g_sdl.window = SDL_CreateWindow(g_sdl.title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_WIDTH * SCALE, WINDOW_HEIGHT * SCALE, SDL_WINDOW_RESIZABLE))) {
+	if(!(g_sdl.window = SDL_CreateWindow(g_sdl.title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_WIDTH * SCALE, WINDOW_HEIGHT * SCALE,
+			SDL_WINDOW_RESIZABLE))) {
 		result = ERROR(NES_ERR, "sdl error -- %s", SDL_GetError());
 		goto exit;
 	}

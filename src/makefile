@@ -72,7 +72,8 @@ archive:
 	@echo ''
 	@echo '--- BUILDING LIBRARY ----------------------------------------------------------'
 	ar rcs $(DIR_BIN_LIB)$(LIB) $(DIR_BUILD)base_bus.o \
-		$(DIR_BUILD)common_buffer.o $(DIR_BUILD)common_cartridge.o $(DIR_BUILD)common_error.o $(DIR_BUILD)common_mapper.o $(DIR_BUILD)common_trace.o $(DIR_BUILD)common_version.o \
+		$(DIR_BUILD)common_buffer.o $(DIR_BUILD)common_cartridge.o $(DIR_BUILD)common_error.o $(DIR_BUILD)common_mapper.o $(DIR_BUILD)common_trace.o \
+			$(DIR_BUILD)common_version.o \
 		$(DIR_BUILD)mapper_nrom.o \
 		$(DIR_BUILD)service_sdl.o
 	cp $(DIR_INCLUDE)nes.h $(DIR_BIN_INCLUDE)

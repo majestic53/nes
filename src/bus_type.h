@@ -26,6 +26,7 @@
 #include "../include/service.h"
 
 typedef struct {
+        nes_mapper_t mapper;
 
 	/* TODO */
 

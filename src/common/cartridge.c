@@ -43,8 +43,11 @@ nes_cartridge_load(
 	size_t length = 0;
 	int result = NES_OK;
 
+	TRACE(LEVEL_VERBOSE, "%s", "Cartridge loading");
+
 	if(configuration->rom.length < sizeof(*cartridge->header)) {
-		result = ERROR(NES_ERR, "cartridge is too small -- expecting %.02f KB (%u bytes)", sizeof(*cartridge->header) / (float)BYTES_PER_KBYTE, sizeof(*cartridge->header));
+		result = ERROR(NES_ERR, "cartridge is too small -- expecting %.02f KB (%u bytes)", sizeof(*cartridge->header) / (float)BYTES_PER_KBYTE,
+				sizeof(*cartridge->header));
 		goto exit;
 	}
 
@@ -55,9 +58,7 @@ nes_cartridge_load(
 		goto exit;
 	}
 
-	cartridge->mapper = (cartridge->header->flag_7.mapper_high << CHAR_BIT) | cartridge->header->flag_6.mapper_low;
-
-	switch(cartridge->mapper) {
+	switch((cartridge->mapper = (cartridge->header->flag_7.mapper_high << CHAR_BIT) | cartridge->header->flag_6.mapper_low)) {
 		case MAPPER_NROM:
 			break;
 		default:
@@ -73,16 +74,25 @@ nes_cartridge_load(
 		length += TRAINER_WIDTH;
 	}
 
-	cartridge->rom_count[ROM_PROGRAM] = cartridge->header->rom_program_count;
+	if(!(cartridge->rom_count[ROM_PROGRAM] = cartridge->header->rom_program_count)) {
+		result = ERROR(NES_ERR, "cartridge program rom counter invalid -- %zu", cartridge->rom_count[ROM_PROGRAM]);
+		goto exit;
+	}
+
 	cartridge->rom[ROM_PROGRAM].length = cartridge->rom_count[ROM_PROGRAM] * ROM_PROGRAM_BANK_WIDTH;
 	length += cartridge->rom[ROM_PROGRAM].length;
-	cartridge->rom_count[ROM_CHARACTER] = cartridge->header->rom_character_count;
+
+	if(!(cartridge->rom_count[ROM_CHARACTER] = cartridge->header->rom_character_count)) {
+		result = ERROR(NES_ERR, "cartridge character rom counter invalid -- %zu", cartridge->rom_count[ROM_CHARACTER]);
+		goto exit;
+	}
+
 	cartridge->rom[ROM_CHARACTER].length = cartridge->rom_count[ROM_CHARACTER] * ROM_CHARACTER_BANK_WIDTH;
 	length += cartridge->rom[ROM_CHARACTER].length;
 
 	if(length != configuration->rom.length) {
-		result = ERROR(NES_ERR, "cartridge length mismatch -- expecting %.02f KB (%u bytes), found %.02f KB (%u bytes)", length / (float)BYTES_PER_KBYTE, length,
-				cartridge->rom->length / (float)BYTES_PER_KBYTE, cartridge->rom->length);
+		result = ERROR(NES_ERR, "cartridge length mismatch -- expecting %.02f KB (%u bytes), found %.02f KB (%u bytes)", length / (float)BYTES_PER_KBYTE,
+				length, cartridge->rom->length / (float)BYTES_PER_KBYTE, cartridge->rom->length);
 		goto exit;
 	}
 
@@ -95,12 +105,14 @@ nes_cartridge_load(
 		goto exit;
 	}
 
+	TRACE(LEVEL_VERBOSE, "%s", "Cartridge loaded");
 	TRACE(LEVEL_VERBOSE, "Cartridge mapper: %i (%s)", cartridge->mapper, MAPPER[cartridge->mapper]);
-	TRACE(LEVEL_VERBOSE, "Cartridge program rom: %u, %.02f KB (%u bytes)", cartridge->rom_count[ROM_PROGRAM], cartridge->rom[ROM_PROGRAM].length / (float)BYTES_PER_KBYTE,
-		cartridge->rom[ROM_PROGRAM].length);
-	TRACE(LEVEL_VERBOSE, "Cartridge character rom: %u, %.02f KB (%u bytes)", cartridge->rom_count[ROM_CHARACTER], cartridge->rom[ROM_CHARACTER].length / (float)BYTES_PER_KBYTE,
-		cartridge->rom[ROM_CHARACTER].length);
-	TRACE(LEVEL_VERBOSE, "Cartridge ram: %u, %.02f KB (%u bytes)", cartridge->ram_count, cartridge->ram.length / (float)BYTES_PER_KBYTE, cartridge->ram.length);
+	TRACE(LEVEL_VERBOSE, "Cartridge program rom: %u, %.02f KB (%u bytes)", cartridge->rom_count[ROM_PROGRAM],
+		cartridge->rom[ROM_PROGRAM].length / (float)BYTES_PER_KBYTE, cartridge->rom[ROM_PROGRAM].length);
+	TRACE(LEVEL_VERBOSE, "Cartridge character rom: %u, %.02f KB (%u bytes)", cartridge->rom_count[ROM_CHARACTER],
+		cartridge->rom[ROM_CHARACTER].length / (float)BYTES_PER_KBYTE, cartridge->rom[ROM_CHARACTER].length);
+	TRACE(LEVEL_VERBOSE, "Cartridge ram: %u, %.02f KB (%u bytes)", cartridge->ram_count,
+		cartridge->ram.length / (float)BYTES_PER_KBYTE, cartridge->ram.length);
 
 exit:
 	return result;
@@ -130,8 +142,12 @@ nes_cartridge_unload(
 	__inout nes_cartridge_t *cartridge
 	)
 {
+	TRACE(LEVEL_VERBOSE, "%s", "Cartridge unloading");
+
 	nes_buffer_free(&cartridge->ram);
 	memset(cartridge, 0, sizeof(*cartridge));
+
+	TRACE(LEVEL_VERBOSE, "%s", "Cartridge unloaded");
 }
 
 void
