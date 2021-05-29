@@ -35,8 +35,6 @@ typedef struct {
 extern "C" {
 #endif /* __cplusplus */
 
-void nes_test_cartridge_initialize(void);
-
 int nes_test_cartridge_load(void);
 
 int nes_test_cartridge_read_ram(void);
@@ -46,6 +44,10 @@ int nes_test_cartridge_read_rom(void);
 int nes_test_cartridge_unload(void);
 
 int nes_test_cartridge_write_ram(void);
+
+void nes_test_initialize(void);
+
+void nes_test_uninitialize(void);
 
 static const nes_test TEST[] = {
 	nes_test_cartridge_load,

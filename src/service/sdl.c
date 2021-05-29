@@ -193,7 +193,7 @@ nes_service_show(void)
 		goto exit;
 	}
 
-	if(SDL_UpdateTexture(g_sdl.texture, NULL, (nes_color_t *)g_sdl.pixel, WINDOW_WIDTH * sizeof(nes_color_t))) {
+	if(SDL_UpdateTexture(g_sdl.texture, NULL, g_sdl.pixel, WINDOW_WIDTH * sizeof(nes_color_t))) {
 		result = ERROR(NES_OK, "sdl error -- %s", SDL_GetError());
 		goto exit;
 	}

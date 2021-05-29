@@ -27,28 +27,20 @@ static nes_test_cartridge_t g_test = {};
 extern "C" {
 #endif /* __cplusplus */
 
-void
-nes_test_cartridge_initialize(void)
-{
-	nes_cartridge_unload(&g_test.cartridge);
-	nes_buffer_free(&g_test.configuration.rom);
-	memset(&g_test, 0, sizeof(g_test));
-}
-
 int
 nes_test_cartridge_load(void)
 {
 	int result = NES_OK;
 	nes_cartridge_header_t *header;
 
-	nes_test_cartridge_initialize();
+	nes_test_initialize();
 
 	if(ASSERT(nes_cartridge_load(&g_test.configuration, &g_test.cartridge) != NES_OK)) {
 		result = NES_ERR;
 		goto exit;
 	}
 
-	nes_test_cartridge_initialize();
+	nes_test_initialize();
 
 	if((result = nes_buffer_allocate(&g_test.configuration.rom, sizeof(g_test.header))) != NES_OK) {
 		goto exit;
@@ -59,7 +51,7 @@ nes_test_cartridge_load(void)
 		goto exit;
 	}
 
-	nes_test_cartridge_initialize();
+	nes_test_initialize();
 
 	if((result = nes_buffer_allocate(&g_test.configuration.rom, sizeof(g_test.header))) != NES_OK) {
 		goto exit;
@@ -74,7 +66,7 @@ nes_test_cartridge_load(void)
 		goto exit;
 	}
 
-	nes_test_cartridge_initialize();
+	nes_test_initialize();
 
 	if((result = nes_buffer_allocate(&g_test.configuration.rom, sizeof(g_test.header))) != NES_OK) {
 		goto exit;
@@ -93,7 +85,7 @@ nes_test_cartridge_load(void)
 		goto exit;
 	}
 
-	nes_test_cartridge_initialize();
+	nes_test_initialize();
 
 	if((result = nes_buffer_allocate(&g_test.configuration.rom, sizeof(g_test.header) + (2 * ROM_PROGRAM_BANK_WIDTH) + ROM_CHARACTER_BANK_WIDTH)) != NES_OK) {
 		goto exit;
@@ -113,7 +105,7 @@ nes_test_cartridge_load(void)
 		goto exit;
 	}
 
-	nes_test_cartridge_initialize();
+	nes_test_initialize();
 
 	if((result = nes_buffer_allocate(&g_test.configuration.rom, sizeof(g_test.header) + (2 * ROM_PROGRAM_BANK_WIDTH) + ROM_CHARACTER_BANK_WIDTH)) != NES_OK) {
 		goto exit;
@@ -133,7 +125,7 @@ nes_test_cartridge_load(void)
 		goto exit;
 	}
 
-	nes_test_cartridge_initialize();
+	nes_test_initialize();
 
 	if((result = nes_buffer_allocate(&g_test.configuration.rom, sizeof(g_test.header) + (2 * ROM_PROGRAM_BANK_WIDTH) + ROM_CHARACTER_BANK_WIDTH)) != NES_OK) {
 		goto exit;
@@ -153,7 +145,7 @@ nes_test_cartridge_load(void)
 		goto exit;
 	}
 
-	nes_test_cartridge_initialize();
+	nes_test_initialize();
 
 	if((result = nes_buffer_allocate(&g_test.configuration.rom, sizeof(g_test.header) + (2 * ROM_PROGRAM_BANK_WIDTH) + ROM_CHARACTER_BANK_WIDTH)) != NES_OK) {
 		goto exit;
@@ -173,7 +165,7 @@ nes_test_cartridge_load(void)
 		goto exit;
 	}
 
-	nes_test_cartridge_initialize();
+	nes_test_initialize();
 
 	if((result = nes_buffer_allocate(&g_test.configuration.rom, sizeof(g_test.header) + (2 * ROM_PROGRAM_BANK_WIDTH) + ROM_CHARACTER_BANK_WIDTH)) != NES_OK) {
 		goto exit;
@@ -194,7 +186,7 @@ nes_test_cartridge_load(void)
 		goto exit;
 	}
 
-	nes_test_cartridge_initialize();
+	nes_test_initialize();
 
 	if((result = nes_buffer_allocate(&g_test.configuration.rom, sizeof(g_test.header) + TRAINER_WIDTH + (2 * ROM_PROGRAM_BANK_WIDTH) + ROM_CHARACTER_BANK_WIDTH))
 			!= NES_OK) {
@@ -228,7 +220,7 @@ nes_test_cartridge_read_ram(void)
 	int result = NES_OK;
 	nes_cartridge_header_t *header;
 
-	nes_test_cartridge_initialize();
+	nes_test_initialize();
 
 	if((result = nes_buffer_allocate(&g_test.configuration.rom, sizeof(g_test.header) + (2 * ROM_PROGRAM_BANK_WIDTH) + ROM_CHARACTER_BANK_WIDTH)) != NES_OK) {
 		goto exit;
@@ -270,7 +262,7 @@ nes_test_cartridge_read_rom(void)
 	int result = NES_OK;
 	nes_cartridge_header_t *header;
 
-	nes_test_cartridge_initialize();
+	nes_test_initialize();
 
 	if((result = nes_buffer_allocate(&g_test.configuration.rom, sizeof(g_test.header) + (2 * ROM_PROGRAM_BANK_WIDTH) + ROM_CHARACTER_BANK_WIDTH)) != NES_OK) {
 		goto exit;
@@ -311,7 +303,7 @@ nes_test_cartridge_read_rom(void)
 		}
 	}
 
-	nes_test_cartridge_initialize();
+	nes_test_initialize();
 
 	if((result = nes_buffer_allocate(&g_test.configuration.rom, sizeof(g_test.header) + TRAINER_WIDTH + (2 * ROM_PROGRAM_BANK_WIDTH) + ROM_CHARACTER_BANK_WIDTH))
 			!= NES_OK) {
@@ -367,7 +359,7 @@ nes_test_cartridge_unload(void)
 	int result = NES_OK;
 	nes_cartridge_header_t *header;
 
-	nes_test_cartridge_initialize();
+	nes_test_initialize();
 
 	if((result = nes_buffer_allocate(&g_test.configuration.rom, sizeof(g_test.header) + TRAINER_WIDTH + (2 * ROM_PROGRAM_BANK_WIDTH) + ROM_CHARACTER_BANK_WIDTH))
 			!= NES_OK) {
@@ -421,7 +413,7 @@ nes_test_cartridge_write_ram(void)
 	int result = NES_OK;
 	nes_cartridge_header_t *header;
 
-	nes_test_cartridge_initialize();
+	nes_test_initialize();
 
 	if((result = nes_buffer_allocate(&g_test.configuration.rom, sizeof(g_test.header) + (2 * ROM_PROGRAM_BANK_WIDTH) + ROM_CHARACTER_BANK_WIDTH)) != NES_OK) {
 		goto exit;
@@ -456,6 +448,20 @@ exit:
 	return result;
 }
 
+void
+nes_test_initialize(void)
+{
+	nes_test_uninitialize();
+}
+
+void
+nes_test_uninitialize(void)
+{
+	nes_cartridge_unload(&g_test.cartridge);
+	nes_buffer_free(&g_test.configuration.rom);
+	memset(&g_test, 0, sizeof(g_test));
+}
+
 int
 main(
 	__in int argc,
@@ -470,6 +476,8 @@ main(
 			result = NES_ERR;
 		}
 	}
+
+	nes_test_uninitialize();
 
 	return result;
 }

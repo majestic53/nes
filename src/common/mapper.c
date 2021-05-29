@@ -47,7 +47,7 @@ nes_mapper_load(
 	TRACE(LEVEL_VERBOSE, "Mapper program rom[0]: %zu", mapper->rom_program[ROM_BANK_0]);
 	TRACE(LEVEL_VERBOSE, "Mapper program rom[1]: %zu", mapper->rom_program[ROM_BANK_1]);
 	TRACE(LEVEL_VERBOSE, "Mapper character rom: %zu", mapper->rom_character);
-	TRACE(LEVEL_VERBOSE, "Mapper ram: %zu (%s)", mapper->ram, mapper->ram_enabled ? "Enabled" : "Disabled");
+	TRACE(LEVEL_VERBOSE, "Mapper ram: %zu", mapper->ram);
 
 exit:
 	return result;

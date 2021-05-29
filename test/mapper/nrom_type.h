@@ -22,21 +22,19 @@
 #ifndef NES_TEST_MAPPER_NROM_TYPE_H_
 #define NES_TEST_MAPPER_NROM_TYPE_H_
 
+#include "../../src/common/cartridge_type.h"
 #include "../../src/common/mapper_type.h"
 #include "../common.h"
 
 typedef struct {
+        nes_t configuration;
+        nes_cartridge_header_t header;
         nes_mapper_t mapper;
-
-	/* TODO */
-
 } nes_test_mapper_nrom_t;
 
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
-
-void nes_test_mapper_nrom_initialize(void);
 
 int nes_test_mapper_nrom_load(void);
 
@@ -47,6 +45,10 @@ int nes_test_mapper_nrom_read_rom(void);
 int nes_test_mapper_nrom_write_ram(void);
 
 int nes_test_mapper_nrom_write_rom(void);
+
+void nes_test_initialize(void);
+
+void nes_test_uninitialize(void);
 
 static const nes_test TEST[] = {
 	nes_test_mapper_nrom_load,

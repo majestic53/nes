@@ -35,9 +35,8 @@ nes_mapper_nrom_load(
 	TRACE(LEVEL_VERBOSE, "%s", "NROM mapper loading");
 
 	mapper->ram = 0;
-	mapper->ram_enabled = true;
 	mapper->rom_program[ROM_BANK_0] = 0;
-	mapper->rom_program[ROM_BANK_1] = 1;
+	mapper->rom_program[ROM_BANK_1] = (mapper->cartridge.rom_count[ROM_PROGRAM] > 1) ? 1 : 0;
 	mapper->rom_character = 0;
 	mapper->read_ram = nes_mapper_nrom_read_ram;
 	mapper->read_rom = nes_mapper_nrom_read_rom;
@@ -55,13 +54,7 @@ nes_mapper_nrom_read_ram(
 	__in uint16_t address
 	)
 {
-	uint8_t result = 0;
-
-	if(mapper->ram_enabled) {
-		result = nes_cartridge_read_ram(&mapper->cartridge, (mapper->ram * NROM_RAM_BANK_WIDTH) + (address % NROM_RAM_BANK_WIDTH));
-	}
-
-	return result;
+	return nes_cartridge_read_ram(&mapper->cartridge, (mapper->ram * NROM_RAM_BANK_WIDTH) + (address % NROM_RAM_BANK_WIDTH));
 }
 
 uint8_t
@@ -102,10 +95,7 @@ nes_mapper_nrom_write_ram(
 	__in uint8_t data
 	)
 {
-
-	if(mapper->ram_enabled) {
-		nes_cartridge_write_ram(&mapper->cartridge, (mapper->ram * NROM_RAM_BANK_WIDTH) + (address % NROM_RAM_BANK_WIDTH), data);
-	}
+	nes_cartridge_write_ram(&mapper->cartridge, (mapper->ram * NROM_RAM_BANK_WIDTH) + (address % NROM_RAM_BANK_WIDTH), data);
 }
 
 void
