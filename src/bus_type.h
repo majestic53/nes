@@ -29,7 +29,7 @@ typedef struct {
         nes_mapper_t mapper;
         nes_processor_t processor;
 
-	/* TODO */
+	/* TODO: ADD SUBSYSTEMS */
 
 } nes_bus_t;
 

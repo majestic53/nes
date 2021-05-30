@@ -24,13 +24,98 @@
 
 #include "../../include/system/processor.h"
 
-/* TODO */
+#define MASKABLE_ADDRESS 0xfffe
+#define MASKABLE_CYCLES 7
+
+#define NON_MASKABLE_ADDRESS 0xfffa
+#define NON_MASKABLE_CYCLES 7
+
+#define PAGE_WIDTH 0x0100
+
+#define RESET_ADDRESS 0xfffc
+#define RESET_CYCLES 7
+
+#define STACK_ADDRESS 0x0100
+
+#define TRANSFER_CYCLES 2
+
+enum {
+        BREAKPOINT_INTERRUPT = 2,
+        BREAKPOINT_INSTRUCTION,
+};
 
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
 
-/* TODO */
+void nes_processor_instruction(
+        __inout nes_processor_t *processor
+        );
+
+void nes_processor_interrupt_maskable(
+        __inout nes_processor_t *processor
+        );
+
+void nes_processor_interrupt_non_maskable(
+        __inout nes_processor_t *processor
+        );
+
+uint8_t nes_processor_pull(
+        __inout nes_processor_t *processor
+        );
+
+uint16_t nes_processor_pull_word(
+        __inout nes_processor_t *processor
+        );
+
+void nes_processor_push(
+        __inout nes_processor_t *processor,
+        __in uint8_t data
+        );
+
+void nes_processor_push_word(
+        __inout nes_processor_t *processor,
+        __in uint16_t data
+        );
+
+uint8_t nes_processor_read(
+        __in const nes_processor_t *processor,
+        __in uint16_t address
+        );
+
+uint16_t nes_processor_read_word(
+        __in const nes_processor_t *processor,
+        __in uint16_t address
+        );
+
+#ifndef NDEBUG
+
+void nes_processor_trace(
+        __in int level,
+        __in const nes_processor_t *processor
+        );
+
+#define TRACE_PROCESSOR(_LEVEL_, _PROCESSOR_) \
+        if((_LEVEL_) <= (LEVEL)) nes_processor_trace(_LEVEL_, _PROCESSOR_)
+#else
+#define TRACE_PROCESSOR(_LEVEL_, _PROCESSOR_)
+#endif /* NDEBUG */
+
+void nes_processor_transfer_byte(
+        __inout nes_processor_t *processor
+        );
+
+void nes_processor_write(
+        __inout nes_processor_t *processor,
+        __in uint16_t address,
+        __in uint8_t data
+        );
+
+void nes_processor_write_word(
+        __inout nes_processor_t *processor,
+        __in uint16_t address,
+        __in uint16_t data
+        );
 
 #ifdef __cplusplus
 }

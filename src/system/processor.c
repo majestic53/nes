@@ -26,12 +26,112 @@ extern "C" {
 #endif /* __cplusplus */
 
 void
+nes_processor_instruction(
+        __inout nes_processor_t *processor
+        )
+{
+        /* TODO: FETCH/EXECUTE NEXT INSTRUCTION */
+}
+
+void
 nes_processor_interrupt(
         __inout nes_processor_t *processor,
         __in bool maskable
         )
 {
-        /* TODO */
+
+        if(maskable) {
+                processor->pending.maskable = true;
+        } else {
+                processor->pending.non_maskable = true;
+        }
+}
+
+void
+nes_processor_interrupt_maskable(
+        __inout nes_processor_t *processor
+        )
+{
+        nes_processor_register_t status = { .low = processor->status.low };
+
+        TRACE(LEVEL_VERBOSE, "%s", "Processor IRQ");
+        nes_processor_push_word(processor, processor->program_counter.word);
+        status.breakpoint = BREAKPOINT_INTERRUPT;
+        nes_processor_push(processor, status.low);
+        processor->program_counter.word = nes_processor_read_word(processor, MASKABLE_ADDRESS);
+        processor->status.interrupt_disabled = true;
+        processor->pending.maskable = false;
+        processor->cycles = MASKABLE_CYCLES;
+}
+
+void
+nes_processor_interrupt_non_maskable(
+        __inout nes_processor_t *processor
+        )
+{
+        nes_processor_register_t status = { .low = processor->status.low };
+
+        TRACE(LEVEL_VERBOSE, "%s", "Processor NMI");
+        nes_processor_push_word(processor, processor->program_counter.word);
+        status.breakpoint = BREAKPOINT_INTERRUPT;
+        nes_processor_push(processor, status.low);
+        processor->program_counter.word = nes_processor_read_word(processor, NON_MASKABLE_ADDRESS);
+        processor->status.interrupt_disabled = true;
+        processor->pending.non_maskable = false;
+        processor->cycles = NON_MASKABLE_CYCLES;
+}
+
+uint8_t
+nes_processor_pull(
+        __inout nes_processor_t *processor
+        )
+{
+        return nes_processor_read(processor, STACK_ADDRESS | ++processor->stack_pointer.low);
+}
+
+uint16_t
+nes_processor_pull_word(
+        __inout nes_processor_t *processor
+        )
+{
+        return nes_processor_pull(processor) | (nes_processor_pull(processor) << CHAR_BIT);
+}
+
+void
+nes_processor_push(
+        __inout nes_processor_t *processor,
+        __in uint8_t data
+        )
+{
+        nes_processor_write(processor, STACK_ADDRESS | processor->stack_pointer.low--, data);
+}
+
+void
+nes_processor_push_word(
+        __inout nes_processor_t *processor,
+        __in uint16_t data
+        )
+{
+        nes_processor_push(processor, data >> CHAR_BIT);
+        nes_processor_push(processor, data);
+}
+
+uint8_t
+nes_processor_read(
+        __in const nes_processor_t *processor,
+        __in uint16_t address
+        )
+{
+        return nes_bus_read(BUS_PROCESSOR, address);
+}
+
+uint16_t
+nes_processor_read_word(
+        __in const nes_processor_t *processor,
+        __in uint16_t address
+        )
+{
+        return nes_processor_read(processor, address) | (nes_processor_read(processor, address + 1) << CHAR_BIT);
 }
 
 void
@@ -39,7 +139,15 @@ nes_processor_reset(
         __inout nes_processor_t *processor
         )
 {
-        /* TODO */
+        TRACE(LEVEL_VERBOSE, "%s", "Processor RESET");
+        memset(processor, 0, sizeof(*processor));
+        nes_processor_push_word(processor, processor->program_counter.word);
+        nes_processor_push(processor, processor->status.low);
+        processor->program_counter.word = nes_processor_read_word(processor, RESET_ADDRESS);
+        processor->status.breakpoint = BREAKPOINT_INSTRUCTION;
+        processor->status.interrupt_disabled = true;
+        processor->cycles = RESET_CYCLES;
+        TRACE_PROCESSOR(LEVEL_VERBOSE, processor);
 }
 
 void
@@ -47,8 +155,62 @@ nes_processor_step(
         __inout nes_processor_t *processor
         )
 {
-        /* TODO */
+
+        if(!processor->cycles) {
+
+                if(processor->pending.transfer) {
+                        nes_processor_transfer_byte(processor);
+                } else {
+
+                        if(processor->pending.non_maskable) {
+                                nes_processor_interrupt_non_maskable(processor);
+                        } else if(processor->pending.maskable && !processor->status.interrupt_disabled) {
+                                nes_processor_interrupt_maskable(processor);
+                        } else {
+                                nes_processor_instruction(processor);
+                        }
+
+                        TRACE_PROCESSOR(LEVEL_VERBOSE, processor);
+                }
+        }
+
+        --processor->cycles;
 }
+
+#ifndef NDEBUG
+
+void
+nes_processor_trace(
+        __in int level,
+        __in const nes_processor_t *processor
+        )
+{
+        TRACE(level, "Processor CYCLES: %u", processor->cycles);
+        TRACE(level, "Processor REG-PC: %04X", processor->program_counter.word);
+        TRACE(level, "Processor REG-SP: %02X", processor->stack_pointer.low);
+        TRACE(level, "Processor REG-S: %02X [%c%c%c%c%c%c%c]", processor->status.low,
+                processor->status.negative ? 'N' : '-', processor->status.overflow ? 'O' : '-',
+                processor->status.breakpoint ? 'B' : '-', processor->status.decimal ? 'D' : '-',
+                processor->status.interrupt_disabled ? 'I' : '-', processor->status.zero ? 'Z' : '-',
+                processor->status.carry ? 'C' : '-');
+
+        if(processor->pending.transfer) {
+                TRACE(level, "Processor REG-P: %02X [%c%c%c], %04X (%u/%u)", processor->pending.low,
+                        processor->pending.maskable ? 'M' : '-', processor->pending.non_maskable ? 'N' : '-',
+                        processor->pending.transfer ? 'T' : '-', processor->transfer.source.word,
+                        processor->transfer.offset.low + 1, PAGE_WIDTH);
+        } else {
+                TRACE(level, "Processor REG-P: %02X [%c%c%c]", processor->pending.low,
+                        processor->pending.maskable ? 'M' : '-', processor->pending.non_maskable ? 'N' : '-',
+                        processor->pending.transfer ? 'T' : '-');
+        }
+
+        TRACE(level, "Processor REG-A: %02X", processor->accumulator.low);
+        TRACE(level, "Processor REG-X: %02X", processor->index_x.low);
+        TRACE(level, "Processor REG-Y: %02X", processor->index_y.low);
+}
+
+#endif /* NDEBUG */
 
 void
 nes_processor_transfer(
@@ -56,7 +218,53 @@ nes_processor_transfer(
         __in uint8_t page
         )
 {
-        /* TODO */
+        processor->pending.transfer = true;
+        processor->transfer.source.word = (page * PAGE_WIDTH);
+        processor->transfer.offset.low = 0;
+        TRACE(LEVEL_VERBOSE, "Processor transfer: %04X-%04X (Page %02X)", processor->transfer.source.word,
+                processor->transfer.source.word + PAGE_WIDTH - 1, page);
+}
+
+void
+nes_processor_transfer_byte(
+        __inout nes_processor_t *processor
+        )
+{
+
+        /* TODO: TRANSFER BYTE FROM CPU[SOURCE+OFFSET] TO OAM[OFFSET] */
+
+        if(processor->transfer.offset.low == UINT8_MAX) {
+                processor->pending.transfer = false;
+                memset(&processor->transfer, 0, sizeof(processor->transfer));
+                TRACE(LEVEL_VERBOSE, "%s", "Processor transfer complete");
+        } else {
+                TRACE(LEVEL_VERBOSE, "Processor transfer byte: %04X (%u/%u)", processor->transfer.source.word,
+                        processor->transfer.offset.low + 1, PAGE_WIDTH);
+                ++processor->transfer.offset.low;
+        }
+
+        processor->cycles = TRANSFER_CYCLES;
+}
+
+void
+nes_processor_write(
+        __inout nes_processor_t *processor,
+        __in uint16_t address,
+        __in uint8_t data
+        )
+{
+        nes_bus_write(BUS_PROCESSOR, address, data);
+}
+
+void
+nes_processor_write_word(
+        __inout nes_processor_t *processor,
+        __in uint16_t address,
+        __in uint16_t data
+        )
+{
+        nes_processor_write(processor, address, data);
+        nes_processor_write(processor, address + 1, data >> CHAR_BIT);
 }
 
 #ifdef __cplusplus

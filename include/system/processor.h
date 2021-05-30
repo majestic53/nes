@@ -56,12 +56,12 @@ typedef union {
 } nes_processor_register_t;
 
 typedef struct {
-        uint16_t source;
-        uint8_t offset;
+        nes_processor_register_t source;
+        nes_processor_register_t offset;
 } nes_processor_transfer_t;
 
 typedef struct {
-        uint8_t cycle;
+        uint8_t cycles;
         nes_processor_register_t pending;
         nes_processor_transfer_t transfer;
         nes_processor_register_t program_counter;

@@ -44,10 +44,10 @@ nes_mapper_load(
 	}
 
 	TRACE(LEVEL_VERBOSE, "%s", "Mapper loaded");
-	TRACE(LEVEL_VERBOSE, "Mapper program rom[0]: %zu", mapper->rom_program[ROM_BANK_0]);
-	TRACE(LEVEL_VERBOSE, "Mapper program rom[1]: %zu", mapper->rom_program[ROM_BANK_1]);
-	TRACE(LEVEL_VERBOSE, "Mapper character rom: %zu", mapper->rom_character);
-	TRACE(LEVEL_VERBOSE, "Mapper ram: %zu", mapper->ram);
+	TRACE(LEVEL_VERBOSE, "Mapper ROM-PRG[0]: %zu", mapper->rom_program[ROM_BANK_0]);
+	TRACE(LEVEL_VERBOSE, "Mapper ROM-PRG[1]: %zu", mapper->rom_program[ROM_BANK_1]);
+	TRACE(LEVEL_VERBOSE, "Mapper ROM-CHR: %zu", mapper->rom_character);
+	TRACE(LEVEL_VERBOSE, "Mapper RAM: %zu", mapper->ram);
 
 exit:
 	return result;

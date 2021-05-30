@@ -40,8 +40,8 @@ nes(
 	}
 
 	TRACE(LEVEL_INFORMATION, "%s ver.%i.%i.%i", NES, nes_version()->major, nes_version()->minor, nes_version()->patch);
-	TRACE(LEVEL_VERBOSE, "Configuration path: \"%s\"", configuration->path);
-	TRACE(LEVEL_VERBOSE, "Configuration rom: %p, %.02f KB (%u bytes)", configuration->rom.data, configuration->rom.length / (float)BYTES_PER_KBYTE,
+	TRACE(LEVEL_VERBOSE, "Configuration PATH: \"%s\"", configuration->path);
+	TRACE(LEVEL_VERBOSE, "Configuration ROM: %p, %.02f KB (%u bytes)", configuration->rom.data, configuration->rom.length / (float)BYTES_PER_KBYTE,
 		configuration->rom.length);
 
 	if((result = nes_bus_load(configuration)) != NES_OK) {
@@ -76,6 +76,7 @@ nes(
 	}
 
 	TRACE(LEVEL_INFORMATION, "%s", "Emulation stopped");
+	TRACE_RESET();
 
 exit:
 	nes_service_unload();

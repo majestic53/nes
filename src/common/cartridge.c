@@ -106,12 +106,12 @@ nes_cartridge_load(
 	}
 
 	TRACE(LEVEL_VERBOSE, "%s", "Cartridge loaded");
-	TRACE(LEVEL_VERBOSE, "Cartridge mapper: %i (%s)", cartridge->mapper, MAPPER[cartridge->mapper]);
-	TRACE(LEVEL_VERBOSE, "Cartridge program rom: %u, %.02f KB (%u bytes)", cartridge->rom_count[ROM_PROGRAM],
+	TRACE(LEVEL_VERBOSE, "Cartridge MAPPER: %i (%s)", cartridge->mapper, MAPPER[cartridge->mapper]);
+	TRACE(LEVEL_VERBOSE, "Cartridge ROM-PRG: %u, %.02f KB (%u bytes)", cartridge->rom_count[ROM_PROGRAM],
 		cartridge->rom[ROM_PROGRAM].length / (float)BYTES_PER_KBYTE, cartridge->rom[ROM_PROGRAM].length);
-	TRACE(LEVEL_VERBOSE, "Cartridge character rom: %u, %.02f KB (%u bytes)", cartridge->rom_count[ROM_CHARACTER],
+	TRACE(LEVEL_VERBOSE, "Cartridge ROM-CHR: %u, %.02f KB (%u bytes)", cartridge->rom_count[ROM_CHARACTER],
 		cartridge->rom[ROM_CHARACTER].length / (float)BYTES_PER_KBYTE, cartridge->rom[ROM_CHARACTER].length);
-	TRACE(LEVEL_VERBOSE, "Cartridge ram: %u, %.02f KB (%u bytes)", cartridge->ram_count,
+	TRACE(LEVEL_VERBOSE, "Cartridge RAM: %u, %.02f KB (%u bytes)", cartridge->ram_count,
 		cartridge->ram.length / (float)BYTES_PER_KBYTE, cartridge->ram.length);
 
 exit:
