@@ -65,7 +65,7 @@ nes(
 
 		/* TODO: STEP SUBSYSTEMS */
 		do {
-			//nes_processor_step(&g_bus.processor);
+			nes_processor_step(&g_bus.processor);
 			TRACE_STEP();
 		} while(cycle++ < CYCLES_PER_FRAME);
 		/* --- */
@@ -99,6 +99,7 @@ nes_bus_load(
 
 	/* TODO: LOAD SUBSYSTEMS */
 
+	nes_processor_reset(&g_bus.processor);
 	TRACE(LEVEL_VERBOSE, "%s", "Bus loaded");
 
 exit:

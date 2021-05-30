@@ -22,16 +22,18 @@ DIR_BIN_LIB=../bin/lib/
 DIR_BUILD=../build/
 DIR_INCLUDE=../include/
 DIR_INCLUDE_COMMON=../include/common/
+DIR_INCLUDE_SYSTEM=../include/system/
 DIR_ROOT=./
 DIR_ROOT_COMMON=./common/
 DIR_ROOT_MAPPER=./mapper/
 DIR_ROOT_SERVICE=./service/
+DIR_ROOT_SYSTEM=./system/
 
 FLAGS=-std=c11 -Wall -Werror
 
 LIB=libnes.a
 
-build: build_base build_common build_mapper build_service
+build: build_base build_common build_mapper build_service build_system
 
 build_base: base_bus.o
 
@@ -68,6 +70,11 @@ build_service: service_sdl.o
 service_sdl.o: $(DIR_ROOT_SERVICE)sdl.c $(DIR_INCLUDE)service.h
 	$(CC) $(FLAGS) $(BUILD_FLAGS) -c $(DIR_ROOT_SERVICE)sdl.c -o $(DIR_BUILD)service_sdl.o
 
+build_system: system_processor.o
+
+system_processor.o: $(DIR_ROOT_SYSTEM)processor.c $(DIR_INCLUDE_SYSTEM)processor.h
+	$(CC) $(FLAGS) $(BUILD_FLAGS) -c $(DIR_ROOT_SYSTEM)processor.c -o $(DIR_BUILD)system_processor.o
+
 archive:
 	@echo ''
 	@echo '--- BUILDING LIBRARY ----------------------------------------------------------'
@@ -75,7 +82,8 @@ archive:
 		$(DIR_BUILD)common_buffer.o $(DIR_BUILD)common_cartridge.o $(DIR_BUILD)common_error.o $(DIR_BUILD)common_mapper.o $(DIR_BUILD)common_trace.o \
 			$(DIR_BUILD)common_version.o \
 		$(DIR_BUILD)mapper_nrom.o \
-		$(DIR_BUILD)service_sdl.o
+		$(DIR_BUILD)service_sdl.o \
+		$(DIR_BUILD)system_processor.o
 	cp $(DIR_INCLUDE)nes.h $(DIR_BIN_INCLUDE)
 	@echo '--- DONE ----------------------------------------------------------------------'
 	@echo ''

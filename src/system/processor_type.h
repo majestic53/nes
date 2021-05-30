@@ -19,32 +19,21 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef NES_BUS_TYPE_H_
-#define NES_BUS_TYPE_H_
+#ifndef NES_PROCESSOR_TYPE_H_
+#define NES_PROCESSOR_TYPE_H_
 
-#include "../include/system/processor.h"
-#include "../include/service.h"
+#include "../../include/system/processor.h"
 
-typedef struct {
-        nes_mapper_t mapper;
-        nes_processor_t processor;
-
-	/* TODO */
-
-} nes_bus_t;
+/* TODO */
 
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
 
-int nes_bus_load(
-	__in const nes_t *configuration
-	);
-
-void nes_bus_unload(void);
+/* TODO */
 
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
 
-#endif /* NES_BUS_TYPE_H_ */
+#endif /* NES_PROCESSOR_H_ */
