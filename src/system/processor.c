@@ -25,12 +25,72 @@
 extern "C" {
 #endif /* __cplusplus */
 
+uint8_t
+nes_processor_execute_breakpoint(
+        __inout nes_processor_t *processor,
+        __in const nes_processor_instruction_t *instruction
+        )
+{
+        nes_processor_register_t status = { .low = processor->status.low };
+
+        TRACE(LEVEL_VERBOSE, "%s", "Processor BRK");
+        nes_processor_push_word(processor, processor->program_counter.word);
+        status.breakpoint = BREAKPOINT_INSTRUCTION;
+        nes_processor_push(processor, status.low);
+        processor->program_counter.word = nes_processor_read_word(processor, MASKABLE_ADDRESS);
+        processor->status.interrupt_disabled = true;
+
+        return 0;
+}
+
+uint8_t
+nes_processor_execute_no_operation(
+        __inout nes_processor_t *processor,
+        __in const nes_processor_instruction_t *instruction
+        )
+{
+        return 0;
+}
+
+uint8_t
+nes_processor_fetch(
+        __inout nes_processor_t *processor
+        )
+{
+        return nes_processor_read(processor, processor->program_counter.word++);
+}
+
+uint16_t
+nes_processor_fetch_word(
+        __inout nes_processor_t *processor
+        )
+{
+        return nes_processor_fetch(processor) | (nes_processor_fetch(processor) << CHAR_BIT);
+}
+
 void
 nes_processor_instruction(
         __inout nes_processor_t *processor
         )
 {
-        /* TODO: FETCH/EXECUTE NEXT INSTRUCTION */
+        const nes_processor_instruction_t *instruction;
+
+        instruction = &INSTRUCTION[processor->fetched.opcode = nes_processor_fetch(processor)];
+
+        switch(instruction->mode) {
+
+                /**
+                 * TODO: FETCH OPERAND BASED OFF MODE
+                 *       POPULATE processor->fetched.operand
+                 */
+
+                default:
+                        TRACE(LEVEL_WARNING, "Invalid instruction mode: %i", instruction->mode);
+                        break;
+        }
+
+        TRACE_PROCESSOR_INSTRUCTION(LEVEL_VERBOSE, processor, instruction);
+        processor->cycles = instruction->cycles + HANDLER[processor->fetched.opcode](processor, instruction);
 }
 
 void
@@ -208,6 +268,16 @@ nes_processor_trace(
         TRACE(level, "Processor REG-A: %02X", processor->accumulator.low);
         TRACE(level, "Processor REG-X: %02X", processor->index_x.low);
         TRACE(level, "Processor REG-Y: %02X", processor->index_y.low);
+}
+
+void
+nes_processor_trace_instruction(
+        __in int level,
+        __in const nes_processor_t *processor,
+        __in const nes_processor_instruction_t *instruction
+        )
+{
+        /* TODO: TRACE PROCESSOR INSTRUCTION DISASSEMBLY */
 }
 
 #endif /* NDEBUG */

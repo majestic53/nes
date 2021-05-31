@@ -123,6 +123,7 @@ nes_bus_read(
 				/* TODO: READ DATA FROM ADDRESS */
 
 				default:
+					TRACE(LEVEL_WARNING, "Invalid processor address: %04X", address);
 					break;
 			}
 			break;
@@ -133,11 +134,12 @@ nes_bus_read(
 				/* TODO: READ DATA FROM ADDRESS */
 
 				default:
+					TRACE(LEVEL_WARNING, "Invalid video address: %04X", address);
 					break;
 			}
 			break;
 		default:
-
+			TRACE(LEVEL_WARNING, "Invalid bus type: %i", bus);
 			break;
 	}
 
@@ -172,6 +174,7 @@ nes_bus_write(
 				/* TODO: READ DATA FROM ADDRESS */
 
 				default:
+					TRACE(LEVEL_WARNING, "Invalid processor address: %04X", address);
 					break;
 			}
 			break;
@@ -182,11 +185,12 @@ nes_bus_write(
 				/* TODO: READ DATA FROM ADDRESS */
 
 				default:
+					TRACE(LEVEL_WARNING, "Invalid video address: %04X", address);
 					break;
 			}
 			break;
 		default:
-
+			TRACE(LEVEL_WARNING, "Invalid bus type: %i", bus);
 			break;
 	}
 }

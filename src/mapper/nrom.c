@@ -82,6 +82,7 @@ nes_mapper_nrom_read_rom(
 					+ (address % NROM_ROM_PROGRAM_BANK_WIDTH));
 			break;
 		default:
+			TRACE(LEVEL_WARNING, "Invalid ROM type: %i", type);
 			break;
 	}
 

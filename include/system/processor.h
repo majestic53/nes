@@ -56,12 +56,24 @@ typedef union {
 } nes_processor_register_t;
 
 typedef struct {
+        uint8_t opcode;
+
+        struct {
+                nes_processor_register_t address;
+                nes_processor_register_t address_indirect;
+                nes_processor_register_t data;
+                bool page_boundary;
+        } operand;
+} nes_processor_fetch_t;
+
+typedef struct {
         nes_processor_register_t source;
         nes_processor_register_t offset;
 } nes_processor_transfer_t;
 
 typedef struct {
         uint8_t cycles;
+        nes_processor_fetch_t fetched;
         nes_processor_register_t pending;
         nes_processor_transfer_t transfer;
         nes_processor_register_t program_counter;
