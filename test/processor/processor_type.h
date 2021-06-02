@@ -19,13 +19,38 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef NES_VERSION_TYPE_H_
-#define NES_VERSION_TYPE_H_
+#ifndef NES_TEST_PROCESSOR_TYPE_H_
+#define NES_TEST_PROCESSOR_TYPE_H_
 
-#include "../../include/common.h"
+#include "../../src/system/processor_type.h"
+#include "../common.h"
 
-#define VERSION_MAJOR 0
-#define VERSION_MINOR 1
-#define VERSION_PATCH 7
+typedef struct {
+        nes_buffer_t memory;
+        nes_processor_t processor;
 
-#endif /* NES_VERSION_TYPE_H_ */
+        /* TODO */
+
+} nes_test_processor_t;
+
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
+
+/* TODO */
+
+int nes_test_processor_reset(void);
+
+void nes_test_initialize(void);
+
+void nes_test_uninitialize(void);
+
+static const nes_test TEST[] = {
+	nes_test_processor_reset,
+	};
+
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
+
+#endif /* NES_TEST_PROCESSOR_TYPE_H_ */

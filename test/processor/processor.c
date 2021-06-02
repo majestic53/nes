@@ -19,13 +19,86 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef NES_VERSION_TYPE_H_
-#define NES_VERSION_TYPE_H_
+#include "./processor_type.h"
 
-#include "../../include/common.h"
+static nes_test_processor_t g_test = {};
 
-#define VERSION_MAJOR 0
-#define VERSION_MINOR 1
-#define VERSION_PATCH 7
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
 
-#endif /* NES_VERSION_TYPE_H_ */
+uint8_t
+nes_bus_read(
+	__in int bus,
+	__in uint16_t address
+	)
+{
+	uint8_t result = 0;
+
+	/* TODO */
+
+	return result;
+}
+
+void
+nes_bus_write(
+	__in int bus,
+	__in uint16_t address,
+	__in uint8_t data
+	)
+{
+	/* TODO */
+}
+
+int
+nes_test_processor_reset(void)
+{
+	int result = NES_OK;
+
+	nes_test_initialize();
+
+	/* TODO */
+
+	TEST_TRACE(result);
+
+	return result;
+}
+
+void
+nes_test_initialize(void)
+{
+	nes_test_uninitialize();
+}
+
+void
+nes_test_uninitialize(void)
+{
+
+	/* TODO */
+
+	memset(&g_test, 0, sizeof(g_test));
+}
+
+int
+main(
+	__in int argc,
+	__in char *argv[]
+	)
+{
+	int result = NES_OK;
+
+	for(size_t test = 0; test < TEST_COUNT(TEST); ++test) {
+
+		if(TEST[test]() != NES_OK) {
+			result = NES_ERR;
+		}
+	}
+
+	nes_test_uninitialize();
+
+	return result;
+}
+
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */

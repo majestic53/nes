@@ -40,8 +40,8 @@
 #define TRANSFER_CYCLES 2
 
 enum {
-        BREAKPOINT_INTERRUPT = 2,
-        BREAKPOINT_INSTRUCTION,
+        BREAKPOINT_CLEAR = 2,
+        BREAKPOINT_SET,
 };
 
 enum {
@@ -430,7 +430,47 @@ uint8_t nes_processor_execute_breakpoint(
         __in const nes_processor_instruction_t *instruction
         );
 
+uint8_t nes_processor_execute_clear(
+        __inout nes_processor_t *processor,
+        __in const nes_processor_instruction_t *instruction
+        );
+
+uint8_t nes_processor_execute_decrement(
+        __inout nes_processor_t *processor,
+        __in const nes_processor_instruction_t *instruction
+        );
+
+uint8_t nes_processor_execute_increment(
+        __inout nes_processor_t *processor,
+        __in const nes_processor_instruction_t *instruction
+        );
+
 uint8_t nes_processor_execute_no_operation(
+        __inout nes_processor_t *processor,
+        __in const nes_processor_instruction_t *instruction
+        );
+
+uint8_t nes_processor_execute_pull(
+        __inout nes_processor_t *processor,
+        __in const nes_processor_instruction_t *instruction
+        );
+
+uint8_t nes_processor_execute_push(
+        __inout nes_processor_t *processor,
+        __in const nes_processor_instruction_t *instruction
+        );
+
+uint8_t nes_processor_execute_return(
+        __inout nes_processor_t *processor,
+        __in const nes_processor_instruction_t *instruction
+        );
+
+uint8_t nes_processor_execute_set(
+        __inout nes_processor_t *processor,
+        __in const nes_processor_instruction_t *instruction
+        );
+
+uint8_t nes_processor_execute_transfer(
         __inout nes_processor_t *processor,
         __in const nes_processor_instruction_t *instruction
         );
@@ -446,7 +486,7 @@ static const nes_processor_instruction_hdlr HANDLER[] = {
         NULL,
         NULL,
         /* 0x08 */
-        NULL,
+        nes_processor_execute_push,
         NULL,
         NULL,
         NULL,
@@ -464,7 +504,7 @@ static const nes_processor_instruction_hdlr HANDLER[] = {
         NULL,
         NULL,
         /* 0x18 */
-        NULL,
+        nes_processor_execute_clear,
         NULL,
         NULL,
         NULL,
@@ -482,7 +522,7 @@ static const nes_processor_instruction_hdlr HANDLER[] = {
         NULL,
         NULL,
         /* 0x28 */
-        NULL,
+        nes_processor_execute_pull,
         NULL,
         NULL,
         NULL,
@@ -500,7 +540,7 @@ static const nes_processor_instruction_hdlr HANDLER[] = {
         NULL,
         NULL,
         /* 0x38 */
-        NULL,
+        nes_processor_execute_set,
         NULL,
         NULL,
         NULL,
@@ -509,7 +549,7 @@ static const nes_processor_instruction_hdlr HANDLER[] = {
         NULL,
         NULL,
         /* 0x40 */
-        NULL,
+        nes_processor_execute_return,
         NULL,
         NULL,
         NULL,
@@ -518,7 +558,7 @@ static const nes_processor_instruction_hdlr HANDLER[] = {
         NULL,
         NULL,
         /* 0x48 */
-        NULL,
+        nes_processor_execute_push,
         NULL,
         NULL,
         NULL,
@@ -536,7 +576,7 @@ static const nes_processor_instruction_hdlr HANDLER[] = {
         NULL,
         NULL,
         /* 0x58 */
-        NULL,
+        nes_processor_execute_clear,
         NULL,
         NULL,
         NULL,
@@ -545,7 +585,7 @@ static const nes_processor_instruction_hdlr HANDLER[] = {
         NULL,
         NULL,
         /* 0x60 */
-        NULL,
+        nes_processor_execute_return,
         NULL,
         NULL,
         NULL,
@@ -554,7 +594,7 @@ static const nes_processor_instruction_hdlr HANDLER[] = {
         NULL,
         NULL,
         /* 0x68 */
-        NULL,
+        nes_processor_execute_pull,
         NULL,
         NULL,
         NULL,
@@ -572,7 +612,7 @@ static const nes_processor_instruction_hdlr HANDLER[] = {
         NULL,
         NULL,
         /* 0x78 */
-        NULL,
+        nes_processor_execute_set,
         NULL,
         NULL,
         NULL,
@@ -590,9 +630,9 @@ static const nes_processor_instruction_hdlr HANDLER[] = {
         NULL,
         NULL,
         /* 0x88 */
+        nes_processor_execute_decrement,
         NULL,
-        NULL,
-        NULL,
+        nes_processor_execute_transfer,
         NULL,
         NULL,
         NULL,
@@ -608,9 +648,9 @@ static const nes_processor_instruction_hdlr HANDLER[] = {
         NULL,
         NULL,
         /* 0x98 */
+        nes_processor_execute_transfer,
         NULL,
-        NULL,
-        NULL,
+        nes_processor_execute_transfer,
         NULL,
         NULL,
         NULL,
@@ -626,9 +666,9 @@ static const nes_processor_instruction_hdlr HANDLER[] = {
         NULL,
         NULL,
         /* 0xa8 */
+        nes_processor_execute_transfer,
         NULL,
-        NULL,
-        NULL,
+        nes_processor_execute_transfer,
         NULL,
         NULL,
         NULL,
@@ -644,9 +684,9 @@ static const nes_processor_instruction_hdlr HANDLER[] = {
         NULL,
         NULL,
         /* 0xb8 */
+        nes_processor_execute_clear,
         NULL,
-        NULL,
-        NULL,
+        nes_processor_execute_transfer,
         NULL,
         NULL,
         NULL,
@@ -662,9 +702,9 @@ static const nes_processor_instruction_hdlr HANDLER[] = {
         NULL,
         NULL,
         /* 0xc8 */
+        nes_processor_execute_increment,
         NULL,
-        NULL,
-        NULL,
+        nes_processor_execute_decrement,
         NULL,
         NULL,
         NULL,
@@ -680,7 +720,7 @@ static const nes_processor_instruction_hdlr HANDLER[] = {
         NULL,
         NULL,
         /* 0xd8 */
-        NULL,
+        nes_processor_execute_clear,
         NULL,
         NULL,
         NULL,
@@ -698,7 +738,7 @@ static const nes_processor_instruction_hdlr HANDLER[] = {
         NULL,
         NULL,
         /* 0xe8 */
-        NULL,
+        nes_processor_execute_increment,
         NULL,
         nes_processor_execute_no_operation,
         NULL,
@@ -716,7 +756,7 @@ static const nes_processor_instruction_hdlr HANDLER[] = {
         NULL,
         NULL,
         /* 0xf8 */
-        NULL,
+        nes_processor_execute_set,
         NULL,
         NULL,
         NULL,

@@ -35,10 +35,90 @@ nes_processor_execute_breakpoint(
 
         TRACE(LEVEL_VERBOSE, "%s", "Processor BRK");
         nes_processor_push_word(processor, processor->program_counter.word);
-        status.breakpoint = BREAKPOINT_INSTRUCTION;
+        status.breakpoint = BREAKPOINT_SET;
         nes_processor_push(processor, status.low);
         processor->program_counter.word = nes_processor_read_word(processor, MASKABLE_ADDRESS);
         processor->status.interrupt_disabled = true;
+
+        return 0;
+}
+
+uint8_t
+nes_processor_execute_clear(
+        __inout nes_processor_t *processor,
+        __in const nes_processor_instruction_t *instruction
+        )
+{
+
+        switch(instruction->opcode) {
+                case OPCODE_CLC:
+                        processor->status.carry = false;
+                        break;
+                case OPCODE_CLD:
+                        processor->status.decimal = false;
+                        break;
+                case OPCODE_CLI:
+                        processor->status.interrupt_disabled = false;
+                        break;
+                case OPCODE_CLV:
+                        processor->status.overflow = false;
+                        break;
+                default:
+                        TRACE(LEVEL_WARNING, "Invalid clear instruction: %i", instruction->opcode);
+                        break;
+        }
+
+        return 0;
+}
+
+uint8_t
+nes_processor_execute_decrement(
+        __inout nes_processor_t *processor,
+        __in const nes_processor_instruction_t *instruction
+        )
+{
+
+        switch(instruction->opcode) {
+                case OPCODE_DEX:
+                        --processor->index_x.low;
+                        processor->status.negative = processor->index_x.negative;
+                        processor->status.zero = !processor->index_x.low;
+                        break;
+                case OPCODE_DEY:
+                        --processor->index_y.low;
+                        processor->status.negative = processor->index_y.negative;
+                        processor->status.zero = !processor->index_y.low;
+                        break;
+                default:
+                        TRACE(LEVEL_WARNING, "Invalid decrement instruction: %i", instruction->opcode);
+                        break;
+        }
+
+        return 0;
+}
+
+uint8_t
+nes_processor_execute_increment(
+        __inout nes_processor_t *processor,
+        __in const nes_processor_instruction_t *instruction
+        )
+{
+
+        switch(instruction->opcode) {
+                case OPCODE_INX:
+                        ++processor->index_x.low;
+                        processor->status.negative = processor->index_x.negative;
+                        processor->status.zero = !processor->index_x.low;
+                        break;
+                case OPCODE_INY:
+                        ++processor->index_y.low;
+                        processor->status.negative = processor->index_y.negative;
+                        processor->status.zero = !processor->index_y.low;
+                        break;
+                default:
+                        TRACE(LEVEL_WARNING, "Invalid increment instruction: %i", instruction->opcode);
+                        break;
+        }
 
         return 0;
 }
@@ -49,6 +129,153 @@ nes_processor_execute_no_operation(
         __in const nes_processor_instruction_t *instruction
         )
 {
+        return 0;
+}
+
+uint8_t
+nes_processor_execute_pull(
+        __inout nes_processor_t *processor,
+        __in const nes_processor_instruction_t *instruction
+        )
+{
+        nes_processor_register_t status = {};
+
+        switch(instruction->opcode) {
+                case OPCODE_PLA:
+                        processor->accumulator.low = nes_processor_pull(processor);
+                        processor->status.negative = processor->accumulator.negative;
+                        processor->status.zero = !processor->accumulator.low;
+                        break;
+                case OPCODE_PLP:
+                        status.low = processor->status.low;
+                        processor->status.low = nes_processor_pull(processor);
+                        processor->status.breakpoint = status.low;
+                        break;
+                default:
+                        TRACE(LEVEL_WARNING, "Invalid pull instruction: %i", instruction->opcode);
+                        break;
+        }
+
+        return 0;
+}
+
+uint8_t
+nes_processor_execute_push(
+        __inout nes_processor_t *processor,
+        __in const nes_processor_instruction_t *instruction
+        )
+{
+        nes_processor_register_t status = {};
+
+        switch(instruction->opcode) {
+                case OPCODE_PHA:
+                        nes_processor_push(processor, processor->accumulator.low);
+                        break;
+                case OPCODE_PHP:
+                        status.low = processor->status.low;
+                        status.breakpoint = BREAKPOINT_SET;
+                        nes_processor_push(processor, status.low);
+                        break;
+                default:
+                        TRACE(LEVEL_WARNING, "Invalid push instruction: %i", instruction->opcode);
+                        break;
+        }
+
+        return 0;
+}
+
+uint8_t
+nes_processor_execute_return(
+        __inout nes_processor_t *processor,
+        __in const nes_processor_instruction_t *instruction
+        )
+{
+        nes_processor_register_t status = {};
+
+        switch(instruction->opcode) {
+                case OPCODE_RTI:
+                        status.low = processor->status.low;
+                        processor->status.low = nes_processor_pull(processor);
+                        processor->status.breakpoint = status.low;
+                        processor->program_counter.word = nes_processor_pull_word(processor);
+                        break;
+                case OPCODE_RTS:
+                        processor->program_counter.word = nes_processor_pull_word(processor) - 1;
+                        break;
+                default:
+                        TRACE(LEVEL_WARNING, "Invalid return instruction: %i", instruction->opcode);
+                        break;
+        }
+
+        return 0;
+}
+
+uint8_t
+nes_processor_execute_set(
+        __inout nes_processor_t *processor,
+        __in const nes_processor_instruction_t *instruction
+        )
+{
+
+        switch(instruction->opcode) {
+                case OPCODE_SEC:
+                        processor->status.carry = true;
+                        break;
+                case OPCODE_SED:
+                        processor->status.decimal = true;
+                        break;
+                case OPCODE_SEI:
+                        processor->status.interrupt_disabled = true;
+                        break;
+                default:
+                        TRACE(LEVEL_WARNING, "Invalid set instruction: %i", instruction->opcode);
+                        break;
+        }
+
+        return 0;
+}
+
+uint8_t
+nes_processor_execute_transfer(
+        __inout nes_processor_t *processor,
+        __in const nes_processor_instruction_t *instruction
+        )
+{
+
+        switch(instruction->opcode) {
+                case OPCODE_TAX:
+                        processor->index_x.low = processor->accumulator.low;
+                        processor->status.negative = processor->index_x.negative;
+                        processor->status.zero = !processor->index_x.low;
+                        break;
+                case OPCODE_TAY:
+                        processor->index_y.low = processor->accumulator.low;
+                        processor->status.negative = processor->index_y.negative;
+                        processor->status.zero = !processor->index_y.low;
+                        break;
+                case OPCODE_TSX:
+                        processor->index_x.low = processor->stack_pointer.low;
+                        processor->status.negative = processor->index_x.negative;
+                        processor->status.zero = !processor->index_x.low;
+                        break;
+                case OPCODE_TXA:
+                        processor->accumulator.low = processor->index_x.low;
+                        processor->status.negative = processor->accumulator.negative;
+                        processor->status.zero = !processor->accumulator.low;
+                        break;
+                case OPCODE_TXS:
+                        processor->stack_pointer.low = processor->index_x.low;
+                        break;
+                case OPCODE_TYA:
+                        processor->accumulator.low = processor->index_y.low;
+                        processor->status.negative = processor->accumulator.negative;
+                        processor->status.zero = !processor->accumulator.low;
+                        break;
+                default:
+                        TRACE(LEVEL_WARNING, "Invalid transfer instruction: %i", instruction->opcode);
+                        break;
+        }
+
         return 0;
 }
 
@@ -84,6 +311,68 @@ nes_processor_instruction(
                  *       POPULATE processor->fetched.operand
                  */
 
+                case MODE_ABSOLUTE:
+
+                        /* TODO */
+
+                        break;
+                case MODE_ABSOLUTE_X:
+
+                        /* TODO */
+
+                        break;
+                case MODE_ABSOLUTE_Y:
+
+                        /* TODO */
+
+                        break;
+                case MODE_IMMEDIATE:
+                        processor->fetched.operand.address.word = processor->program_counter.word;
+                        processor->fetched.operand.address_indirect.word = 0;
+                        processor->fetched.operand.data.low = nes_processor_fetch(processor);
+                        processor->fetched.operand.page_boundary = false;
+                        break;
+                case MODE_IMPLIED:
+                        processor->fetched.operand.address.word = 0;
+                        processor->fetched.operand.address_indirect.word = 0;
+                        processor->fetched.operand.data.low = processor->accumulator.low;
+                        processor->fetched.operand.page_boundary = false;
+                        break;
+                case MODE_INDIRECT:
+
+                        /* TODO */
+
+                        break;
+                case MODE_INDIRECT_X:
+
+                        /* TODO */
+
+                        break;
+                case MODE_INDIRECT_Y:
+
+                        /* TODO */
+
+                        break;
+                case MODE_RELATIVE:
+
+                        /* TODO */
+
+                        break;
+                case MODE_ZEROPAGE:
+
+                        /* TODO */
+
+                        break;
+                case MODE_ZEROPAGE_X:
+
+                        /* TODO */
+
+                        break;
+                case MODE_ZEROPAGE_Y:
+
+                        /* TODO */
+
+                        break;
                 default:
                         TRACE(LEVEL_WARNING, "Invalid instruction mode: %i", instruction->mode);
                         break;
@@ -116,7 +405,7 @@ nes_processor_interrupt_maskable(
 
         TRACE(LEVEL_VERBOSE, "%s", "Processor IRQ");
         nes_processor_push_word(processor, processor->program_counter.word);
-        status.breakpoint = BREAKPOINT_INTERRUPT;
+        status.breakpoint = BREAKPOINT_CLEAR;
         nes_processor_push(processor, status.low);
         processor->program_counter.word = nes_processor_read_word(processor, MASKABLE_ADDRESS);
         processor->status.interrupt_disabled = true;
@@ -133,7 +422,7 @@ nes_processor_interrupt_non_maskable(
 
         TRACE(LEVEL_VERBOSE, "%s", "Processor NMI");
         nes_processor_push_word(processor, processor->program_counter.word);
-        status.breakpoint = BREAKPOINT_INTERRUPT;
+        status.breakpoint = BREAKPOINT_CLEAR;
         nes_processor_push(processor, status.low);
         processor->program_counter.word = nes_processor_read_word(processor, NON_MASKABLE_ADDRESS);
         processor->status.interrupt_disabled = true;
@@ -204,7 +493,7 @@ nes_processor_reset(
         nes_processor_push_word(processor, processor->program_counter.word);
         nes_processor_push(processor, processor->status.low);
         processor->program_counter.word = nes_processor_read_word(processor, RESET_ADDRESS);
-        processor->status.breakpoint = BREAKPOINT_INSTRUCTION;
+        processor->status.breakpoint = BREAKPOINT_SET;
         processor->status.interrupt_disabled = true;
         processor->cycles = RESET_CYCLES;
         TRACE_PROCESSOR(LEVEL_VERBOSE, processor);
