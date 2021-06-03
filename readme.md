@@ -2,6 +2,7 @@ NES
 =
 
 [![License: MIT](https://shields.io/badge/license-MIT-blue.svg?style=flat)]() [![Language](https://shields.io/github/languages/top/majestic53/nes?style=flat)]() [![Code Size](https://shields.io/github/languages/code-size/majestic53/nes?style=flat)]()
+
 [![Build Status](https://shields.io/github/workflow/status/majestic53/nes/Build?style=flat)]() [![Release](https://shields.io/github/v/release/majestic53/nes?style=flat)]()
 
 Features
