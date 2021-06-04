@@ -1,7 +1,7 @@
 NES
 =
 
-[![License: MIT](https://shields.io/badge/license-MIT-blue.svg?style=flat)](https://github.com/majestic53/nes/blob/master/license) [![Language](https://shields.io/github/languages/top/majestic53/nes?style=flat)](https://github.com/majestic53/nes/search?l=c&type=code) [![Code Size](https://shields.io/github/languages/code-size/majestic53/nes?style=flat)](https://github.com/majestic53/nes/search?l=c&type=code) [![Build Status](https://shields.io/github/workflow/status/majestic53/nes/Build?style=flat)](https://github.com/majestic53/nes/actions)
+[![License: MIT](https://shields.io/badge/license-MIT-blue.svg?style=flat)](https://github.com/majestic53/nes/blob/master/license) [![Build Status](https://shields.io/github/workflow/status/majestic53/nes/Build?style=flat)](https://github.com/majestic53/nes/actions) [![Release](https://shields.io/github/v/release/majestic53/nes?style=flat)](https://github.com/majestic53/nes/releases)
 
 Features
 =
@@ -11,7 +11,7 @@ Features
 Latest Release
 =
 
-The latest release can be found here: [![Release](https://shields.io/github/v/release/majestic53/nes?style=flat)](https://github.com/majestic53/nes/releases)
+The latest release can be found here: ```TBD```
 
 Building from Source
 =

@@ -56,6 +56,7 @@ typedef union {
 } nes_processor_register_t;
 
 typedef struct {
+        nes_processor_register_t address;
         uint8_t opcode;
 
         struct {

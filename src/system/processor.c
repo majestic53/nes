@@ -33,7 +33,7 @@ nes_processor_execute_breakpoint(
 {
         nes_processor_register_t status = { .low = processor->status.low };
 
-        TRACE(LEVEL_VERBOSE, "%s", "Processor BRK");
+        TRACE(LEVEL_VERBOSE, "Processor BRK [%04X]", processor->fetched.address.word);
         nes_processor_push_word(processor, processor->program_counter.word);
         status.breakpoint = BREAKPOINT_SET;
         nes_processor_push(processor, status.low);
@@ -64,7 +64,8 @@ nes_processor_execute_clear(
                         processor->status.overflow = false;
                         break;
                 default:
-                        TRACE(LEVEL_WARNING, "Invalid clear instruction: %i", instruction->opcode);
+                        TRACE(LEVEL_WARNING, "Invalid clear instruction: [%04X] %02X (%i)", processor->fetched.address.word, processor->fetched.opcode,
+                                instruction->opcode);
                         break;
         }
 
@@ -90,9 +91,21 @@ nes_processor_execute_decrement(
                         processor->status.zero = !processor->index_y.low;
                         break;
                 default:
-                        TRACE(LEVEL_WARNING, "Invalid decrement instruction: %i", instruction->opcode);
+                        TRACE(LEVEL_WARNING, "Invalid decrement instruction: [%04X] %02X (%i)", processor->fetched.address.word, processor->fetched.opcode,
+                                instruction->opcode);
                         break;
         }
+
+        return 0;
+}
+
+uint8_t
+nes_processor_execute_illegal(
+        __inout nes_processor_t *processor,
+        __in const nes_processor_instruction_t *instruction
+        )
+{
+        TRACE(LEVEL_WARNING, "Illegal instruction: [%04X] %02X (%i)", processor->fetched.address.word, processor->fetched.opcode, instruction->opcode);
 
         return 0;
 }
@@ -116,7 +129,8 @@ nes_processor_execute_increment(
                         processor->status.zero = !processor->index_y.low;
                         break;
                 default:
-                        TRACE(LEVEL_WARNING, "Invalid increment instruction: %i", instruction->opcode);
+                        TRACE(LEVEL_WARNING, "Invalid increment instruction: [%04X] %02X (%i)", processor->fetched.address.word, processor->fetched.opcode,
+                                instruction->opcode);
                         break;
         }
 
@@ -152,7 +166,8 @@ nes_processor_execute_pull(
                         processor->status.breakpoint = status.low;
                         break;
                 default:
-                        TRACE(LEVEL_WARNING, "Invalid pull instruction: %i", instruction->opcode);
+                        TRACE(LEVEL_WARNING, "Invalid pull instruction: [%04X] %02X (%i)", processor->fetched.address.word, processor->fetched.opcode,
+                                instruction->opcode);
                         break;
         }
 
@@ -177,7 +192,8 @@ nes_processor_execute_push(
                         nes_processor_push(processor, status.low);
                         break;
                 default:
-                        TRACE(LEVEL_WARNING, "Invalid push instruction: %i", instruction->opcode);
+                        TRACE(LEVEL_WARNING, "Invalid push instruction: [%04X] %02X (%i)", processor->fetched.address.word, processor->fetched.opcode,
+                                instruction->opcode);
                         break;
         }
 
@@ -200,10 +216,11 @@ nes_processor_execute_return(
                         processor->program_counter.word = nes_processor_pull_word(processor);
                         break;
                 case OPCODE_RTS:
-                        processor->program_counter.word = nes_processor_pull_word(processor) - 1;
+                        processor->program_counter.word = nes_processor_pull_word(processor) + 1;
                         break;
                 default:
-                        TRACE(LEVEL_WARNING, "Invalid return instruction: %i", instruction->opcode);
+                        TRACE(LEVEL_WARNING, "Invalid return instruction: [%04X] %02X (%i)", processor->fetched.address.word, processor->fetched.opcode,
+                                instruction->opcode);
                         break;
         }
 
@@ -228,7 +245,8 @@ nes_processor_execute_set(
                         processor->status.interrupt_disabled = true;
                         break;
                 default:
-                        TRACE(LEVEL_WARNING, "Invalid set instruction: %i", instruction->opcode);
+                        TRACE(LEVEL_WARNING, "Invalid set instruction: [%04X] %02X (%i)", processor->fetched.address.word, processor->fetched.opcode,
+                                instruction->opcode);
                         break;
         }
 
@@ -272,7 +290,8 @@ nes_processor_execute_transfer(
                         processor->status.zero = !processor->accumulator.low;
                         break;
                 default:
-                        TRACE(LEVEL_WARNING, "Invalid transfer instruction: %i", instruction->opcode);
+                        TRACE(LEVEL_WARNING, "Invalid transfer instruction: [%04X] %02X (%i)", processor->fetched.address.word, processor->fetched.opcode,
+                                instruction->opcode);
                         break;
         }
 
@@ -302,6 +321,7 @@ nes_processor_instruction(
 {
         const nes_processor_instruction_t *instruction;
 
+        processor->fetched.address.word = processor->program_counter.word;
         instruction = &INSTRUCTION[processor->fetched.opcode = nes_processor_fetch(processor)];
 
         switch(instruction->mode) {
@@ -374,7 +394,7 @@ nes_processor_instruction(
 
                         break;
                 default:
-                        TRACE(LEVEL_WARNING, "Invalid instruction mode: %i", instruction->mode);
+                        TRACE(LEVEL_WARNING, "Invalid addressing mode: [%04X] %i", processor->fetched.address.word, instruction->mode);
                         break;
         }
 
