@@ -28,9 +28,6 @@
 typedef struct {
         nes_buffer_t memory;
         nes_processor_t processor;
-
-        /* TODO */
-
 } nes_test_processor_t;
 
 #ifdef __cplusplus
@@ -39,6 +36,10 @@ extern "C" {
 
 /* TODO */
 
+int nes_test_processor_interrupt_maskable(void);
+
+int nes_test_processor_interrupt_non_maskable(void);
+
 int nes_test_processor_reset(void);
 
 void nes_test_initialize(void);
@@ -46,6 +47,8 @@ void nes_test_initialize(void);
 void nes_test_uninitialize(void);
 
 static const nes_test TEST[] = {
+        nes_test_processor_interrupt_maskable,
+        nes_test_processor_interrupt_non_maskable,
 	nes_test_processor_reset,
 	};
 
