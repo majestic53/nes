@@ -83,6 +83,9 @@ typedef struct {
         nes_processor_register_t accumulator;
         nes_processor_register_t index_x;
         nes_processor_register_t index_y;
+#ifndef NDEBUG
+        char format[FORMAT_MAX];
+#endif /* NDEBUG */
 } nes_processor_t;
 
 #ifdef __cplusplus

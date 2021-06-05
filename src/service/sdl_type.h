@@ -38,9 +38,6 @@
 #define WINDOW_WIDTH 256
 
 typedef struct {
-#ifndef NDEBUG
-	char format[FORMAT_MAX];
-#endif /* NDEBUG */
 	uint32_t frame;
 	uint32_t frame_begin;
 	float framerate;
@@ -52,6 +49,9 @@ typedef struct {
 	char title[TITLE_MAX];
 	SDL_version version;
 	SDL_Window *window;
+#ifndef NDEBUG
+        char format[FORMAT_MAX];
+#endif /* NDEBUG */
 } nes_sdl_t;
 
 static const nes_color_t BACKGROUND = {{ 0x00, 0x00, 0x00, 0xff }};

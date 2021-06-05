@@ -828,7 +828,7 @@ void nes_processor_trace(
 
 void nes_processor_trace_instruction(
         __in int level,
-        __in const nes_processor_t *processor,
+        __inout nes_processor_t *processor,
         __in const nes_processor_instruction_t *instruction
         );
 
