@@ -34,7 +34,27 @@ typedef struct {
 extern "C" {
 #endif /* __cplusplus */
 
-/* TODO */
+int nes_test_processor_execute_break(void);
+
+int nes_test_processor_execute_clear(void);
+
+int nes_test_processor_execute_decrement(void);
+
+int nes_test_processor_execute_illegal(void);
+
+int nes_test_processor_execute_increment(void);
+
+int nes_test_processor_execute_no_operation(void);
+
+int nes_test_processor_execute_pull(void);
+
+int nes_test_processor_execute_push(void);
+
+int nes_test_processor_execute_return(void);
+
+int nes_test_processor_execute_set(void);
+
+int nes_test_processor_execute_transfer(void);
 
 int nes_test_processor_interrupt_maskable(void);
 
@@ -47,6 +67,17 @@ void nes_test_initialize(void);
 void nes_test_uninitialize(void);
 
 static const nes_test TEST[] = {
+        nes_test_processor_execute_break,
+        nes_test_processor_execute_clear,
+        nes_test_processor_execute_decrement,
+        nes_test_processor_execute_illegal,
+        nes_test_processor_execute_increment,
+        nes_test_processor_execute_no_operation,
+        nes_test_processor_execute_pull,
+        nes_test_processor_execute_push,
+        nes_test_processor_execute_return,
+        nes_test_processor_execute_set,
+        nes_test_processor_execute_transfer,
         nes_test_processor_interrupt_maskable,
         nes_test_processor_interrupt_non_maskable,
 	nes_test_processor_reset,

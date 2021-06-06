@@ -332,9 +332,10 @@ nes_processor_instruction(
                  */
 
                 case MODE_ABSOLUTE:
-
-                        /* TODO */
-
+                        processor->fetched.operand.address.word = nes_processor_fetch_word(processor);
+                        processor->fetched.operand.address_indirect.word = 0;
+                        processor->fetched.operand.data.low = nes_processor_read(processor, processor->fetched.operand.address.word);
+                        processor->fetched.operand.page_boundary = false;
                         break;
                 case MODE_ABSOLUTE_X:
 
