@@ -25,6 +25,8 @@
 #include "../../src/system/processor_type.h"
 #include "../common.h"
 
+#define TRIALS 100
+
 typedef struct {
         nes_buffer_t memory;
         nes_processor_t processor;
@@ -56,6 +58,30 @@ int nes_test_processor_execute_set(void);
 
 int nes_test_processor_execute_transfer(void);
 
+int nes_test_processor_fetch_absolute(void);
+
+int nes_test_processor_fetch_absolute_x(void);
+
+int nes_test_processor_fetch_absolute_y(void);
+
+int nes_test_processor_fetch_immediate(void);
+
+int nes_test_processor_fetch_implied(void);
+
+int nes_test_processor_fetch_indirect(void);
+
+int nes_test_processor_fetch_indirect_x(void);
+
+int nes_test_processor_fetch_indirect_y(void);
+
+int nes_test_processor_fetch_relative(void);
+
+int nes_test_processor_fetch_zeropage(void);
+
+int nes_test_processor_fetch_zeropage_x(void);
+
+int nes_test_processor_fetch_zeropage_y(void);
+
 int nes_test_processor_interrupt_maskable(void);
 
 int nes_test_processor_interrupt_non_maskable(void);
@@ -78,6 +104,18 @@ static const nes_test TEST[] = {
         nes_test_processor_execute_return,
         nes_test_processor_execute_set,
         nes_test_processor_execute_transfer,
+        nes_test_processor_fetch_absolute,
+        nes_test_processor_fetch_absolute_x,
+        nes_test_processor_fetch_absolute_y,
+        nes_test_processor_fetch_immediate,
+        nes_test_processor_fetch_implied,
+        nes_test_processor_fetch_indirect,
+        nes_test_processor_fetch_indirect_x,
+        nes_test_processor_fetch_indirect_y,
+        nes_test_processor_fetch_relative,
+        nes_test_processor_fetch_zeropage,
+        nes_test_processor_fetch_zeropage_x,
+        nes_test_processor_fetch_zeropage_y,
         nes_test_processor_interrupt_maskable,
         nes_test_processor_interrupt_non_maskable,
 	nes_test_processor_reset,

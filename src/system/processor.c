@@ -325,74 +325,94 @@ nes_processor_instruction(
         instruction = &INSTRUCTION[processor->fetched.opcode = nes_processor_fetch(processor)];
 
         switch(instruction->mode) {
-
-                /**
-                 * TODO: FETCH OPERAND BASED OFF MODE
-                 *       POPULATE processor->fetched.operand
-                 */
-
                 case MODE_ABSOLUTE:
                         processor->fetched.operand.address.word = nes_processor_fetch_word(processor);
                         processor->fetched.operand.address_indirect.word = 0;
-                        processor->fetched.operand.data.low = nes_processor_read(processor, processor->fetched.operand.address.word);
+                        processor->fetched.operand.data.word = nes_processor_read(processor, processor->fetched.operand.address.word);
                         processor->fetched.operand.page_boundary = false;
                         break;
                 case MODE_ABSOLUTE_X:
-
-                        /* TODO */
-
+                        processor->fetched.operand.address_indirect.word = nes_processor_fetch_word(processor);
+                        processor->fetched.operand.address.word = processor->fetched.operand.address_indirect.word + processor->index_x.low;
+                        processor->fetched.operand.data.word = nes_processor_read(processor, processor->fetched.operand.address.word);
+                        processor->fetched.operand.page_boundary = (processor->fetched.operand.address.high != processor->fetched.operand.address_indirect.high);
                         break;
                 case MODE_ABSOLUTE_Y:
-
-                        /* TODO */
-
+                        processor->fetched.operand.address_indirect.word = nes_processor_fetch_word(processor);
+                        processor->fetched.operand.address.word = processor->fetched.operand.address_indirect.word + processor->index_y.low;
+                        processor->fetched.operand.data.word = nes_processor_read(processor, processor->fetched.operand.address.word);
+                        processor->fetched.operand.page_boundary = (processor->fetched.operand.address.high != processor->fetched.operand.address_indirect.high);
                         break;
                 case MODE_IMMEDIATE:
                         processor->fetched.operand.address.word = processor->program_counter.word;
                         processor->fetched.operand.address_indirect.word = 0;
-                        processor->fetched.operand.data.low = nes_processor_fetch(processor);
+                        processor->fetched.operand.data.word = nes_processor_fetch(processor);
                         processor->fetched.operand.page_boundary = false;
                         break;
                 case MODE_IMPLIED:
                         processor->fetched.operand.address.word = 0;
                         processor->fetched.operand.address_indirect.word = 0;
-                        processor->fetched.operand.data.low = processor->accumulator.low;
+                        processor->fetched.operand.data.word = processor->accumulator.low;
                         processor->fetched.operand.page_boundary = false;
                         break;
                 case MODE_INDIRECT:
+                        processor->fetched.operand.address_indirect.word = nes_processor_fetch_word(processor);
 
-                        /* TODO */
+                        if(processor->fetched.operand.address_indirect.low == UINT8_MAX) {
+                                processor->fetched.operand.address.low = nes_processor_read(processor, processor->fetched.operand.address_indirect.word);
+                                processor->fetched.operand.address.high = nes_processor_read(processor, processor->fetched.operand.address_indirect.high << CHAR_BIT);
+                        } else {
+                                processor->fetched.operand.address.word = nes_processor_read_word(processor, processor->fetched.operand.address_indirect.word);
+                        }
 
+                        processor->fetched.operand.data.word = 0;
+                        processor->fetched.operand.page_boundary = false;
                         break;
                 case MODE_INDIRECT_X:
-
-                        /* TODO */
-
+                        processor->fetched.operand.address_indirect.word = nes_processor_fetch(processor);
+                        processor->fetched.operand.address.low = nes_processor_read(processor,
+                                        (processor->fetched.operand.address_indirect.word + processor->index_x.low) & UINT8_MAX);
+                        processor->fetched.operand.address.high = nes_processor_read(processor,
+                                        (processor->fetched.operand.address_indirect.word + processor->index_x.low + 1) & UINT8_MAX);
+                        processor->fetched.operand.data.word = nes_processor_read(processor, processor->fetched.operand.address.word);
+                        processor->fetched.operand.page_boundary = false;
                         break;
                 case MODE_INDIRECT_Y:
-
-                        /* TODO */
-
+                        processor->fetched.operand.address_indirect.word = nes_processor_fetch(processor);
+                        processor->fetched.operand.data.low = nes_processor_read(processor, processor->fetched.operand.address_indirect.low);
+                        processor->fetched.operand.data.high = nes_processor_read(processor, (processor->fetched.operand.address_indirect.low + 1) & UINT8_MAX);
+                        processor->fetched.operand.address.word = processor->fetched.operand.data.word + processor->index_y.low;
+                        processor->fetched.operand.page_boundary = (processor->fetched.operand.address.high != processor->fetched.operand.data.high);
+                        processor->fetched.operand.data.word = nes_processor_read(processor, processor->fetched.operand.address.word);
                         break;
                 case MODE_RELATIVE:
+                        processor->fetched.operand.data.word = nes_processor_fetch(processor);
 
-                        /* TODO */
+                        if(processor->fetched.operand.data.negative) {
+                                processor->fetched.operand.data.high = UINT8_MAX;
+                        }
 
+                        processor->fetched.operand.address.word = processor->program_counter.word + processor->fetched.operand.data.word;
+                        processor->fetched.operand.address_indirect.word = 0;
+                        processor->fetched.operand.page_boundary = (processor->program_counter.high != processor->fetched.operand.address.high);
                         break;
                 case MODE_ZEROPAGE:
-
-                        /* TODO */
-
+                        processor->fetched.operand.address.word = nes_processor_fetch(processor);
+                        processor->fetched.operand.address_indirect.word = 0;
+                        processor->fetched.operand.data.word = nes_processor_read(processor, processor->fetched.operand.address.word);
+                        processor->fetched.operand.page_boundary = false;
                         break;
                 case MODE_ZEROPAGE_X:
-
-                        /* TODO */
-
+                        processor->fetched.operand.address_indirect.word = nes_processor_fetch(processor);
+                        processor->fetched.operand.address.word = (processor->fetched.operand.address_indirect.word + processor->index_x.low) & UINT8_MAX;
+                        processor->fetched.operand.data.word = nes_processor_read(processor, processor->fetched.operand.address.word);
+                        processor->fetched.operand.page_boundary = false;
                         break;
                 case MODE_ZEROPAGE_Y:
-
-                        /* TODO */
-
+                        processor->fetched.operand.address_indirect.word = nes_processor_fetch(processor);
+                        processor->fetched.operand.address.word = (processor->fetched.operand.address_indirect.word + processor->index_y.low) & UINT8_MAX;
+                        processor->fetched.operand.data.word = nes_processor_read(processor, processor->fetched.operand.address.word);
+                        processor->fetched.operand.page_boundary = false;
                         break;
                 default:
                         TRACE(LEVEL_WARNING, "Invalid addressing mode: [%04X] %i", processor->fetched.address.word, instruction->mode);
@@ -752,6 +772,10 @@ nes_processor_trace_instruction(
                         case MODE_IMPLIED:
                         default:
                                 break;
+                }
+
+                if(processor->fetched.operand.page_boundary) {
+                        snprintf(processor->format + strlen(processor->format), FORMAT_MAX - strlen(processor->format), " (PAGE-BOUNDARY)");
                 }
 
                 TRACE(level, "%s", processor->format);
