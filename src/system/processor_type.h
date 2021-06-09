@@ -775,6 +775,11 @@ uint8_t nes_processor_fetch(
         __inout nes_processor_t *processor
         );
 
+void nes_processor_fetch_operand(
+        __inout nes_processor_t *processor,
+        __in int mode
+        );
+
 uint16_t nes_processor_fetch_word(
         __inout nes_processor_t *processor
         );

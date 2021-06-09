@@ -306,25 +306,14 @@ nes_processor_fetch(
         return nes_processor_read(processor, processor->program_counter.word++);
 }
 
-uint16_t
-nes_processor_fetch_word(
-        __inout nes_processor_t *processor
-        )
-{
-        return nes_processor_fetch(processor) | (nes_processor_fetch(processor) << CHAR_BIT);
-}
-
 void
-nes_processor_instruction(
-        __inout nes_processor_t *processor
+nes_processor_fetch_operand(
+        __inout nes_processor_t *processor,
+        __in int mode
         )
 {
-        const nes_processor_instruction_t *instruction;
 
-        processor->fetched.address.word = processor->program_counter.word;
-        instruction = &INSTRUCTION[processor->fetched.opcode = nes_processor_fetch(processor)];
-
-        switch(instruction->mode) {
+        switch(mode) {
                 case MODE_ABSOLUTE:
                         processor->fetched.operand.address.word = nes_processor_fetch_word(processor);
                         processor->fetched.operand.address_indirect.word = 0;
@@ -415,10 +404,29 @@ nes_processor_instruction(
                         processor->fetched.operand.page_boundary = false;
                         break;
                 default:
-                        TRACE(LEVEL_WARNING, "Invalid addressing mode: [%04X] %i", processor->fetched.address.word, instruction->mode);
+                        TRACE(LEVEL_WARNING, "Invalid addressing mode: [%04X] %i", processor->fetched.address.word, mode);
                         break;
         }
+}
 
+uint16_t
+nes_processor_fetch_word(
+        __inout nes_processor_t *processor
+        )
+{
+        return nes_processor_fetch(processor) | (nes_processor_fetch(processor) << CHAR_BIT);
+}
+
+void
+nes_processor_instruction(
+        __inout nes_processor_t *processor
+        )
+{
+        const nes_processor_instruction_t *instruction;
+
+        processor->fetched.address.word = processor->program_counter.word;
+        instruction = &INSTRUCTION[processor->fetched.opcode = nes_processor_fetch(processor)];
+        nes_processor_fetch_operand(processor, instruction->mode);
         TRACE_PROCESSOR_INSTRUCTION(LEVEL_VERBOSE, processor, instruction);
         processor->cycles = instruction->cycles + HANDLER[processor->fetched.opcode](processor, instruction);
 }

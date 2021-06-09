@@ -1229,10 +1229,25 @@ nes_test_processor_fetch_absolute(void)
 	int result = NES_OK;
 
 	for(size_t trial = 0; trial < TRIALS; ++trial) {
+		nes_processor_register_t address = { .word = 0x2000 }, address_indirect = { .word = 0x4000 }, data = { .low = rand() };
 
-		/* TODO */
+		nes_test_initialize();
+		nes_processor_write_word(&g_test.processor, RESET_ADDRESS, address.word);
+		nes_processor_write_word(&g_test.processor, address.word, address_indirect.word);
+		nes_processor_write(&g_test.processor, address_indirect.word, data.low);
+		nes_processor_reset(&g_test.processor);
+		nes_processor_fetch_operand(&g_test.processor, MODE_ABSOLUTE);
+
+		if(ASSERT((g_test.processor.fetched.operand.address.word == address_indirect.word)
+				&& (g_test.processor.fetched.operand.address_indirect.word == 0)
+				&& (g_test.processor.fetched.operand.data.word == data.low)
+				&& (g_test.processor.fetched.operand.page_boundary == false))) {
+			result = NES_ERR;
+			goto exit;
+		}
 	}
 
+exit:
 	TEST_TRACE(result);
 
 	return result;
@@ -1244,10 +1259,46 @@ nes_test_processor_fetch_absolute_x(void)
 	int result = NES_OK;
 
 	for(size_t trial = 0; trial < TRIALS; ++trial) {
+		nes_processor_register_t address = { .word = 0x2000 }, address_indirect = { .word = 0x4000 }, data = { .low = rand() },
+			index = { .low = 0x20 };
 
-		/* TODO */
+		nes_test_initialize();
+		nes_processor_write_word(&g_test.processor, RESET_ADDRESS, address.word);
+		nes_processor_write_word(&g_test.processor, address.word, address_indirect.word);
+		nes_processor_write(&g_test.processor, address_indirect.word + index.low, data.low);
+		nes_processor_reset(&g_test.processor);
+		g_test.processor.index_x.low = index.low;
+		nes_processor_fetch_operand(&g_test.processor, MODE_ABSOLUTE_X);
+
+		if(ASSERT((g_test.processor.fetched.operand.address.word == address_indirect.word + g_test.processor.index_x.low)
+				&& (g_test.processor.fetched.operand.address_indirect.word == address_indirect.word)
+				&& (g_test.processor.fetched.operand.data.word == data.low)
+				&& (g_test.processor.fetched.operand.page_boundary == false))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		nes_test_initialize();
+		address_indirect.word = 0x4080;
+		data.low = rand();
+		index.low = UINT8_MAX;
+		nes_processor_write_word(&g_test.processor, RESET_ADDRESS, address.word);
+		nes_processor_write_word(&g_test.processor, address.word, address_indirect.word);
+		nes_processor_write(&g_test.processor, address_indirect.word + index.low, data.low);
+		nes_processor_reset(&g_test.processor);
+		g_test.processor.index_x.low = index.low;
+		nes_processor_fetch_operand(&g_test.processor, MODE_ABSOLUTE_X);
+
+		if(ASSERT((g_test.processor.fetched.operand.address.word == address_indirect.word + g_test.processor.index_x.low)
+				&& (g_test.processor.fetched.operand.address_indirect.word == address_indirect.word)
+				&& (g_test.processor.fetched.operand.data.word == data.low)
+				&& (g_test.processor.fetched.operand.page_boundary == true))) {
+			result = NES_ERR;
+			goto exit;
+		}
 	}
 
+exit:
 	TEST_TRACE(result);
 
 	return result;
@@ -1259,10 +1310,46 @@ nes_test_processor_fetch_absolute_y(void)
 	int result = NES_OK;
 
 	for(size_t trial = 0; trial < TRIALS; ++trial) {
+		nes_processor_register_t address = { .word = 0x2000 }, address_indirect = { .word = 0x4000 }, data = { .low = rand() },
+			index = { .low = 0x20 };
 
-		/* TODO */
+		nes_test_initialize();
+		nes_processor_write_word(&g_test.processor, RESET_ADDRESS, address.word);
+		nes_processor_write_word(&g_test.processor, address.word, address_indirect.word);
+		nes_processor_write(&g_test.processor, address_indirect.word + index.low, data.low);
+		nes_processor_reset(&g_test.processor);
+		g_test.processor.index_y.low = index.low;
+		nes_processor_fetch_operand(&g_test.processor, MODE_ABSOLUTE_Y);
+
+		if(ASSERT((g_test.processor.fetched.operand.address.word == address_indirect.word + g_test.processor.index_y.low)
+				&& (g_test.processor.fetched.operand.address_indirect.word == address_indirect.word)
+				&& (g_test.processor.fetched.operand.data.word == data.low)
+				&& (g_test.processor.fetched.operand.page_boundary == false))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		nes_test_initialize();
+		address_indirect.word = 0x4080;
+		data.low = rand();
+		index.low = UINT8_MAX;
+		nes_processor_write_word(&g_test.processor, RESET_ADDRESS, address.word);
+		nes_processor_write_word(&g_test.processor, address.word, address_indirect.word);
+		nes_processor_write(&g_test.processor, address_indirect.word + index.low, data.low);
+		nes_processor_reset(&g_test.processor);
+		g_test.processor.index_y.low = index.low;
+		nes_processor_fetch_operand(&g_test.processor, MODE_ABSOLUTE_Y);
+
+		if(ASSERT((g_test.processor.fetched.operand.address.word == address_indirect.word + g_test.processor.index_y.low)
+				&& (g_test.processor.fetched.operand.address_indirect.word == address_indirect.word)
+				&& (g_test.processor.fetched.operand.data.word == data.low)
+				&& (g_test.processor.fetched.operand.page_boundary == true))) {
+			result = NES_ERR;
+			goto exit;
+		}
 	}
 
+exit:
 	TEST_TRACE(result);
 
 	return result;
@@ -1274,10 +1361,24 @@ nes_test_processor_fetch_immediate(void)
 	int result = NES_OK;
 
 	for(size_t trial = 0; trial < TRIALS; ++trial) {
+		nes_processor_register_t address = { .word = 0x2000 }, data = { .low = rand() };
 
-		/* TODO */
+		nes_test_initialize();
+		nes_processor_write_word(&g_test.processor, RESET_ADDRESS, address.word);
+		nes_processor_write(&g_test.processor, address.word, data.low);
+		nes_processor_reset(&g_test.processor);
+		nes_processor_fetch_operand(&g_test.processor, MODE_IMMEDIATE);
+
+		if(ASSERT((g_test.processor.fetched.operand.address.word == address.word)
+				&& (g_test.processor.fetched.operand.address_indirect.word == 0)
+				&& (g_test.processor.fetched.operand.data.word == data.low)
+				&& (g_test.processor.fetched.operand.page_boundary == false))) {
+			result = NES_ERR;
+			goto exit;
+		}
 	}
 
+exit:
 	TEST_TRACE(result);
 
 	return result;
@@ -1289,10 +1390,24 @@ nes_test_processor_fetch_implied(void)
 	int result = NES_OK;
 
 	for(size_t trial = 0; trial < TRIALS; ++trial) {
+		nes_processor_register_t address = { .word = 0x2000 }, data = { .low = rand() };
 
-		/* TODO */
+		nes_test_initialize();
+		nes_processor_write_word(&g_test.processor, RESET_ADDRESS, address.word);
+		nes_processor_reset(&g_test.processor);
+		g_test.processor.accumulator.low = data.low;
+		nes_processor_fetch_operand(&g_test.processor, MODE_IMPLIED);
+
+		if(ASSERT((g_test.processor.fetched.operand.address.word == 0)
+				&& (g_test.processor.fetched.operand.address_indirect.word == 0)
+				&& (g_test.processor.fetched.operand.data.word == g_test.processor.accumulator.low)
+				&& (g_test.processor.fetched.operand.page_boundary == false))) {
+			result = NES_ERR;
+			goto exit;
+		}
 	}
 
+exit:
 	TEST_TRACE(result);
 
 	return result;
@@ -1304,10 +1419,43 @@ nes_test_processor_fetch_indirect(void)
 	int result = NES_OK;
 
 	for(size_t trial = 0; trial < TRIALS; ++trial) {
+		nes_processor_register_t address = { .word = 0x2000 }, address_indirect = { .word = 0x4000 }, data = { .word = rand() };
 
-		/* TODO */
+		nes_test_initialize();
+		nes_processor_write_word(&g_test.processor, RESET_ADDRESS, address.word);
+		nes_processor_write_word(&g_test.processor, address.word, address_indirect.word);
+		nes_processor_write_word(&g_test.processor, address_indirect.word, data.word);
+		nes_processor_reset(&g_test.processor);
+		nes_processor_fetch_operand(&g_test.processor, MODE_INDIRECT);
+
+		if(ASSERT((g_test.processor.fetched.operand.address.word == data.word)
+				&& (g_test.processor.fetched.operand.address_indirect.word == address_indirect.word)
+				&& (g_test.processor.fetched.operand.data.word == 0)
+				&& (g_test.processor.fetched.operand.page_boundary == false))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		nes_test_initialize();
+		address_indirect.word = 0x5fff;
+		nes_processor_write_word(&g_test.processor, RESET_ADDRESS, address.word);
+		nes_processor_write_word(&g_test.processor, address.word, address_indirect.word);
+		nes_processor_write_word(&g_test.processor, address_indirect.word, data.word);
+		data.high = rand();
+		nes_processor_write(&g_test.processor, address_indirect.high << CHAR_BIT, data.high);
+		nes_processor_reset(&g_test.processor);
+		nes_processor_fetch_operand(&g_test.processor, MODE_INDIRECT);
+
+		if(ASSERT((g_test.processor.fetched.operand.address.word == data.word)
+				&& (g_test.processor.fetched.operand.address_indirect.word == address_indirect.word)
+				&& (g_test.processor.fetched.operand.data.word == 0)
+				&& (g_test.processor.fetched.operand.page_boundary == false))) {
+			result = NES_ERR;
+			goto exit;
+		}
 	}
 
+exit:
 	TEST_TRACE(result);
 
 	return result;
@@ -1319,10 +1467,30 @@ nes_test_processor_fetch_indirect_x(void)
 	int result = NES_OK;
 
 	for(size_t trial = 0; trial < TRIALS; ++trial) {
+		nes_processor_register_t address = { .word = 0x2000 }, address_indirect = { .low = rand() }, data = { .low = rand() },
+			index = { .low = rand() };
 
-		/* TODO */
+		nes_test_initialize();
+		nes_processor_write_word(&g_test.processor, RESET_ADDRESS, address.word);
+		nes_processor_write_word(&g_test.processor, address.word, address_indirect.word);
+		address.word = 0x4000;
+		nes_processor_write(&g_test.processor, (address_indirect.word + index.low) & UINT8_MAX, address.low);
+		nes_processor_write(&g_test.processor, (address_indirect.word + index.low + 1) & UINT8_MAX, address.high);
+		nes_processor_write(&g_test.processor, address.word, data.low);
+		nes_processor_reset(&g_test.processor);
+		g_test.processor.index_x.low = index.low;
+		nes_processor_fetch_operand(&g_test.processor, MODE_INDIRECT_X);
+
+		if(ASSERT((g_test.processor.fetched.operand.address.word == address.word)
+				&& (g_test.processor.fetched.operand.address_indirect.word == address_indirect.word)
+				&& (g_test.processor.fetched.operand.data.word == data.low)
+				&& (g_test.processor.fetched.operand.page_boundary == false))) {
+			result = NES_ERR;
+			goto exit;
+		}
 	}
 
+exit:
 	TEST_TRACE(result);
 
 	return result;
@@ -1334,10 +1502,51 @@ nes_test_processor_fetch_indirect_y(void)
 	int result = NES_OK;
 
 	for(size_t trial = 0; trial < TRIALS; ++trial) {
+		nes_processor_register_t address = { .word = 0x2000 }, address_indirect = { .low = rand() }, data = { .low = rand() },
+			index = { .low = 0x20 };
 
-		/* TODO */
+		nes_test_initialize();
+		nes_processor_write_word(&g_test.processor, RESET_ADDRESS, address.word);
+		nes_processor_write_word(&g_test.processor, address.word, address_indirect.word);
+		address.word = 0x4000;
+		nes_processor_write(&g_test.processor, address_indirect.word, address.low);
+		nes_processor_write(&g_test.processor, (address_indirect.word + 1) & UINT8_MAX, address.high);
+		nes_processor_write(&g_test.processor, address.word + index.low, data.low);
+		nes_processor_reset(&g_test.processor);
+		g_test.processor.index_y.low = index.low;
+		nes_processor_fetch_operand(&g_test.processor, MODE_INDIRECT_Y);
+
+		if(ASSERT((g_test.processor.fetched.operand.address.word == address.word + g_test.processor.index_y.low)
+				&& (g_test.processor.fetched.operand.address_indirect.word == address_indirect.word)
+				&& (g_test.processor.fetched.operand.data.word == data.low)
+				&& (g_test.processor.fetched.operand.page_boundary == false))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		nes_test_initialize();
+		address.word = 0x2000;
+		index.low = 0x80;
+		nes_processor_write_word(&g_test.processor, RESET_ADDRESS, address.word);
+		nes_processor_write_word(&g_test.processor, address.word, address_indirect.word);
+		address.word = 0x40f0;
+		nes_processor_write(&g_test.processor, address_indirect.word, address.low);
+		nes_processor_write(&g_test.processor, (address_indirect.word + 1) & UINT8_MAX, address.high);
+		nes_processor_write(&g_test.processor, address.word + index.low, data.low);
+		nes_processor_reset(&g_test.processor);
+		g_test.processor.index_y.low = index.low;
+		nes_processor_fetch_operand(&g_test.processor, MODE_INDIRECT_Y);
+
+		if(ASSERT((g_test.processor.fetched.operand.address.word == address.word + g_test.processor.index_y.low)
+				&& (g_test.processor.fetched.operand.address_indirect.word == address_indirect.word)
+				&& (g_test.processor.fetched.operand.data.word == data.low)
+				&& (g_test.processor.fetched.operand.page_boundary == true))) {
+			result = NES_ERR;
+			goto exit;
+		}
 	}
 
+exit:
 	TEST_TRACE(result);
 
 	return result;
@@ -1349,10 +1558,39 @@ nes_test_processor_fetch_relative(void)
 	int result = NES_OK;
 
 	for(size_t trial = 0; trial < TRIALS; ++trial) {
+		nes_processor_register_t address = { .word = 0x2000 }, data = { .low = 0x10 };
 
-		/* TODO */
+		nes_test_initialize();
+		nes_processor_write_word(&g_test.processor, RESET_ADDRESS, address.word);
+		nes_processor_write_word(&g_test.processor, address.word, data.low);
+		nes_processor_reset(&g_test.processor);
+		nes_processor_fetch_operand(&g_test.processor, MODE_RELATIVE);
+
+		if(ASSERT((g_test.processor.fetched.operand.address.word == ((g_test.processor.program_counter.word + data.word) & UINT16_MAX))
+				&& (g_test.processor.fetched.operand.address_indirect.word == 0)
+				&& (g_test.processor.fetched.operand.data.word == data.word)
+				&& (g_test.processor.fetched.operand.page_boundary == false))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		nes_test_initialize();
+		data.word = 0xff80;
+		nes_processor_write_word(&g_test.processor, RESET_ADDRESS, address.word);
+		nes_processor_write_word(&g_test.processor, address.word, data.low);
+		nes_processor_reset(&g_test.processor);
+		nes_processor_fetch_operand(&g_test.processor, MODE_RELATIVE);
+
+		if(ASSERT((g_test.processor.fetched.operand.address.word == ((g_test.processor.program_counter.word + data.word) & UINT16_MAX))
+				&& (g_test.processor.fetched.operand.address_indirect.word == 0)
+				&& (g_test.processor.fetched.operand.data.word == data.word)
+				&& (g_test.processor.fetched.operand.page_boundary == true))) {
+			result = NES_ERR;
+			goto exit;
+		}
 	}
 
+exit:
 	TEST_TRACE(result);
 
 	return result;
@@ -1364,10 +1602,25 @@ nes_test_processor_fetch_zeropage(void)
 	int result = NES_OK;
 
 	for(size_t trial = 0; trial < TRIALS; ++trial) {
+		nes_processor_register_t address = { .word = 0x2000 }, address_indirect = { .low = rand() }, data = { .low = rand() };
 
-		/* TODO */
+		nes_test_initialize();
+		nes_processor_write_word(&g_test.processor, RESET_ADDRESS, address.word);
+		nes_processor_write(&g_test.processor, address.word, address_indirect.low);
+		nes_processor_write(&g_test.processor, address_indirect.low, data.low);
+		nes_processor_reset(&g_test.processor);
+		nes_processor_fetch_operand(&g_test.processor, MODE_ZEROPAGE);
+
+		if(ASSERT((g_test.processor.fetched.operand.address.word == address_indirect.low)
+				&& (g_test.processor.fetched.operand.address_indirect.word == 0)
+				&& (g_test.processor.fetched.operand.data.word == data.low)
+				&& (g_test.processor.fetched.operand.page_boundary == false))) {
+			result = NES_ERR;
+			goto exit;
+		}
 	}
 
+exit:
 	TEST_TRACE(result);
 
 	return result;
@@ -1379,10 +1632,27 @@ nes_test_processor_fetch_zeropage_x(void)
 	int result = NES_OK;
 
 	for(size_t trial = 0; trial < TRIALS; ++trial) {
+		nes_processor_register_t address = { .word = 0x2000 }, address_indirect = { .low = rand() }, data = { .low = rand() },
+			index = { .low = rand() };
 
-		/* TODO */
+		nes_test_initialize();
+		nes_processor_write_word(&g_test.processor, RESET_ADDRESS, address.word);
+		nes_processor_write(&g_test.processor, address.word, address_indirect.low);
+		nes_processor_write(&g_test.processor, (address_indirect.low + index.low) & UINT8_MAX, data.low);
+		nes_processor_reset(&g_test.processor);
+		g_test.processor.index_x.low = index.low;
+		nes_processor_fetch_operand(&g_test.processor, MODE_ZEROPAGE_X);
+
+		if(ASSERT((g_test.processor.fetched.operand.address.word == ((address_indirect.low + g_test.processor.index_x.low) & UINT8_MAX))
+				&& (g_test.processor.fetched.operand.address_indirect.word == address_indirect.low)
+				&& (g_test.processor.fetched.operand.data.word == data.low)
+				&& (g_test.processor.fetched.operand.page_boundary == false))) {
+			result = NES_ERR;
+			goto exit;
+		}
 	}
 
+exit:
 	TEST_TRACE(result);
 
 	return result;
@@ -1394,10 +1664,27 @@ nes_test_processor_fetch_zeropage_y(void)
 	int result = NES_OK;
 
 	for(size_t trial = 0; trial < TRIALS; ++trial) {
+		nes_processor_register_t address = { .word = 0x2000 }, address_indirect = { .low = rand() }, data = { .low = rand() },
+			index = { .low = rand() };
 
-		/* TODO */
+		nes_test_initialize();
+		nes_processor_write_word(&g_test.processor, RESET_ADDRESS, address.word);
+		nes_processor_write(&g_test.processor, address.word, address_indirect.low);
+		nes_processor_write(&g_test.processor, (address_indirect.low + index.low) & UINT8_MAX, data.low);
+		nes_processor_reset(&g_test.processor);
+		g_test.processor.index_y.low = index.low;
+		nes_processor_fetch_operand(&g_test.processor, MODE_ZEROPAGE_Y);
+
+		if(ASSERT((g_test.processor.fetched.operand.address.word == ((address_indirect.low + g_test.processor.index_y.low) & UINT8_MAX))
+				&& (g_test.processor.fetched.operand.address_indirect.word == address_indirect.low)
+				&& (g_test.processor.fetched.operand.data.word == data.low)
+				&& (g_test.processor.fetched.operand.page_boundary == false))) {
+			result = NES_ERR;
+			goto exit;
+		}
 	}
 
+exit:
 	TEST_TRACE(result);
 
 	return result;

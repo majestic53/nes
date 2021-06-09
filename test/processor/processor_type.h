@@ -25,7 +25,7 @@
 #include "../../src/system/processor_type.h"
 #include "../common.h"
 
-#define TRIALS 100
+#define TRIALS 1
 
 typedef struct {
         nes_buffer_t memory;
