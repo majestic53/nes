@@ -448,20 +448,19 @@ nes_test_processor_execute_illegal(void)
 
 	for(size_t trial = 0; trial < TRIALS; ++trial) {
 
-		for(uint16_t opcode = 0; opcode < (UINT8_MAX + 1); ++opcode) {
+		for(uint16_t opcode = 0; opcode < sizeof(ILLEGAL_OPCODE); ++opcode) {
 			nes_processor_register_t address = { .word = (rand() % 0x8000) + 512 };
-			const nes_processor_instruction_t *instruction = &INSTRUCTION[opcode];
+			const nes_processor_instruction_t *instruction = &INSTRUCTION[ILLEGAL_OPCODE[opcode]];
 
-			if(instruction->opcode != OPCODE_XXX) {
-				continue;
-			} else if(ASSERT(instruction->mode == MODE_IMPLIED)) {
+			if(ASSERT((instruction->opcode == OPCODE_XXX)
+					&& (instruction->mode == MODE_IMPLIED))) {
 				result = NES_ERR;
 				goto exit;
 			}
 
 			nes_test_initialize();
 			nes_processor_write_word(&g_test.processor, RESET_ADDRESS, address.word);
-			nes_processor_write(&g_test.processor, address.word, opcode);
+			nes_processor_write(&g_test.processor, address.word, ILLEGAL_OPCODE[opcode]);
 			nes_processor_reset(&g_test.processor);
 
 			while(g_test.processor.cycles > 0) {
