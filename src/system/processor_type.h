@@ -425,6 +425,21 @@ typedef uint8_t (*nes_processor_instruction_hdlr)(
 extern "C" {
 #endif /* __cplusplus */
 
+uint8_t nes_processor_execute_binary(
+        __inout nes_processor_t *processor,
+        __in const nes_processor_instruction_t *instruction
+        );
+
+uint8_t nes_processor_execute_bit(
+        __inout nes_processor_t *processor,
+        __in const nes_processor_instruction_t *instruction
+        );
+
+uint8_t nes_processor_execute_branch(
+        __inout nes_processor_t *processor,
+        __in const nes_processor_instruction_t *instruction
+        );
+
 uint8_t nes_processor_execute_breakpoint(
         __inout nes_processor_t *processor,
         __in const nes_processor_instruction_t *instruction
@@ -446,6 +461,11 @@ uint8_t nes_processor_execute_illegal(
         );
 
 uint8_t nes_processor_execute_increment(
+        __inout nes_processor_t *processor,
+        __in const nes_processor_instruction_t *instruction
+        );
+
+uint8_t nes_processor_execute_jump(
         __inout nes_processor_t *processor,
         __in const nes_processor_instruction_t *instruction
         );
@@ -483,110 +503,110 @@ uint8_t nes_processor_execute_transfer(
 static const nes_processor_instruction_hdlr HANDLER[] = {
         /* 0x00 */
         nes_processor_execute_breakpoint,
-        NULL,
+        nes_processor_execute_binary,
         nes_processor_execute_illegal,
         nes_processor_execute_illegal,
         nes_processor_execute_illegal,
-        NULL,
+        nes_processor_execute_binary,
         NULL,
         nes_processor_execute_illegal,
         /* 0x08 */
         nes_processor_execute_push,
-        NULL,
+        nes_processor_execute_binary,
         NULL,
         nes_processor_execute_illegal,
         nes_processor_execute_illegal,
-        NULL,
+        nes_processor_execute_binary,
         NULL,
         nes_processor_execute_illegal,
         /* 0x10 */
-        NULL,
-        NULL,
+        nes_processor_execute_branch,
+        nes_processor_execute_binary,
         nes_processor_execute_illegal,
         nes_processor_execute_illegal,
         nes_processor_execute_illegal,
-        NULL,
+        nes_processor_execute_binary,
         NULL,
         nes_processor_execute_illegal,
         /* 0x18 */
         nes_processor_execute_clear,
-        NULL,
+        nes_processor_execute_binary,
         nes_processor_execute_illegal,
         nes_processor_execute_illegal,
         nes_processor_execute_illegal,
-        NULL,
+        nes_processor_execute_binary,
         NULL,
         nes_processor_execute_illegal,
         /* 0x20 */
-        NULL,
-        NULL,
+        nes_processor_execute_jump,
+        nes_processor_execute_binary,
         nes_processor_execute_illegal,
         nes_processor_execute_illegal,
-        NULL,
-        NULL,
+        nes_processor_execute_bit,
+        nes_processor_execute_binary,
         NULL,
         nes_processor_execute_illegal,
         /* 0x28 */
         nes_processor_execute_pull,
-        NULL,
+        nes_processor_execute_binary,
         NULL,
         nes_processor_execute_illegal,
-        NULL,
-        NULL,
+        nes_processor_execute_bit,
+        nes_processor_execute_binary,
         NULL,
         nes_processor_execute_illegal,
         /* 0x30 */
-        NULL,
-        NULL,
+        nes_processor_execute_branch,
+        nes_processor_execute_binary,
         nes_processor_execute_illegal,
         nes_processor_execute_illegal,
         nes_processor_execute_illegal,
-        NULL,
+        nes_processor_execute_binary,
         NULL,
         nes_processor_execute_illegal,
         /* 0x38 */
         nes_processor_execute_set,
-        NULL,
+        nes_processor_execute_binary,
         nes_processor_execute_illegal,
         nes_processor_execute_illegal,
         nes_processor_execute_illegal,
-        NULL,
+        nes_processor_execute_binary,
         NULL,
         nes_processor_execute_illegal,
         /* 0x40 */
         nes_processor_execute_return,
-        NULL,
+        nes_processor_execute_binary,
         nes_processor_execute_illegal,
         nes_processor_execute_illegal,
         nes_processor_execute_illegal,
-        NULL,
+        nes_processor_execute_binary,
         NULL,
         nes_processor_execute_illegal,
         /* 0x48 */
         nes_processor_execute_push,
-        NULL,
+        nes_processor_execute_binary,
         NULL,
         nes_processor_execute_illegal,
-        NULL,
-        NULL,
+        nes_processor_execute_jump,
+        nes_processor_execute_binary,
         NULL,
         nes_processor_execute_illegal,
         /* 0x50 */
-        NULL,
-        NULL,
+        nes_processor_execute_branch,
+        nes_processor_execute_binary,
         nes_processor_execute_illegal,
         nes_processor_execute_illegal,
         nes_processor_execute_illegal,
-        NULL,
+        nes_processor_execute_binary,
         NULL,
         nes_processor_execute_illegal,
         /* 0x58 */
         nes_processor_execute_clear,
-        NULL,
+        nes_processor_execute_binary,
         nes_processor_execute_illegal,
         nes_processor_execute_illegal,
         nes_processor_execute_illegal,
-        NULL,
+        nes_processor_execute_binary,
         NULL,
         nes_processor_execute_illegal,
         /* 0x60 */
@@ -603,12 +623,12 @@ static const nes_processor_instruction_hdlr HANDLER[] = {
         NULL,
         NULL,
         nes_processor_execute_illegal,
-        NULL,
+        nes_processor_execute_jump,
         NULL,
         NULL,
         nes_processor_execute_illegal,
         /* 0x70 */
-        NULL,
+        nes_processor_execute_branch,
         NULL,
         nes_processor_execute_illegal,
         nes_processor_execute_illegal,
@@ -644,7 +664,7 @@ static const nes_processor_instruction_hdlr HANDLER[] = {
         NULL,
         nes_processor_execute_illegal,
         /* 0x90 */
-        NULL,
+        nes_processor_execute_branch,
         NULL,
         nes_processor_execute_illegal,
         nes_processor_execute_illegal,
@@ -680,7 +700,7 @@ static const nes_processor_instruction_hdlr HANDLER[] = {
         NULL,
         nes_processor_execute_illegal,
         /* 0xb0 */
-        NULL,
+        nes_processor_execute_branch,
         NULL,
         nes_processor_execute_illegal,
         nes_processor_execute_illegal,
@@ -704,7 +724,7 @@ static const nes_processor_instruction_hdlr HANDLER[] = {
         nes_processor_execute_illegal,
         NULL,
         NULL,
-        NULL,
+        nes_processor_execute_decrement,
         nes_processor_execute_illegal,
         /* 0xc8 */
         nes_processor_execute_increment,
@@ -713,16 +733,16 @@ static const nes_processor_instruction_hdlr HANDLER[] = {
         nes_processor_execute_illegal,
         NULL,
         NULL,
-        NULL,
+        nes_processor_execute_decrement,
         nes_processor_execute_illegal,
         /* 0xd0 */
-        NULL,
+        nes_processor_execute_branch,
         NULL,
         nes_processor_execute_illegal,
         nes_processor_execute_illegal,
         nes_processor_execute_illegal,
         NULL,
-        NULL,
+        nes_processor_execute_decrement,
         nes_processor_execute_illegal,
         /* 0xd8 */
         nes_processor_execute_clear,
@@ -731,7 +751,7 @@ static const nes_processor_instruction_hdlr HANDLER[] = {
         nes_processor_execute_illegal,
         nes_processor_execute_illegal,
         NULL,
-        NULL,
+        nes_processor_execute_decrement,
         nes_processor_execute_illegal,
         /* 0xe0 */
         NULL,
@@ -740,7 +760,7 @@ static const nes_processor_instruction_hdlr HANDLER[] = {
         nes_processor_execute_illegal,
         NULL,
         NULL,
-        NULL,
+        nes_processor_execute_increment,
         nes_processor_execute_illegal,
         /* 0xe8 */
         nes_processor_execute_increment,
@@ -749,16 +769,16 @@ static const nes_processor_instruction_hdlr HANDLER[] = {
         nes_processor_execute_illegal,
         NULL,
         NULL,
-        NULL,
+        nes_processor_execute_increment,
         nes_processor_execute_illegal,
         /* 0xf0 */
-        NULL,
+        nes_processor_execute_branch,
         NULL,
         nes_processor_execute_illegal,
         nes_processor_execute_illegal,
         nes_processor_execute_illegal,
         NULL,
-        NULL,
+        nes_processor_execute_increment,
         nes_processor_execute_illegal,
         /* 0xf8 */
         nes_processor_execute_set,
@@ -767,7 +787,7 @@ static const nes_processor_instruction_hdlr HANDLER[] = {
         nes_processor_execute_illegal,
         nes_processor_execute_illegal,
         NULL,
-        NULL,
+        nes_processor_execute_increment,
         nes_processor_execute_illegal,
         };
 

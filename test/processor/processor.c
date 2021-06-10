@@ -363,6 +363,8 @@ nes_test_processor_execute_decrement(void)
 	for(size_t trial = 0; trial < TRIALS; ++trial) {
 		nes_processor_register_t address = { .word = (rand() % 0x8000) + 512 }, data = {}, status = {};
 
+		/* TODO: DEC */
+
 		if(ASSERT((INSTRUCTION[0xca].opcode == OPCODE_DEX)
 				&& (INSTRUCTION[0xca].mode == MODE_IMPLIED))) {
 			result = NES_ERR;
@@ -430,9 +432,6 @@ nes_test_processor_execute_decrement(void)
 			result = NES_ERR;
 			goto exit;
 		}
-
-		/* TODO: DEC */
-
 	}
 
 exit:
@@ -495,6 +494,8 @@ nes_test_processor_execute_increment(void)
 
 	for(size_t trial = 0; trial < TRIALS; ++trial) {
 		nes_processor_register_t address = { .word = (rand() % 0x8000) + 512 }, data = {}, status = {};
+
+		/* TODO: INC */
 
 		if(ASSERT((INSTRUCTION[0xe8].opcode == OPCODE_INX)
 				&& (INSTRUCTION[0xe8].mode == MODE_IMPLIED))) {
@@ -563,9 +564,6 @@ nes_test_processor_execute_increment(void)
 			result = NES_ERR;
 			goto exit;
 		}
-
-		/* TODO: INC */
-
 	}
 
 exit:

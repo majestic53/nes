@@ -26,6 +26,110 @@ extern "C" {
 #endif /* __cplusplus */
 
 uint8_t
+nes_processor_execute_binary(
+        __inout nes_processor_t *processor,
+        __in const nes_processor_instruction_t *instruction
+        )
+{
+        uint8_t result = 0;
+        nes_processor_register_t value = { .low = processor->accumulator.low };
+
+        switch(instruction->opcode) {
+                case OPCODE_AND:
+                        value.low &= processor->fetched.operand.data.low;
+                        break;
+                case OPCODE_EOR:
+                        value.low ^= processor->fetched.operand.data.low;
+                        break;
+                case OPCODE_ORA:
+                        value.low |= processor->fetched.operand.data.low;
+                        break;
+                default:
+                        TRACE(LEVEL_WARNING, "Invalid binary instruction: [%04X] %02X (%i)", processor->fetched.address.word, processor->fetched.opcode,
+                                instruction->opcode);
+                        break;
+        }
+
+        if(processor->fetched.operand.page_boundary) {
+                ++result;
+        }
+
+        processor->status.negative = value.negative;
+        processor->status.zero = !value.low;
+
+        return result;
+}
+
+uint8_t
+nes_processor_execute_bit(
+        __inout nes_processor_t *processor,
+        __in const nes_processor_instruction_t *instruction
+        )
+{
+        nes_processor_register_t value = { .low = processor->accumulator.low };
+
+        processor->status.negative = processor->fetched.operand.data.negative;
+        processor->status.overflow = processor->fetched.operand.data.overflow;
+        value.low &= processor->fetched.operand.data.low;
+        processor->status.zero = !value.low;
+
+        return 0;
+}
+
+uint8_t
+nes_processor_execute_branch(
+        __inout nes_processor_t *processor,
+        __in const nes_processor_instruction_t *instruction
+        )
+{
+        uint8_t result = 0;
+        bool taken = false;
+
+        switch(instruction->opcode) {
+                case OPCODE_BCC:
+                        taken = !processor->status.carry;
+                        break;
+                case OPCODE_BCS:
+                        taken = processor->status.carry;
+                        break;
+                case OPCODE_BEQ:
+                        taken = processor->status.zero;
+                        break;
+                case OPCODE_BMI:
+                        taken = processor->status.negative;
+                        break;
+                case OPCODE_BNE:
+                        taken = !processor->status.zero;
+                        break;
+                case OPCODE_BPL:
+                        taken = !processor->status.negative;
+                        break;
+                case OPCODE_BVC:
+                        taken = !processor->status.overflow;
+                        break;
+                case OPCODE_BVS:
+                        taken = processor->status.overflow;
+                        break;
+                default:
+                        TRACE(LEVEL_WARNING, "Invalid branch instruction: [%04X] %02X (%i)", processor->fetched.address.word, processor->fetched.opcode,
+                                instruction->opcode);
+                        break;
+        }
+
+        if(taken) {
+                processor->program_counter.word = processor->fetched.operand.address.word;
+
+                if(processor->fetched.operand.page_boundary) {
+                        ++result;
+                }
+
+                ++result;
+        }
+
+        return result;
+}
+
+uint8_t
 nes_processor_execute_breakpoint(
         __inout nes_processor_t *processor,
         __in const nes_processor_instruction_t *instruction
@@ -80,6 +184,11 @@ nes_processor_execute_decrement(
 {
 
         switch(instruction->opcode) {
+                case OPCODE_DEC:
+                        nes_processor_write(processor, processor->fetched.address.word, --processor->fetched.operand.data.low);
+                        processor->status.negative = processor->fetched.operand.data.negative;
+                        processor->status.zero = !processor->fetched.operand.data.low;
+                        break;
                 case OPCODE_DEX:
                         --processor->index_x.low;
                         processor->status.negative = processor->index_x.negative;
@@ -118,6 +227,11 @@ nes_processor_execute_increment(
 {
 
         switch(instruction->opcode) {
+                case OPCODE_INC:
+                        nes_processor_write(processor, processor->fetched.address.word, ++processor->fetched.operand.data.low);
+                        processor->status.negative = processor->fetched.operand.data.negative;
+                        processor->status.zero = !processor->fetched.operand.data.low;
+                        break;
                 case OPCODE_INX:
                         ++processor->index_x.low;
                         processor->status.negative = processor->index_x.negative;
@@ -135,6 +249,31 @@ nes_processor_execute_increment(
         }
 
         return 0;
+}
+
+uint8_t
+nes_processor_execute_jump(
+        __inout nes_processor_t *processor,
+        __in const nes_processor_instruction_t *instruction
+        )
+{
+        uint8_t result = 0;
+
+        switch(instruction->opcode) {
+                case OPCODE_JMP:
+                        processor->program_counter.word = processor->fetched.operand.address.word;
+                        break;
+                case OPCODE_JSR:
+                        nes_processor_push_word(processor, processor->program_counter.word - 1);
+                        processor->program_counter.word = processor->fetched.operand.address.word;
+                        break;
+                default:
+                        TRACE(LEVEL_WARNING, "Invalid jump instruction: [%04X] %02X (%i)", processor->fetched.address.word, processor->fetched.opcode,
+                                instruction->opcode);
+                        break;
+        }
+
+        return result;
 }
 
 uint8_t
@@ -425,7 +564,8 @@ nes_processor_instruction(
         const nes_processor_instruction_t *instruction;
 
         processor->fetched.address.word = processor->program_counter.word;
-        instruction = &INSTRUCTION[processor->fetched.opcode = nes_processor_fetch(processor)];
+        processor->fetched.opcode = nes_processor_fetch(processor);
+        instruction = &INSTRUCTION[processor->fetched.opcode];
         nes_processor_fetch_operand(processor, instruction->mode);
         TRACE_PROCESSOR_INSTRUCTION(LEVEL_VERBOSE, processor, instruction);
         processor->cycles = instruction->cycles + HANDLER[processor->fetched.opcode](processor, instruction);
