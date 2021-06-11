@@ -34,21 +34,31 @@ Run the following commands from the projects root directory:
 
 ```
 $ export CC=<COMPILER>
-$ make <BUILD>
+$ make [<BUILD>] [LEVLE=<LEVEL>]
 ```
 
-|Field   |Supported values          |Description                                                 |
-|:-------|:-------------------------|:-----------------------------------------------------------|
-|COMPILER|```gcc```                 |Specifies the compiler to be used                           |
-|BUILD   |```release```, ```debug```|Specifies the build type (defaults to relaese)              |
+|Field   |Supported values                           |Description                                                                                                  |
+|:-------|:------------------------------------------|:------------------------------------------------------------------------------------------------------------|
+|COMPILER|```gcc```                                  |Specifies the compiler to be used                                                                            |
+|BUILD   |```debug```, ```release```                 |Optionally specifies the build type (__NOTE__: defaults to relaese)                                          |
+|LEVEL   |```0```, ```1```, ```2```, ```3```, ```4```|Optionally specifies the debug tracing level (__NOTE__: 0=None, 1=Error, 2=Warning, 3=Information, 4=Verbose)|
+
+If the build succeeds, the binary files can be found under ```bin/```
 
 #### Examples
 
-For example, to compile the NES release build using GCC, run the following commands:
+To compile the NES release build using GCC, run the following commands:
 
 ```
 $ export CC=gcc
-$ make
+$ make release
+```
+
+To compile the NES debug build using GCC, with verbose tracing enabled, run the following commands:
+
+```
+$ export CC=gcc
+$ make debug LEVEL=4
 ```
 
 Using the Library
@@ -62,7 +72,7 @@ This project is implemented in C and exposes a simple API, described in ```inclu
 |nes_error  |```const char *nes_error(void)```           |Retrieve emulator error  |
 |nes_version|```const nes_version_t *nes_version(void)```|Retrieve emulator version|
 
-For an example of how to use this interface, see the [launcher tool](https://github.com/majestic53/nes/tree/master/tool) under ```tool/```
+For an example of how to use this interface, see the [launcher](https://github.com/majestic53/nes/tree/master/tool) under ```tool/```
 
 Trademark
 =

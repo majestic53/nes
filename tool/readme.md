@@ -23,10 +23,10 @@ The following options are available:
 
 #### Examples
 
-For example, to launch nes with a file, run the following command:
+To launch nes with a file, run the following command:
 
 ```
-$ nes file.nes
+$ ./bin/nes <PATH_TO_FILE>
 ```
 
 Trademark
