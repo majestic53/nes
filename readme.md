@@ -3,6 +3,8 @@ NES
 
 [![License: MIT](https://shields.io/badge/license-MIT-blue.svg?style=flat)](https://github.com/majestic53/nes/blob/master/license) [![Build Status](https://github.com/majestic53/nes/workflows/Build/badge.svg)](https://github.com/majestic53/nes/actions)
 
+A lightweight NES emulator, written in C
+
 Features
 =
 
@@ -16,7 +18,7 @@ The latest release can be found here: ```TBD```
 Building from Source
 =
 
-__NOTE__: This project was tested under GNU/Linux, using the GCC C compiler. Some modifications to the makefiles will be required to build with a different OS/compiler.
+__NOTE__: This project is tested under GNU/Linux, using the GCC C compiler. Some modifications will be required to build with a different OS/compiler.
 
 ### Preparing to build
 
@@ -42,7 +44,7 @@ $ make <BUILD>
 
 #### Examples
 
-The following example shows how to compile the NES release build using GCC:
+For example, to compile the NES release build using GCC, run the following commands:
 
 ```
 $ export CC=gcc

@@ -1,6 +1,8 @@
 NES Launcher
 =
 
+A launcher for NES
+
 Interface
 =
 
@@ -21,7 +23,7 @@ The following options are available:
 
 #### Examples
 
-The following example shows how to launch nes with a file:
+For example, to launch nes with a file, run the following command:
 
 ```
 $ nes file.nes
