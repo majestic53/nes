@@ -1,7 +1,7 @@
 NES
 =
 
-[![License: MIT](https://shields.io/badge/license-MIT-blue.svg?style=flat)](https://github.com/majestic53/nes/blob/master/license) [![Build Status](https://shields.io/github/workflow/status/majestic53/nes/Build?style=flat)](https://github.com/majestic53/nes/actions) [![Release](https://shields.io/github/v/release/majestic53/nes?style=flat)](https://github.com/majestic53/nes/releases)
+[![License: MIT](https://shields.io/badge/license-MIT-blue.svg?style=flat)](https://github.com/majestic53/nes/blob/master/license) [![Build Status](https://github.com/majestic53/nes/workflows/Build/badge.svg)](https://github.com/majestic53/nes/actions)
 
 Features
 =
@@ -54,8 +54,6 @@ Using the Library
 
 This project is implemented in C and exposes a simple API, described in ```include/nes.h```:
 
-For an example of how to use this interface, see the [launcher tool](https://github.com/majestic53/nes/tree/master/tool) under ```tool/```
-
 #### Routines
 
 |Name       |Description              |Signature                                   |
@@ -63,6 +61,8 @@ For an example of how to use this interface, see the [launcher tool](https://git
 |nes        |Run emulator             |```int nes(const nes_t *)```                |
 |nes_error  |Retrieve emulator error  |```const char *nes_error(void)```           |
 |nes_version|Retrieve emulator version|```const nes_version_t *nes_version(void)```|
+
+For an example of how to use this interface, see the [launcher tool](https://github.com/majestic53/nes/tree/master/tool) under ```tool/```
 
 Trademark
 =
