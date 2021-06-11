@@ -32,17 +32,16 @@ nes_processor_execute_binary(
         )
 {
         uint8_t result = 0;
-        nes_processor_register_t value = { .low = processor->accumulator.low };
 
         switch(instruction->opcode) {
                 case OPCODE_AND:
-                        value.low &= processor->fetched.operand.data.low;
+                        processor->accumulator.low &= processor->fetched.operand.data.low;
                         break;
                 case OPCODE_EOR:
-                        value.low ^= processor->fetched.operand.data.low;
+                        processor->accumulator.low ^= processor->fetched.operand.data.low;
                         break;
                 case OPCODE_ORA:
-                        value.low |= processor->fetched.operand.data.low;
+                        processor->accumulator.low |= processor->fetched.operand.data.low;
                         break;
                 default:
                         TRACE(LEVEL_WARNING, "Invalid binary instruction: [%04X] %02X (%i)", processor->fetched.address.word, processor->fetched.opcode,
@@ -50,12 +49,12 @@ nes_processor_execute_binary(
                         break;
         }
 
+        processor->status.negative = processor->accumulator.negative;
+        processor->status.zero = !processor->accumulator.low;
+
         if(processor->fetched.operand.page_boundary) {
                 ++result;
         }
-
-        processor->status.negative = value.negative;
-        processor->status.zero = !value.low;
 
         return result;
 }
@@ -185,7 +184,7 @@ nes_processor_execute_decrement(
 
         switch(instruction->opcode) {
                 case OPCODE_DEC:
-                        nes_processor_write(processor, processor->fetched.address.word, --processor->fetched.operand.data.low);
+                        nes_processor_write(processor, processor->fetched.operand.address.word, --processor->fetched.operand.data.low);
                         processor->status.negative = processor->fetched.operand.data.negative;
                         processor->status.zero = !processor->fetched.operand.data.low;
                         break;
@@ -228,7 +227,7 @@ nes_processor_execute_increment(
 
         switch(instruction->opcode) {
                 case OPCODE_INC:
-                        nes_processor_write(processor, processor->fetched.address.word, ++processor->fetched.operand.data.low);
+                        nes_processor_write(processor, processor->fetched.operand.address.word, ++processor->fetched.operand.data.low);
                         processor->status.negative = processor->fetched.operand.data.negative;
                         processor->status.zero = !processor->fetched.operand.data.low;
                         break;

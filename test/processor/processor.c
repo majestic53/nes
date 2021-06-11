@@ -64,7 +64,43 @@ nes_bus_write(
 }
 
 int
-nes_test_processor_execute_break(void)
+nes_test_processor_execute_binary(void)
+{
+	int result = NES_OK;
+
+	/* TODO */
+
+	TEST_TRACE(result);
+
+	return result;
+}
+
+int
+nes_test_processor_execute_bit(void)
+{
+	int result = NES_OK;
+
+	/* TODO */
+
+	TEST_TRACE(result);
+
+	return result;
+}
+
+int
+nes_test_processor_execute_branch(void)
+{
+	int result = NES_OK;
+
+	/* TODO */
+
+	TEST_TRACE(result);
+
+	return result;
+}
+
+int
+nes_test_processor_execute_breakpoint(void)
 {
 	int result = NES_OK;
 
@@ -72,7 +108,8 @@ nes_test_processor_execute_break(void)
 		nes_processor_register_t address = { .word = (rand() % 0x8000) + 512 };
 
 		if(ASSERT((INSTRUCTION[0x00].opcode == OPCODE_BRK)
-				&& (INSTRUCTION[0x00].mode == MODE_IMPLIED))) {
+				&& (INSTRUCTION[0x00].mode == MODE_IMPLIED)
+				&& (INSTRUCTION[0x00].cycles == 7))) {
 			result = NES_ERR;
 			goto exit;
 		}
@@ -141,7 +178,8 @@ nes_test_processor_execute_clear(void)
 		nes_processor_register_t address = { .word = (rand() % 0x8000) + 512 };
 
 		if(ASSERT((INSTRUCTION[0x18].opcode == OPCODE_CLC)
-				&& (INSTRUCTION[0x18].mode == MODE_IMPLIED))) {
+				&& (INSTRUCTION[0x18].mode == MODE_IMPLIED)
+				&& (INSTRUCTION[0x18].cycles == 2))) {
 			result = NES_ERR;
 			goto exit;
 		}
@@ -193,7 +231,8 @@ nes_test_processor_execute_clear(void)
 		}
 
 		if(ASSERT((INSTRUCTION[0xd8].opcode == OPCODE_CLD)
-				&& (INSTRUCTION[0xd8].mode == MODE_IMPLIED))) {
+				&& (INSTRUCTION[0xd8].mode == MODE_IMPLIED)
+				&& (INSTRUCTION[0xd8].cycles == 2))) {
 			result = NES_ERR;
 			goto exit;
 		}
@@ -245,7 +284,8 @@ nes_test_processor_execute_clear(void)
 		}
 
 		if(ASSERT((INSTRUCTION[0x58].opcode == OPCODE_CLI)
-				&& (INSTRUCTION[0x58].mode == MODE_IMPLIED))) {
+				&& (INSTRUCTION[0x58].mode == MODE_IMPLIED)
+				&& (INSTRUCTION[0x58].cycles == 2))) {
 			result = NES_ERR;
 			goto exit;
 		}
@@ -297,7 +337,8 @@ nes_test_processor_execute_clear(void)
 		}
 
 		if(ASSERT((INSTRUCTION[0xb8].opcode == OPCODE_CLV)
-				&& (INSTRUCTION[0xb8].mode == MODE_IMPLIED))) {
+				&& (INSTRUCTION[0xb8].mode == MODE_IMPLIED)
+				&& (INSTRUCTION[0xb8].cycles == 2))) {
 			result = NES_ERR;
 			goto exit;
 		}
@@ -361,12 +402,58 @@ nes_test_processor_execute_decrement(void)
 	int result = NES_OK;
 
 	for(size_t trial = 0; trial < TRIALS; ++trial) {
-		nes_processor_register_t address = { .word = (rand() % 0x8000) + 512 }, data = {}, status = {};
+		nes_processor_register_t address = { .word = (rand() % 0x2000) + 512 }, address_indirect = { .word = (rand() % 0x2000) + 0x2000 + 512 },
+			data = {}, status = {};
 
-		/* TODO: DEC */
+		if(ASSERT((INSTRUCTION[0xce].opcode == OPCODE_DEC)
+				&& (INSTRUCTION[0xce].mode == MODE_ABSOLUTE)
+					&& (INSTRUCTION[0xce].cycles == 6)
+				&& (INSTRUCTION[0xde].opcode == OPCODE_DEC)
+					&& (INSTRUCTION[0xde].mode == MODE_ABSOLUTE_X)
+					&& (INSTRUCTION[0xde].cycles == 7)
+				&& (INSTRUCTION[0xc6].opcode == OPCODE_DEC)
+					&& (INSTRUCTION[0xc6].mode == MODE_ZEROPAGE)
+					&& (INSTRUCTION[0xc6].cycles == 5)
+				&& (INSTRUCTION[0xd6].opcode == OPCODE_DEC)
+					&& (INSTRUCTION[0xd6].mode == MODE_ZEROPAGE_X)
+					&& (INSTRUCTION[0xd6].cycles == 6))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		nes_test_initialize();
+		nes_processor_write_word(&g_test.processor, RESET_ADDRESS, address.word);
+		nes_processor_write(&g_test.processor, address.word, 0xce);
+		nes_processor_write_word(&g_test.processor, address.word + 1, address_indirect.word);
+		data.low = rand();
+		nes_processor_write_word(&g_test.processor, address_indirect.word, data.low);
+		nes_processor_reset(&g_test.processor);
+
+		while(g_test.processor.cycles > 0) {
+			nes_processor_step(&g_test.processor);
+		}
+
+		--data.low;
+		status.low = 0x34;
+		status.negative = data.negative;
+		status.zero = !data.low;
+		nes_processor_step(&g_test.processor);
+
+		if(ASSERT((g_test.processor.cycles == 5)
+				&& (g_test.processor.program_counter.word == (uint16_t)(address.word + 3))
+				&& (g_test.processor.stack_pointer.low == 0xfd)
+				&& (g_test.processor.status.low == status.low)
+				&& (g_test.processor.accumulator.low == 0)
+				&& (g_test.processor.index_x.low == 0)
+				&& (g_test.processor.index_y.low == 0)
+				&& (nes_processor_read(&g_test.processor, address_indirect.word) == data.low))) {
+			result = NES_ERR;
+			goto exit;
+		}
 
 		if(ASSERT((INSTRUCTION[0xca].opcode == OPCODE_DEX)
-				&& (INSTRUCTION[0xca].mode == MODE_IMPLIED))) {
+				&& (INSTRUCTION[0xca].mode == MODE_IMPLIED)
+				&& (INSTRUCTION[0xca].cycles == 2))) {
 			result = NES_ERR;
 			goto exit;
 		}
@@ -400,7 +487,8 @@ nes_test_processor_execute_decrement(void)
 		}
 
 		if(ASSERT((INSTRUCTION[0x88].opcode == OPCODE_DEY)
-				&& (INSTRUCTION[0x88].mode == MODE_IMPLIED))) {
+				&& (INSTRUCTION[0x88].mode == MODE_IMPLIED)
+				&& (INSTRUCTION[0x88].cycles == 2))) {
 			result = NES_ERR;
 			goto exit;
 		}
@@ -452,7 +540,8 @@ nes_test_processor_execute_illegal(void)
 			const nes_processor_instruction_t *instruction = &INSTRUCTION[ILLEGAL_OPCODE[opcode]];
 
 			if(ASSERT((instruction->opcode == OPCODE_XXX)
-					&& (instruction->mode == MODE_IMPLIED))) {
+					&& (instruction->mode == MODE_IMPLIED)
+					&& (instruction->cycles == 2))) {
 				result = NES_ERR;
 				goto exit;
 			}
@@ -493,12 +582,58 @@ nes_test_processor_execute_increment(void)
 	int result = NES_OK;
 
 	for(size_t trial = 0; trial < TRIALS; ++trial) {
-		nes_processor_register_t address = { .word = (rand() % 0x8000) + 512 }, data = {}, status = {};
+		nes_processor_register_t address = { .word = (rand() % 0x2000) + 512 }, address_indirect = { .word = (rand() % 0x2000) + 0x2000 + 512 },
+			data = {}, status = {};
 
-		/* TODO: INC */
+		if(ASSERT((INSTRUCTION[0xee].opcode == OPCODE_INC)
+				&& (INSTRUCTION[0xee].mode == MODE_ABSOLUTE)
+				&& (INSTRUCTION[0xee].cycles == 6)
+				&& (INSTRUCTION[0xfe].opcode == OPCODE_INC)
+					&& (INSTRUCTION[0xfe].mode == MODE_ABSOLUTE_X)
+					&& (INSTRUCTION[0xfe].cycles == 7)
+				&& (INSTRUCTION[0xe6].opcode == OPCODE_INC)
+					&& (INSTRUCTION[0xe6].mode == MODE_ZEROPAGE)
+					&& (INSTRUCTION[0xe6].cycles == 5)
+				&& (INSTRUCTION[0xf6].opcode == OPCODE_INC)
+					&& (INSTRUCTION[0xf6].mode == MODE_ZEROPAGE_X)
+					&& (INSTRUCTION[0xf6].cycles == 6))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		nes_test_initialize();
+		nes_processor_write_word(&g_test.processor, RESET_ADDRESS, address.word);
+		nes_processor_write(&g_test.processor, address.word, 0xee);
+		nes_processor_write_word(&g_test.processor, address.word + 1, address_indirect.word);
+		data.low = rand();
+		nes_processor_write_word(&g_test.processor, address_indirect.word, data.low);
+		nes_processor_reset(&g_test.processor);
+
+		while(g_test.processor.cycles > 0) {
+			nes_processor_step(&g_test.processor);
+		}
+
+		++data.low;
+		status.low = 0x34;
+		status.negative = data.negative;
+		status.zero = !data.low;
+		nes_processor_step(&g_test.processor);
+
+		if(ASSERT((g_test.processor.cycles == 5)
+				&& (g_test.processor.program_counter.word == (uint16_t)(address.word + 3))
+				&& (g_test.processor.stack_pointer.low == 0xfd)
+				&& (g_test.processor.status.low == status.low)
+				&& (g_test.processor.accumulator.low == 0)
+				&& (g_test.processor.index_x.low == 0)
+				&& (g_test.processor.index_y.low == 0)
+				&& (nes_processor_read(&g_test.processor, address_indirect.word) == data.low))) {
+			result = NES_ERR;
+			goto exit;
+		}
 
 		if(ASSERT((INSTRUCTION[0xe8].opcode == OPCODE_INX)
-				&& (INSTRUCTION[0xe8].mode == MODE_IMPLIED))) {
+				&& (INSTRUCTION[0xe8].mode == MODE_IMPLIED)
+				&& (INSTRUCTION[0xe8].cycles == 2))) {
 			result = NES_ERR;
 			goto exit;
 		}
@@ -532,7 +667,8 @@ nes_test_processor_execute_increment(void)
 		}
 
 		if(ASSERT((INSTRUCTION[0xc8].opcode == OPCODE_INY)
-				&& (INSTRUCTION[0xc8].mode == MODE_IMPLIED))) {
+				&& (INSTRUCTION[0xc8].mode == MODE_IMPLIED)
+				&& (INSTRUCTION[0xc8].cycles == 2))) {
 			result = NES_ERR;
 			goto exit;
 		}
@@ -573,6 +709,18 @@ exit:
 }
 
 int
+nes_test_processor_execute_jump(void)
+{
+	int result = NES_OK;
+
+	/* TODO */
+
+	TEST_TRACE(result);
+
+	return result;
+}
+
+int
 nes_test_processor_execute_no_operation(void)
 {
 	int result = NES_OK;
@@ -581,7 +729,8 @@ nes_test_processor_execute_no_operation(void)
 		nes_processor_register_t address = { .word = (rand() % 0x8000) + 512 };
 
 		if(ASSERT((INSTRUCTION[0xea].opcode == OPCODE_NOP)
-				&& (INSTRUCTION[0xea].mode == MODE_IMPLIED))) {
+				&& (INSTRUCTION[0xea].mode == MODE_IMPLIED)
+				&& (INSTRUCTION[0xea].cycles == 2))) {
 			result = NES_ERR;
 			goto exit;
 		}
@@ -624,7 +773,8 @@ nes_test_processor_execute_pull(void)
 		nes_processor_register_t address = { .word = (rand() % 0x8000) + 512 }, data = { .low = rand() }, status = {};
 
 		if(ASSERT((INSTRUCTION[0x68].opcode == OPCODE_PLA)
-				&& (INSTRUCTION[0x68].mode == MODE_IMPLIED))) {
+				&& (INSTRUCTION[0x68].mode == MODE_IMPLIED)
+				&& (INSTRUCTION[0x68].cycles == 4))) {
 			result = NES_ERR;
 			goto exit;
 		}
@@ -656,7 +806,8 @@ nes_test_processor_execute_pull(void)
 		}
 
 		if(ASSERT((INSTRUCTION[0x28].opcode == OPCODE_PLP)
-				&& (INSTRUCTION[0x28].mode == MODE_IMPLIED))) {
+				&& (INSTRUCTION[0x28].mode == MODE_IMPLIED)
+				&& (INSTRUCTION[0x28].cycles == 4))) {
 			result = NES_ERR;
 			goto exit;
 		}
@@ -702,7 +853,8 @@ nes_test_processor_execute_push(void)
 		nes_processor_register_t address = { .word = (rand() % 0x8000) + 512 }, data = { .low = rand() }, status = {};
 
 		if(ASSERT((INSTRUCTION[0x48].opcode == OPCODE_PHA)
-				&& (INSTRUCTION[0x48].mode == MODE_IMPLIED))) {
+				&& (INSTRUCTION[0x48].mode == MODE_IMPLIED)
+				&& (INSTRUCTION[0x48].cycles == 3))) {
 			result = NES_ERR;
 			goto exit;
 		}
@@ -732,7 +884,8 @@ nes_test_processor_execute_push(void)
 		}
 
 		if(ASSERT((INSTRUCTION[0x08].opcode == OPCODE_PHP)
-				&& (INSTRUCTION[0x08].mode == MODE_IMPLIED))) {
+				&& (INSTRUCTION[0x08].mode == MODE_IMPLIED)
+				&& (INSTRUCTION[0x08].cycles == 3))) {
 			result = NES_ERR;
 			goto exit;
 		}
@@ -778,7 +931,8 @@ nes_test_processor_execute_return(void)
 		nes_processor_register_t address = { .word = (rand() % 0x8000) + 512 }, status = { .low = rand() };
 
 		if(ASSERT((INSTRUCTION[0x40].opcode == OPCODE_RTI)
-				&& (INSTRUCTION[0x40].mode == MODE_IMPLIED))) {
+				&& (INSTRUCTION[0x40].mode == MODE_IMPLIED)
+				&& (INSTRUCTION[0x40].cycles == 6))) {
 			result = NES_ERR;
 			goto exit;
 		}
@@ -809,7 +963,8 @@ nes_test_processor_execute_return(void)
 		}
 
 		if(ASSERT((INSTRUCTION[0x60].opcode == OPCODE_RTS)
-				&& (INSTRUCTION[0x60].mode == MODE_IMPLIED))) {
+				&& (INSTRUCTION[0x60].mode == MODE_IMPLIED)
+				&& (INSTRUCTION[0x60].cycles == 6))) {
 			result = NES_ERR;
 			goto exit;
 		}
@@ -854,7 +1009,8 @@ nes_test_processor_execute_set(void)
 		nes_processor_register_t address = { .word = (rand() % 0x8000) + 512 };
 
 		if(ASSERT((INSTRUCTION[0x38].opcode == OPCODE_SEC)
-				&& (INSTRUCTION[0x38].mode == MODE_IMPLIED))) {
+				&& (INSTRUCTION[0x38].mode == MODE_IMPLIED)
+				&& (INSTRUCTION[0x38].cycles == 2))) {
 			result = NES_ERR;
 			goto exit;
 		}
@@ -906,7 +1062,8 @@ nes_test_processor_execute_set(void)
 		}
 
 		if(ASSERT((INSTRUCTION[0xf8].opcode == OPCODE_SED)
-				&& (INSTRUCTION[0xf8].mode == MODE_IMPLIED))) {
+				&& (INSTRUCTION[0xf8].mode == MODE_IMPLIED)
+				&& (INSTRUCTION[0xf8].cycles == 2))) {
 			result = NES_ERR;
 			goto exit;
 		}
@@ -958,7 +1115,8 @@ nes_test_processor_execute_set(void)
 		}
 
 		if(ASSERT((INSTRUCTION[0x78].opcode == OPCODE_SEI)
-				&& (INSTRUCTION[0x78].mode == MODE_IMPLIED))) {
+				&& (INSTRUCTION[0x78].mode == MODE_IMPLIED)
+				&& (INSTRUCTION[0x78].cycles == 2))) {
 			result = NES_ERR;
 			goto exit;
 		}
@@ -1025,7 +1183,8 @@ nes_test_processor_execute_transfer(void)
 		nes_processor_register_t address = { .word = (rand() % 0x8000) + 512 }, data = { .low = rand() }, status = {};
 
 		if(ASSERT((INSTRUCTION[0xaa].opcode == OPCODE_TAX)
-				&& (INSTRUCTION[0xaa].mode == MODE_IMPLIED))) {
+				&& (INSTRUCTION[0xaa].mode == MODE_IMPLIED)
+				&& (INSTRUCTION[0xaa].cycles == 2))) {
 			result = NES_ERR;
 			goto exit;
 		}
@@ -1057,7 +1216,8 @@ nes_test_processor_execute_transfer(void)
 		}
 
 		if(ASSERT((INSTRUCTION[0xa8].opcode == OPCODE_TAY)
-				&& (INSTRUCTION[0xa8].mode == MODE_IMPLIED))) {
+				&& (INSTRUCTION[0xa8].mode == MODE_IMPLIED)
+				&& (INSTRUCTION[0xa8].cycles == 2))) {
 			result = NES_ERR;
 			goto exit;
 		}
@@ -1089,7 +1249,8 @@ nes_test_processor_execute_transfer(void)
 		}
 
 		if(ASSERT((INSTRUCTION[0xba].opcode == OPCODE_TSX)
-				&& (INSTRUCTION[0xba].mode == MODE_IMPLIED))) {
+				&& (INSTRUCTION[0xba].mode == MODE_IMPLIED)
+				&& (INSTRUCTION[0xba].cycles == 2))) {
 			result = NES_ERR;
 			goto exit;
 		}
@@ -1121,7 +1282,8 @@ nes_test_processor_execute_transfer(void)
 		}
 
 		if(ASSERT((INSTRUCTION[0x8a].opcode == OPCODE_TXA)
-				&& (INSTRUCTION[0x8a].mode == MODE_IMPLIED))) {
+				&& (INSTRUCTION[0x8a].mode == MODE_IMPLIED)
+				&& (INSTRUCTION[0x8a].cycles == 2))) {
 			result = NES_ERR;
 			goto exit;
 		}
@@ -1153,7 +1315,8 @@ nes_test_processor_execute_transfer(void)
 		}
 
 		if(ASSERT((INSTRUCTION[0x9a].opcode == OPCODE_TXS)
-				&& (INSTRUCTION[0x9a].mode == MODE_IMPLIED))) {
+				&& (INSTRUCTION[0x9a].mode == MODE_IMPLIED)
+				&& (INSTRUCTION[0x9a].cycles == 2))) {
 			result = NES_ERR;
 			goto exit;
 		}
@@ -1182,7 +1345,8 @@ nes_test_processor_execute_transfer(void)
 		}
 
 		if(ASSERT((INSTRUCTION[0x98].opcode == OPCODE_TYA)
-				&& (INSTRUCTION[0x98].mode == MODE_IMPLIED))) {
+				&& (INSTRUCTION[0x98].mode == MODE_IMPLIED)
+				&& (INSTRUCTION[0x98].cycles == 2))) {
 			result = NES_ERR;
 			goto exit;
 		}

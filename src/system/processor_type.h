@@ -349,7 +349,7 @@ static const nes_processor_instruction_t INSTRUCTION[] = {
         { 2, OPCODE_XXX, MODE_IMPLIED },
         { 3, OPCODE_CPY, MODE_ZEROPAGE },
         { 3, OPCODE_CMP, MODE_ZEROPAGE },
-        { 3, OPCODE_DEC, MODE_ZEROPAGE },
+        { 5, OPCODE_DEC, MODE_ZEROPAGE },
         { 2, OPCODE_XXX, MODE_IMPLIED },
         /* 0xc8 */
         { 2, OPCODE_INY, MODE_IMPLIED },

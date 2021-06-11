@@ -55,7 +55,13 @@ typedef struct {
 extern "C" {
 #endif /* __cplusplus */
 
-int nes_test_processor_execute_break(void);
+int nes_test_processor_execute_binary(void);
+
+int nes_test_processor_execute_bit(void);
+
+int nes_test_processor_execute_branch(void);
+
+int nes_test_processor_execute_breakpoint(void);
 
 int nes_test_processor_execute_clear(void);
 
@@ -64,6 +70,8 @@ int nes_test_processor_execute_decrement(void);
 int nes_test_processor_execute_illegal(void);
 
 int nes_test_processor_execute_increment(void);
+
+int nes_test_processor_execute_jump(void);
 
 int nes_test_processor_execute_no_operation(void);
 
@@ -112,11 +120,15 @@ void nes_test_initialize(void);
 void nes_test_uninitialize(void);
 
 static const nes_test TEST[] = {
-        nes_test_processor_execute_break,
+        nes_test_processor_execute_binary,
+        nes_test_processor_execute_bit,
+        nes_test_processor_execute_branch,
+        nes_test_processor_execute_breakpoint,
         nes_test_processor_execute_clear,
         nes_test_processor_execute_decrement,
         nes_test_processor_execute_illegal,
         nes_test_processor_execute_increment,
+        nes_test_processor_execute_jump,
         nes_test_processor_execute_no_operation,
         nes_test_processor_execute_pull,
         nes_test_processor_execute_push,
