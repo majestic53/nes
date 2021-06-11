@@ -35,10 +35,10 @@ $ export CC=<COMPILER>
 $ make <BUILD>
 ```
 
-|Field   |Supported values          |Note                                                        |
+|Field   |Supported values          |Description                                                 |
 |:-------|:-------------------------|:-----------------------------------------------------------|
-|COMPILER|```gcc```                 |                                                            |
-|BUILD   |```release```, ```debug```|If no argument is specified, a release build will be created|
+|COMPILER|```gcc```                 |Specifies the compiler to be used                           |
+|BUILD   |```release```, ```debug```|Specifies the build type (defaults to relaese)              |
 
 #### Examples
 
@@ -54,13 +54,11 @@ Using the Library
 
 This project is implemented in C and exposes a simple API, described in ```include/nes.h```:
 
-#### Routines
-
-|Name       |Description              |Signature                                   |
-|:----------|:------------------------|:-------------------------------------------|
-|nes        |Run emulator             |```int nes(const nes_t *)```                |
-|nes_error  |Retrieve emulator error  |```const char *nes_error(void)```           |
-|nes_version|Retrieve emulator version|```const nes_version_t *nes_version(void)```|
+|Routine    |Signature                                   |Description              |
+|:----------|:-------------------------------------------|:------------------------|
+|nes        |```int nes(const nes_t *)```                |Run emulator             |
+|nes_error  |```const char *nes_error(void)```           |Retrieve emulator error  |
+|nes_version|```const nes_version_t *nes_version(void)```|Retrieve emulator version|
 
 For an example of how to use this interface, see the [launcher tool](https://github.com/majestic53/nes/tree/master/tool) under ```tool/```
 
