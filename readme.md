@@ -40,7 +40,7 @@ $ make [<BUILD>] [LEVLE=<LEVEL>]
 |Field   |Supported values                           |Description                                                                                                  |
 |:-------|:------------------------------------------|:------------------------------------------------------------------------------------------------------------|
 |COMPILER|```gcc```                                  |Specifies the compiler to be used                                                                            |
-|BUILD   |```debug```, ```release```                 |Optionally specifies the build type (__NOTE__: defaults to relaese)                                          |
+|BUILD   |```debug```, ```release```                 |Optionally specifies the build type (__NOTE__: defaults to release)                                          |
 |LEVEL   |```0```, ```1```, ```2```, ```3```, ```4```|Optionally specifies the debug tracing level (__NOTE__: 0=None, 1=Error, 2=Warning, 3=Information, 4=Verbose)|
 
 If the build succeeds, the binary files can be found under ```bin/```

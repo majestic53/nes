@@ -26,7 +26,20 @@ extern "C" {
 #endif /* __cplusplus */
 
 uint8_t
-nes_processor_execute_binary(
+nes_processor_execute_bit(
+        __inout nes_processor_t *processor,
+        __in const nes_processor_instruction_t *instruction
+        )
+{
+        processor->status.negative = processor->fetched.operand.data.negative;
+        processor->status.overflow = processor->fetched.operand.data.overflow;
+        processor->status.zero = !(processor->accumulator.low & processor->fetched.operand.data.low);
+
+        return 0;
+}
+
+uint8_t
+nes_processor_execute_bitwise(
         __inout nes_processor_t *processor,
         __in const nes_processor_instruction_t *instruction
         )
@@ -57,22 +70,6 @@ nes_processor_execute_binary(
         }
 
         return result;
-}
-
-uint8_t
-nes_processor_execute_bit(
-        __inout nes_processor_t *processor,
-        __in const nes_processor_instruction_t *instruction
-        )
-{
-        nes_processor_register_t value = { .low = processor->accumulator.low };
-
-        processor->status.negative = processor->fetched.operand.data.negative;
-        processor->status.overflow = processor->fetched.operand.data.overflow;
-        value.low &= processor->fetched.operand.data.low;
-        processor->status.zero = !value.low;
-
-        return 0;
 }
 
 uint8_t

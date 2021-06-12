@@ -55,9 +55,9 @@ typedef struct {
 extern "C" {
 #endif /* __cplusplus */
 
-int nes_test_processor_execute_binary(void);
-
 int nes_test_processor_execute_bit(void);
+
+int nes_test_processor_execute_bitwise(void);
 
 int nes_test_processor_execute_branch(void);
 
@@ -120,8 +120,8 @@ void nes_test_initialize(void);
 void nes_test_uninitialize(void);
 
 static const nes_test TEST[] = {
-        nes_test_processor_execute_binary,
         nes_test_processor_execute_bit,
+        nes_test_processor_execute_bitwise,
         nes_test_processor_execute_branch,
         nes_test_processor_execute_breakpoint,
         nes_test_processor_execute_clear,
