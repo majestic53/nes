@@ -64,6 +64,165 @@ nes_bus_write(
 }
 
 int
+nes_test_processor_execute_arithmetic(void)
+{
+	int result = NES_OK;
+
+	for(size_t trial = 0; trial < TRIALS; ++trial) {
+
+		if(ASSERT((INSTRUCTION[0x6d].opcode == OPCODE_ADC)
+				&& (INSTRUCTION[0x6d].mode == MODE_ABSOLUTE)
+				&& (INSTRUCTION[0x6d].cycles == 4))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* TODO: ADC ABS */
+
+		if(ASSERT((INSTRUCTION[0x7d].opcode == OPCODE_ADC)
+				&& (INSTRUCTION[0x7d].mode == MODE_ABSOLUTE_X)
+				&& (INSTRUCTION[0x7d].cycles == 4))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* TODO: ADC ABS.X */
+
+		if(ASSERT((INSTRUCTION[0x79].opcode == OPCODE_ADC)
+				&& (INSTRUCTION[0x79].mode == MODE_ABSOLUTE_Y)
+				&& (INSTRUCTION[0x79].cycles == 4))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* TODO: ADC ABS.Y */
+
+		if(ASSERT((INSTRUCTION[0x69].opcode == OPCODE_ADC)
+				&& (INSTRUCTION[0x69].mode == MODE_IMMEDIATE)
+				&& (INSTRUCTION[0x69].cycles == 2))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* TODO: ADC IMM */
+
+		if(ASSERT((INSTRUCTION[0x61].opcode == OPCODE_ADC)
+				&& (INSTRUCTION[0x61].mode == MODE_INDIRECT_X)
+				&& (INSTRUCTION[0x61].cycles == 6))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* TODO: ADC IND,X */
+
+		if(ASSERT((INSTRUCTION[0x71].opcode == OPCODE_ADC)
+				&& (INSTRUCTION[0x71].mode == MODE_INDIRECT_Y)
+				&& (INSTRUCTION[0x71].cycles == 5))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* TODO: ADC IND,Y */
+
+		if(ASSERT((INSTRUCTION[0x65].opcode == OPCODE_ADC)
+				&& (INSTRUCTION[0x65].mode == MODE_ZEROPAGE)
+				&& (INSTRUCTION[0x65].cycles == 3))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* TODO: ADC ZP */
+
+		if(ASSERT((INSTRUCTION[0x75].opcode == OPCODE_ADC)
+				&& (INSTRUCTION[0x75].mode == MODE_ZEROPAGE_X)
+				&& (INSTRUCTION[0x75].cycles == 4))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* TODO: ADC ZP,X */
+
+		if(ASSERT((INSTRUCTION[0xed].opcode == OPCODE_SBC)
+				&& (INSTRUCTION[0xed].mode == MODE_ABSOLUTE)
+				&& (INSTRUCTION[0xed].cycles == 4))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* TODO: SBC ABS */
+
+		if(ASSERT((INSTRUCTION[0xfd].opcode == OPCODE_SBC)
+				&& (INSTRUCTION[0xfd].mode == MODE_ABSOLUTE_X)
+				&& (INSTRUCTION[0xfd].cycles == 4))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* TODO: SBC ABS.X */
+
+		if(ASSERT((INSTRUCTION[0xf9].opcode == OPCODE_SBC)
+				&& (INSTRUCTION[0xf9].mode == MODE_ABSOLUTE_Y)
+				&& (INSTRUCTION[0xf9].cycles == 4))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* TODO: SBC ABS.Y */
+
+		if(ASSERT((INSTRUCTION[0xe9].opcode == OPCODE_SBC)
+				&& (INSTRUCTION[0xe9].mode == MODE_IMMEDIATE)
+				&& (INSTRUCTION[0xe9].cycles == 2))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* TODO: SBC IMM */
+
+		if(ASSERT((INSTRUCTION[0xe1].opcode == OPCODE_SBC)
+				&& (INSTRUCTION[0xe1].mode == MODE_INDIRECT_X)
+				&& (INSTRUCTION[0xe1].cycles == 6))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* TODO: SBC IND,X */
+
+		if(ASSERT((INSTRUCTION[0xf1].opcode == OPCODE_SBC)
+				&& (INSTRUCTION[0xf1].mode == MODE_INDIRECT_Y)
+				&& (INSTRUCTION[0xf1].cycles == 5))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* TODO: SBC IND,Y */
+
+		if(ASSERT((INSTRUCTION[0xe5].opcode == OPCODE_SBC)
+				&& (INSTRUCTION[0xe5].mode == MODE_ZEROPAGE)
+				&& (INSTRUCTION[0xe5].cycles == 3))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* TODO: SBC ZP */
+
+		if(ASSERT((INSTRUCTION[0xf5].opcode == OPCODE_SBC)
+				&& (INSTRUCTION[0xf5].mode == MODE_ZEROPAGE_X)
+				&& (INSTRUCTION[0xf5].cycles == 4))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* TODO: SBC ZP,X */
+
+	}
+
+exit:
+	TEST_TRACE(result);
+
+	return result;
+}
+
+int
 nes_test_processor_execute_bit(void)
 {
 	int result = NES_OK;
@@ -1967,6 +2126,147 @@ exit:
 }
 
 int
+nes_test_processor_execute_compare(void)
+{
+	int result = NES_OK;
+
+	for(size_t trial = 0; trial < TRIALS; ++trial) {
+
+		if(ASSERT((INSTRUCTION[0xcd].opcode == OPCODE_CMP)
+				&& (INSTRUCTION[0xcd].mode == MODE_ABSOLUTE)
+				&& (INSTRUCTION[0xcd].cycles == 4))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* TODO: CMP ABS */
+
+		if(ASSERT((INSTRUCTION[0xdd].opcode == OPCODE_CMP)
+				&& (INSTRUCTION[0xdd].mode == MODE_ABSOLUTE_X)
+				&& (INSTRUCTION[0xdd].cycles == 4))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* TODO: CMP ABS,X */
+
+		if(ASSERT((INSTRUCTION[0xd9].opcode == OPCODE_CMP)
+				&& (INSTRUCTION[0xd9].mode == MODE_ABSOLUTE_Y)
+				&& (INSTRUCTION[0xd9].cycles == 4))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* TODO: CMP ABS,Y */
+
+		if(ASSERT((INSTRUCTION[0xc9].opcode == OPCODE_CMP)
+				&& (INSTRUCTION[0xc9].mode == MODE_IMMEDIATE)
+				&& (INSTRUCTION[0xc9].cycles == 2))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* TODO: CMP IMM */
+
+		if(ASSERT((INSTRUCTION[0xc1].opcode == OPCODE_CMP)
+				&& (INSTRUCTION[0xc1].mode == MODE_INDIRECT_X)
+				&& (INSTRUCTION[0xc1].cycles == 6))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* TODO: CMP IND,X */
+
+		if(ASSERT((INSTRUCTION[0xd1].opcode == OPCODE_CMP)
+				&& (INSTRUCTION[0xd1].mode == MODE_INDIRECT_Y)
+				&& (INSTRUCTION[0xd1].cycles == 5))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* TODO: CMP IND,Y */
+
+		if(ASSERT((INSTRUCTION[0xc5].opcode == OPCODE_CMP)
+				&& (INSTRUCTION[0xc5].mode == MODE_ZEROPAGE)
+				&& (INSTRUCTION[0xc5].cycles == 3))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* TODO: CMP ZP */
+
+		if(ASSERT((INSTRUCTION[0xd5].opcode == OPCODE_CMP)
+				&& (INSTRUCTION[0xd5].mode == MODE_ZEROPAGE_X)
+				&& (INSTRUCTION[0xd5].cycles == 4))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* TODO: CMP ZP,X */
+
+		if(ASSERT((INSTRUCTION[0xec].opcode == OPCODE_CPX)
+				&& (INSTRUCTION[0xec].mode == MODE_ABSOLUTE)
+				&& (INSTRUCTION[0xec].cycles == 4))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* TODO: CPX ABS */
+
+		if(ASSERT((INSTRUCTION[0xe0].opcode == OPCODE_CPX)
+				&& (INSTRUCTION[0xe0].mode == MODE_IMMEDIATE)
+				&& (INSTRUCTION[0xe0].cycles == 2))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* TODO: CPX IMM */
+
+		if(ASSERT((INSTRUCTION[0xe4].opcode == OPCODE_CPX)
+				&& (INSTRUCTION[0xe4].mode == MODE_ZEROPAGE)
+				&& (INSTRUCTION[0xe4].cycles == 3))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* TODO: CPX ZP */
+
+		if(ASSERT((INSTRUCTION[0xcc].opcode == OPCODE_CPY)
+				&& (INSTRUCTION[0xcc].mode == MODE_ABSOLUTE)
+				&& (INSTRUCTION[0xcc].cycles == 4))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* TODO: CPY ABS */
+
+		if(ASSERT((INSTRUCTION[0xc0].opcode == OPCODE_CPY)
+				&& (INSTRUCTION[0xc0].mode == MODE_IMMEDIATE)
+				&& (INSTRUCTION[0xc0].cycles == 2))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* TODO: CPY IMM */
+
+		if(ASSERT((INSTRUCTION[0xc4].opcode == OPCODE_CPY)
+				&& (INSTRUCTION[0xc4].mode == MODE_ZEROPAGE)
+				&& (INSTRUCTION[0xc4].cycles == 3))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* TODO: CPY ZP */
+
+	}
+
+exit:
+	TEST_TRACE(result);
+
+	return result;
+}
+
+int
 nes_test_processor_execute_decrement(void)
 {
 	int result = NES_OK;
@@ -2623,6 +2923,183 @@ exit:
 }
 
 int
+nes_test_processor_execute_load(void)
+{
+	int result = NES_OK;
+
+	for(size_t trial = 0; trial < TRIALS; ++trial) {
+
+		if(ASSERT((INSTRUCTION[0xad].opcode == OPCODE_LDA)
+				&& (INSTRUCTION[0xad].mode == MODE_ABSOLUTE)
+				&& (INSTRUCTION[0xad].cycles == 4))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* TODO: LDA ABS */
+
+		if(ASSERT((INSTRUCTION[0xbd].opcode == OPCODE_LDA)
+				&& (INSTRUCTION[0xbd].mode == MODE_ABSOLUTE_X)
+				&& (INSTRUCTION[0xbd].cycles == 4))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* TODO: LDA ABS,X */
+
+		if(ASSERT((INSTRUCTION[0xb9].opcode == OPCODE_LDA)
+				&& (INSTRUCTION[0xb9].mode == MODE_ABSOLUTE_Y)
+				&& (INSTRUCTION[0xb9].cycles == 4))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* TODO: LDA ABS,Y */
+
+		if(ASSERT((INSTRUCTION[0xa9].opcode == OPCODE_LDA)
+				&& (INSTRUCTION[0xa9].mode == MODE_IMMEDIATE)
+				&& (INSTRUCTION[0xa9].cycles == 2))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* TODO: LDA IMM */
+
+		if(ASSERT((INSTRUCTION[0xa1].opcode == OPCODE_LDA)
+				&& (INSTRUCTION[0xa1].mode == MODE_INDIRECT_X)
+				&& (INSTRUCTION[0xa1].cycles == 6))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* TODO: LDA IND,X */
+
+		if(ASSERT((INSTRUCTION[0xb1].opcode == OPCODE_LDA)
+				&& (INSTRUCTION[0xb1].mode == MODE_INDIRECT_Y)
+				&& (INSTRUCTION[0xb1].cycles == 5))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* TODO: LDA IND,Y */
+
+		if(ASSERT((INSTRUCTION[0xa5].opcode == OPCODE_LDA)
+				&& (INSTRUCTION[0xa5].mode == MODE_ZEROPAGE)
+				&& (INSTRUCTION[0xa5].cycles == 3))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* TODO: LDA ZP */
+
+		if(ASSERT((INSTRUCTION[0xb5].opcode == OPCODE_LDA)
+				&& (INSTRUCTION[0xb5].mode == MODE_ZEROPAGE_X)
+				&& (INSTRUCTION[0xb5].cycles == 4))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* TODO: LDA ZP,X */
+
+		if(ASSERT((INSTRUCTION[0xae].opcode == OPCODE_LDX)
+				&& (INSTRUCTION[0xae].mode == MODE_ABSOLUTE)
+				&& (INSTRUCTION[0xae].cycles == 4))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* TODO: LDX ABS */
+
+		if(ASSERT((INSTRUCTION[0xbe].opcode == OPCODE_LDX)
+				&& (INSTRUCTION[0xbe].mode == MODE_ABSOLUTE_Y)
+				&& (INSTRUCTION[0xbe].cycles == 4))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* TODO: LDX ABS,Y */
+
+		if(ASSERT((INSTRUCTION[0xa2].opcode == OPCODE_LDX)
+				&& (INSTRUCTION[0xa2].mode == MODE_IMMEDIATE)
+				&& (INSTRUCTION[0xa2].cycles == 2))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* TODO: LDX IMM */
+
+		if(ASSERT((INSTRUCTION[0xa6].opcode == OPCODE_LDX)
+				&& (INSTRUCTION[0xa6].mode == MODE_ZEROPAGE)
+				&& (INSTRUCTION[0xa6].cycles == 3))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* TODO: LDX ZP */
+
+		if(ASSERT((INSTRUCTION[0xb6].opcode == OPCODE_LDX)
+				&& (INSTRUCTION[0xb6].mode == MODE_ZEROPAGE_Y)
+				&& (INSTRUCTION[0xb6].cycles == 4))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* TODO: LDX ZP,Y */
+
+		if(ASSERT((INSTRUCTION[0xac].opcode == OPCODE_LDY)
+				&& (INSTRUCTION[0xac].mode == MODE_ABSOLUTE)
+				&& (INSTRUCTION[0xac].cycles == 4))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* TODO: LDY ABS */
+
+		if(ASSERT((INSTRUCTION[0xbc].opcode == OPCODE_LDY)
+				&& (INSTRUCTION[0xbc].mode == MODE_ABSOLUTE_X)
+				&& (INSTRUCTION[0xbc].cycles == 4))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* TODO: LDY ABS,X */
+
+		if(ASSERT((INSTRUCTION[0xa0].opcode == OPCODE_LDY)
+				&& (INSTRUCTION[0xa0].mode == MODE_IMMEDIATE)
+				&& (INSTRUCTION[0xa0].cycles == 2))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* TODO: LDY IMM */
+
+		if(ASSERT((INSTRUCTION[0xa4].opcode == OPCODE_LDY)
+				&& (INSTRUCTION[0xa4].mode == MODE_ZEROPAGE)
+				&& (INSTRUCTION[0xa4].cycles == 3))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* TODO: LDY ZP */
+
+		if(ASSERT((INSTRUCTION[0xb4].opcode == OPCODE_LDY)
+				&& (INSTRUCTION[0xb4].mode == MODE_ZEROPAGE_X)
+				&& (INSTRUCTION[0xb4].cycles == 4))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* TODO: LDY ZP,X */
+
+	}
+
+exit:
+	TEST_TRACE(result);
+
+	return result;
+}
+
+int
 nes_test_processor_execute_no_operation(void)
 {
 	int result = NES_OK;
@@ -2903,6 +3380,110 @@ exit:
 }
 
 int
+nes_test_processor_execute_rotate(void)
+{
+	int result = NES_OK;
+
+	for(size_t trial = 0; trial < TRIALS; ++trial) {
+
+		if(ASSERT((INSTRUCTION[0x2e].opcode == OPCODE_ROL)
+				&& (INSTRUCTION[0x2e].mode == MODE_ABSOLUTE)
+				&& (INSTRUCTION[0x2e].cycles == 6))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* ROL ABS */
+
+		if(ASSERT((INSTRUCTION[0x3e].opcode == OPCODE_ROL)
+				&& (INSTRUCTION[0x3e].mode == MODE_ABSOLUTE_X)
+				&& (INSTRUCTION[0x3e].cycles == 7))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* ROL ABS,X */
+
+		if(ASSERT((INSTRUCTION[0x2a].opcode == OPCODE_ROL)
+				&& (INSTRUCTION[0x2a].mode == MODE_IMPLIED)
+				&& (INSTRUCTION[0x2a].cycles == 2))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* ROL IMP */
+
+		if(ASSERT((INSTRUCTION[0x26].opcode == OPCODE_ROL)
+				&& (INSTRUCTION[0x26].mode == MODE_ZEROPAGE)
+				&& (INSTRUCTION[0x26].cycles == 5))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* ROL ZP */
+
+		if(ASSERT((INSTRUCTION[0x36].opcode == OPCODE_ROL)
+				&& (INSTRUCTION[0x36].mode == MODE_ZEROPAGE_X)
+				&& (INSTRUCTION[0x36].cycles == 6))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* ROL ZP,X */
+
+		if(ASSERT((INSTRUCTION[0x6e].opcode == OPCODE_ROR)
+				&& (INSTRUCTION[0x6e].mode == MODE_ABSOLUTE)
+				&& (INSTRUCTION[0x6e].cycles == 6))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* ROR ABS */
+
+		if(ASSERT((INSTRUCTION[0x7e].opcode == OPCODE_ROR)
+				&& (INSTRUCTION[0x7e].mode == MODE_ABSOLUTE_X)
+				&& (INSTRUCTION[0x7e].cycles == 7))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* ROR ABS,X */
+
+		if(ASSERT((INSTRUCTION[0x6a].opcode == OPCODE_ROR)
+				&& (INSTRUCTION[0x6a].mode == MODE_IMPLIED)
+				&& (INSTRUCTION[0x6a].cycles == 2))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* ROR IMP */
+
+		if(ASSERT((INSTRUCTION[0x66].opcode == OPCODE_ROR)
+				&& (INSTRUCTION[0x66].mode == MODE_ZEROPAGE)
+				&& (INSTRUCTION[0x66].cycles == 5))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* ROR ZP */
+
+		if(ASSERT((INSTRUCTION[0x76].opcode == OPCODE_ROR)
+				&& (INSTRUCTION[0x76].mode == MODE_ZEROPAGE_X)
+				&& (INSTRUCTION[0x76].cycles == 6))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* ROR ZP,X */
+	}
+
+exit:
+	TEST_TRACE(result);
+
+	return result;
+}
+
+int
 nes_test_processor_execute_set(void)
 {
 	int result = NES_OK;
@@ -3068,6 +3649,241 @@ nes_test_processor_execute_set(void)
 			result = NES_ERR;
 			goto exit;
 		}
+	}
+
+exit:
+	TEST_TRACE(result);
+
+	return result;
+}
+
+int
+nes_test_processor_execute_shift(void)
+{
+	int result = NES_OK;
+
+	for(size_t trial = 0; trial < TRIALS; ++trial) {
+
+		if(ASSERT((INSTRUCTION[0x0e].opcode == OPCODE_ASL)
+				&& (INSTRUCTION[0x0e].mode == MODE_ABSOLUTE)
+				&& (INSTRUCTION[0x0e].cycles == 6))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* ASL ABS */
+
+		if(ASSERT((INSTRUCTION[0x1e].opcode == OPCODE_ASL)
+				&& (INSTRUCTION[0x1e].mode == MODE_ABSOLUTE_X)
+				&& (INSTRUCTION[0x1e].cycles == 7))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* ASL ABS,X */
+
+		if(ASSERT((INSTRUCTION[0x0a].opcode == OPCODE_ASL)
+				&& (INSTRUCTION[0x0a].mode == MODE_IMPLIED)
+				&& (INSTRUCTION[0x0a].cycles == 2))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* ASL IMP */
+
+		if(ASSERT((INSTRUCTION[0x06].opcode == OPCODE_ASL)
+				&& (INSTRUCTION[0x06].mode == MODE_ZEROPAGE)
+				&& (INSTRUCTION[0x06].cycles == 5))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* ASL ZP */
+
+		if(ASSERT((INSTRUCTION[0x16].opcode == OPCODE_ASL)
+				&& (INSTRUCTION[0x16].mode == MODE_ZEROPAGE_X)
+				&& (INSTRUCTION[0x16].cycles == 6))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* ASL ZP,X */
+
+		if(ASSERT((INSTRUCTION[0x4e].opcode == OPCODE_LSR)
+				&& (INSTRUCTION[0x4e].mode == MODE_ABSOLUTE)
+				&& (INSTRUCTION[0x4e].cycles == 6))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* LSR ABS */
+
+		if(ASSERT((INSTRUCTION[0x5e].opcode == OPCODE_LSR)
+				&& (INSTRUCTION[0x5e].mode == MODE_ABSOLUTE_X)
+				&& (INSTRUCTION[0x5e].cycles == 7))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* LSR ABS,X */
+
+		if(ASSERT((INSTRUCTION[0x4a].opcode == OPCODE_LSR)
+				&& (INSTRUCTION[0x4a].mode == MODE_IMPLIED)
+				&& (INSTRUCTION[0x4a].cycles == 2))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* LSR IMP */
+
+		if(ASSERT((INSTRUCTION[0x46].opcode == OPCODE_LSR)
+				&& (INSTRUCTION[0x46].mode == MODE_ZEROPAGE)
+				&& (INSTRUCTION[0x46].cycles == 5))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* LSR ZP */
+
+		if(ASSERT((INSTRUCTION[0x56].opcode == OPCODE_LSR)
+				&& (INSTRUCTION[0x56].mode == MODE_ZEROPAGE_X)
+				&& (INSTRUCTION[0x56].cycles == 6))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* LSR ZP,X */
+	}
+
+exit:
+	TEST_TRACE(result);
+
+	return result;
+}
+
+int
+nes_test_processor_execute_store(void)
+{
+	int result = NES_OK;
+
+	for(size_t trial = 0; trial < TRIALS; ++trial) {
+
+		if(ASSERT((INSTRUCTION[0x8d].opcode == OPCODE_STA)
+				&& (INSTRUCTION[0x8d].mode == MODE_ABSOLUTE)
+				&& (INSTRUCTION[0x8d].cycles == 4))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* STA ABS */
+
+		if(ASSERT((INSTRUCTION[0x9d].opcode == OPCODE_STA)
+				&& (INSTRUCTION[0x9d].mode == MODE_ABSOLUTE_X)
+				&& (INSTRUCTION[0x9d].cycles == 5))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* STA ABS,X */
+
+		if(ASSERT((INSTRUCTION[0x99].opcode == OPCODE_STA)
+				&& (INSTRUCTION[0x99].mode == MODE_ABSOLUTE_Y)
+				&& (INSTRUCTION[0x99].cycles == 5))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* STA ABS,Y */
+
+		if(ASSERT((INSTRUCTION[0x81].opcode == OPCODE_STA)
+				&& (INSTRUCTION[0x81].mode == MODE_INDIRECT_X)
+				&& (INSTRUCTION[0x81].cycles == 6))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* STA IND,X */
+
+		if(ASSERT((INSTRUCTION[0x91].opcode == OPCODE_STA)
+				&& (INSTRUCTION[0x91].mode == MODE_INDIRECT_Y)
+				&& (INSTRUCTION[0x91].cycles == 6))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* STA IND,Y */
+
+		if(ASSERT((INSTRUCTION[0x85].opcode == OPCODE_STA)
+				&& (INSTRUCTION[0x85].mode == MODE_ZEROPAGE)
+				&& (INSTRUCTION[0x85].cycles == 3))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* STA ZP */
+
+		if(ASSERT((INSTRUCTION[0x95].opcode == OPCODE_STA)
+				&& (INSTRUCTION[0x95].mode == MODE_ZEROPAGE_X)
+				&& (INSTRUCTION[0x95].cycles == 4))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* STA ZP,X */
+
+		if(ASSERT((INSTRUCTION[0x8e].opcode == OPCODE_STX)
+				&& (INSTRUCTION[0x8e].mode == MODE_ABSOLUTE)
+				&& (INSTRUCTION[0x8e].cycles == 4))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* STX ABS */
+
+		if(ASSERT((INSTRUCTION[0x86].opcode == OPCODE_STX)
+				&& (INSTRUCTION[0x86].mode == MODE_ZEROPAGE)
+				&& (INSTRUCTION[0x86].cycles == 3))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* STX ZP */
+
+		if(ASSERT((INSTRUCTION[0x96].opcode == OPCODE_STX)
+				&& (INSTRUCTION[0x96].mode == MODE_ZEROPAGE_Y)
+				&& (INSTRUCTION[0x96].cycles == 4))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* STX ZP,Y */
+
+		if(ASSERT((INSTRUCTION[0x8c].opcode == OPCODE_STY)
+				&& (INSTRUCTION[0x8c].mode == MODE_ABSOLUTE)
+				&& (INSTRUCTION[0x8c].cycles == 4))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* STY ABS */
+
+		if(ASSERT((INSTRUCTION[0x84].opcode == OPCODE_STY)
+				&& (INSTRUCTION[0x84].mode == MODE_ZEROPAGE)
+				&& (INSTRUCTION[0x84].cycles == 3))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* STY ZP */
+
+		if(ASSERT((INSTRUCTION[0x94].opcode == OPCODE_STY)
+				&& (INSTRUCTION[0x94].mode == MODE_ZEROPAGE_X)
+				&& (INSTRUCTION[0x94].cycles == 4))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		/* STY ZP,X */
 	}
 
 exit:
@@ -3958,10 +4774,6 @@ main(
 
 		if(TEST[test]() != NES_OK) {
 			result = NES_ERR;
-
-/* TODO */
-break;
-/* --- */
 		}
 	}
 

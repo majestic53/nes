@@ -55,6 +55,8 @@ typedef struct {
 extern "C" {
 #endif /* __cplusplus */
 
+int nes_test_processor_execute_arithmetic(void);
+
 int nes_test_processor_execute_bit(void);
 
 int nes_test_processor_execute_bitwise(void);
@@ -65,6 +67,8 @@ int nes_test_processor_execute_breakpoint(void);
 
 int nes_test_processor_execute_clear(void);
 
+int nes_test_processor_execute_compare(void);
+
 int nes_test_processor_execute_decrement(void);
 
 int nes_test_processor_execute_illegal(void);
@@ -72,6 +76,8 @@ int nes_test_processor_execute_illegal(void);
 int nes_test_processor_execute_increment(void);
 
 int nes_test_processor_execute_jump(void);
+
+int nes_test_processor_execute_load(void);
 
 int nes_test_processor_execute_no_operation(void);
 
@@ -81,7 +87,13 @@ int nes_test_processor_execute_push(void);
 
 int nes_test_processor_execute_return(void);
 
+int nes_test_processor_execute_rotate(void);
+
 int nes_test_processor_execute_set(void);
+
+int nes_test_processor_execute_shift(void);
+
+int nes_test_processor_execute_store(void);
 
 int nes_test_processor_execute_transfer(void);
 
@@ -120,20 +132,26 @@ void nes_test_initialize(void);
 void nes_test_uninitialize(void);
 
 static const nes_test TEST[] = {
+        nes_test_processor_execute_arithmetic,
         nes_test_processor_execute_bit,
         nes_test_processor_execute_bitwise,
         nes_test_processor_execute_branch,
         nes_test_processor_execute_breakpoint,
         nes_test_processor_execute_clear,
+        nes_test_processor_execute_compare,
         nes_test_processor_execute_decrement,
         nes_test_processor_execute_illegal,
         nes_test_processor_execute_increment,
         nes_test_processor_execute_jump,
+        nes_test_processor_execute_load,
         nes_test_processor_execute_no_operation,
         nes_test_processor_execute_pull,
         nes_test_processor_execute_push,
         nes_test_processor_execute_return,
+        nes_test_processor_execute_rotate,
         nes_test_processor_execute_set,
+        nes_test_processor_execute_shift,
+        nes_test_processor_execute_store,
         nes_test_processor_execute_transfer,
         nes_test_processor_fetch_absolute,
         nes_test_processor_fetch_absolute_x,

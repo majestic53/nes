@@ -26,6 +26,19 @@ extern "C" {
 #endif /* __cplusplus */
 
 uint8_t
+nes_processor_execute_arithmetic(
+        __inout nes_processor_t *processor,
+        __in const nes_processor_instruction_t *instruction
+        )
+{
+        uint8_t result = 0;
+
+        /* TODO: ADC/SBC */
+
+        return result;
+}
+
+uint8_t
 nes_processor_execute_bit(
         __inout nes_processor_t *processor,
         __in const nes_processor_instruction_t *instruction
@@ -173,6 +186,19 @@ nes_processor_execute_clear(
 }
 
 uint8_t
+nes_processor_execute_compare(
+        __inout nes_processor_t *processor,
+        __in const nes_processor_instruction_t *instruction
+        )
+{
+        uint8_t result = 0;
+
+        /* TODO: CMP/CPX/CPY */
+
+        return result;
+}
+
+uint8_t
 nes_processor_execute_decrement(
         __inout nes_processor_t *processor,
         __in const nes_processor_instruction_t *instruction
@@ -273,6 +299,19 @@ nes_processor_execute_jump(
 }
 
 uint8_t
+nes_processor_execute_load(
+        __inout nes_processor_t *processor,
+        __in const nes_processor_instruction_t *instruction
+        )
+{
+        uint8_t result = 0;
+
+        /* TODO: LDA/LDX/LDY */
+
+        return result;
+}
+
+uint8_t
 nes_processor_execute_no_operation(
         __inout nes_processor_t *processor,
         __in const nes_processor_instruction_t *instruction
@@ -363,6 +402,19 @@ nes_processor_execute_return(
 }
 
 uint8_t
+nes_processor_execute_rotate(
+        __inout nes_processor_t *processor,
+        __in const nes_processor_instruction_t *instruction
+        )
+{
+        uint8_t result = 0;
+
+        /* TODO: ROL/ROR */
+
+        return result;
+}
+
+uint8_t
 nes_processor_execute_set(
         __inout nes_processor_t *processor,
         __in const nes_processor_instruction_t *instruction
@@ -386,6 +438,32 @@ nes_processor_execute_set(
         }
 
         return 0;
+}
+
+uint8_t
+nes_processor_execute_shift(
+        __inout nes_processor_t *processor,
+        __in const nes_processor_instruction_t *instruction
+        )
+{
+        uint8_t result = 0;
+
+        /* TODO: ASL/LSR */
+
+        return result;
+}
+
+uint8_t
+nes_processor_execute_store(
+        __inout nes_processor_t *processor,
+        __in const nes_processor_instruction_t *instruction
+        )
+{
+        uint8_t result = 0;
+
+        /* TODO: STA/STX/STY */
+
+        return result;
 }
 
 uint8_t
