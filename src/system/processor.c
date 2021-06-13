@@ -33,7 +33,27 @@ nes_processor_execute_arithmetic(
 {
         uint8_t result = 0;
 
-        /* TODO: ADC/SBC */
+        switch(instruction->opcode) {
+                case OPCODE_ADC:
+                        break;
+                case OPCODE_SBC:
+                        processor->fetched.operand.data.low = ~processor->fetched.operand.data.low;
+                        break;
+                default:
+                        TRACE(LEVEL_WARNING, "Invalid arithmetic instruction: [%04X] %02X (%i)", processor->fetched.address.word, processor->fetched.opcode,
+                                instruction->opcode);
+                        break;
+        }
+
+        /* TODO: PERFORM ADDITION INTO ACCUMULATOR AND SET STATUS FLAGS
+        processor->status.carry = ;
+        precessor->status.negative = processor->accumulator.negative;
+        precessor->status.overflow = ;
+        precessor->status.zero = !processor->accumulator.low;*/
+
+        if(processor->fetched.operand.page_boundary) {
+                ++result;
+        }
 
         return result;
 }
@@ -192,8 +212,32 @@ nes_processor_execute_compare(
         )
 {
         uint8_t result = 0;
+        nes_processor_register_t value = {};
 
-        /* TODO: CMP/CPX/CPY */
+        switch(instruction->opcode) {
+                case OPCODE_CMP:
+                        value.low = processor->accumulator.low;
+                        break;
+                case OPCODE_CPX:
+                        value.low = processor->index_x.low;
+                        break;
+                case OPCODE_CPY:
+                        value.low = processor->index_y.low;
+                        break;
+                default:
+                        TRACE(LEVEL_WARNING, "Invalid compare instruction: [%04X] %02X (%i)", processor->fetched.address.word, processor->fetched.opcode,
+                                instruction->opcode);
+                        break;
+        }
+
+        processor->status.carry = (value.low >= processor->fetched.operand.data.low);
+        processor->status.zero = (value.low == processor->fetched.operand.data.low);
+        value.low -= processor->fetched.operand.data.low;
+        processor->status.negative = value.negative;
+
+        if(processor->fetched.operand.page_boundary) {
+                ++result;
+        }
 
         return result;
 }
@@ -306,7 +350,28 @@ nes_processor_execute_load(
 {
         uint8_t result = 0;
 
-        /* TODO: LDA/LDX/LDY */
+        switch(instruction->opcode) {
+                case OPCODE_LDA:
+                        processor->accumulator.low = processor->fetched.operand.data.low;
+                        break;
+                case OPCODE_LDX:
+                        processor->index_x.low = processor->fetched.operand.data.low;
+                        break;
+                case OPCODE_LDY:
+                        processor->index_y.low = processor->fetched.operand.data.low;
+                        break;
+                default:
+                        TRACE(LEVEL_WARNING, "Invalid load instruction: [%04X] %02X (%i)", processor->fetched.address.word, processor->fetched.opcode,
+                                instruction->opcode);
+                        break;
+        }
+
+        processor->status.negative = processor->fetched.operand.data.negative;
+        processor->status.zero = !processor->fetched.operand.data.low;
+
+        if(processor->fetched.operand.page_boundary) {
+                ++result;
+        }
 
         return result;
 }
@@ -408,8 +473,34 @@ nes_processor_execute_rotate(
         )
 {
         uint8_t result = 0;
+        bool carry = processor->status.carry;
+        nes_processor_register_t value = { .low = processor->fetched.operand.data.low };
 
-        /* TODO: ROL/ROR */
+        switch(instruction->opcode) {
+                case OPCODE_ROL:
+                        processor->status.carry = value.negative;
+                        value.low <<= 1;
+                        value.carry = carry;
+                        break;
+                case OPCODE_ROR:
+                        processor->status.carry = value.carry;
+                        value.low >>= 1;
+                        value.negative = carry;
+                        break;
+                default:
+                        TRACE(LEVEL_WARNING, "Invalid rotate instruction: [%04X] %02X (%i)", processor->fetched.address.word, processor->fetched.opcode,
+                                instruction->opcode);
+                        break;
+        }
+
+        processor->status.negative = value.negative;
+        processor->status.zero = !value.low;
+
+        if(instruction->mode != MODE_IMPLIED) {
+                nes_processor_write(processor, processor->fetched.operand.address.word, value.low);
+        } else {
+                processor->accumulator.low = value.low;
+        }
 
         return result;
 }
@@ -447,8 +538,31 @@ nes_processor_execute_shift(
         )
 {
         uint8_t result = 0;
+        nes_processor_register_t value = { .low = processor->fetched.operand.data.low };
 
-        /* TODO: ASL/LSR */
+        switch(instruction->opcode) {
+                case OPCODE_ASL:
+                        processor->status.carry = value.negative;
+                        value.low <<= 1;
+                        break;
+                case OPCODE_LSR:
+                        processor->status.carry = value.carry;
+                        value.low >>= 1;
+                        break;
+                default:
+                        TRACE(LEVEL_WARNING, "Invalid shift instruction: [%04X] %02X (%i)", processor->fetched.address.word, processor->fetched.opcode,
+                                instruction->opcode);
+                        break;
+        }
+
+        processor->status.negative = value.negative;
+        processor->status.zero = !value.low;
+
+        if(instruction->mode != MODE_IMPLIED) {
+                nes_processor_write(processor, processor->fetched.operand.address.word, value.low);
+        } else {
+                processor->accumulator.low = value.low;
+        }
 
         return result;
 }
@@ -461,7 +575,21 @@ nes_processor_execute_store(
 {
         uint8_t result = 0;
 
-        /* TODO: STA/STX/STY */
+        switch(instruction->opcode) {
+                case OPCODE_STA:
+                        nes_processor_write(processor, processor->fetched.operand.address.word, processor->accumulator.low);
+                        break;
+                case OPCODE_STX:
+                        nes_processor_write(processor, processor->fetched.operand.address.word, processor->index_x.low);
+                        break;
+                case OPCODE_STY:
+                        nes_processor_write(processor, processor->fetched.operand.address.word, processor->index_y.low);
+                        break;
+                default:
+                        TRACE(LEVEL_WARNING, "Invalid store instruction: [%04X] %02X (%i)", processor->fetched.address.word, processor->fetched.opcode,
+                                instruction->opcode);
+                        break;
+        }
 
         return result;
 }
