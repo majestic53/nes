@@ -25,30 +25,49 @@
 #include <stddef.h>
 #include <stdint.h>
 
+/**
+ * NES API versions
+ */
 #define NES_API_VERSION_1 1
+
+/**
+ * NES API current version
+ */
 #define NES_API_VERSION NES_API_VERSION_1
 
+/**
+ * NES error enum
+ */
 enum {
-	NES_EVT = -1,
-	NES_OK,
-	NES_ERR,
+	NES_EVT = -1, /* Internal event */
+	NES_OK, /* Success */
+	NES_ERR, /* Failure */
 };
 
+/**
+ * NES buffer struct
+ */
 typedef struct {
-	uint8_t *data;
-	size_t length;
+	uint8_t *data; /* Pointer to data */
+	size_t length; /* Data length in bytes */
 } nes_buffer_t;
 
+/**
+ * NES version struct
+ */
 typedef struct {
-	int major;
-	int minor;
-	int patch;
+	int major; /* Major number */
+	int minor; /* Minor number */
+	int patch; /* Patch number */
 } nes_version_t;
 
+/**
+ * NES configuration struct
+ */
 typedef struct {
 #if NES_API_VERSION >= NES_API_VERSION_1
-	const char *path;
-	nes_buffer_t rom;
+	const char *path; /* ROM path */
+	nes_buffer_t rom; /* ROM data */
 #endif /* NES_API_VERSION >= NES_API_VERSION_1 */
 } nes_t;
 
@@ -56,10 +75,23 @@ typedef struct {
 extern "C" {
 #endif /* __cplusplus */
 
+/**
+ * Run NES emulator
+ * @param[in] Pointer to configuration struct
+ * @return NES_OK on success, NES_ERR otherwise
+ */
 int nes(const nes_t *);
 
+/**
+ * Retrieve NES emulator error
+ * @return Pointer to error string
+ */
 const char *nes_error(void);
 
+/**
+ * Retrieve NES emulator version
+ * @return Pointer to version struct
+ */
 const nes_version_t *nes_version(void);
 
 #ifdef __cplusplus

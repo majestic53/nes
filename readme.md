@@ -25,6 +25,7 @@ __NOTE__: This project is tested under GNU/Linux, using the GCC C compiler. Some
 The following libraries are required to build this project:
 
 ```
+libreadline
 libsdl2
 ```
 

@@ -217,7 +217,7 @@ nes_test_processor_execute_arithmetic(void)
 	}
 
 exit:
-	TEST_TRACE(result);
+	TRACE_RESULT(result);
 
 	return result;
 }
@@ -309,7 +309,7 @@ nes_test_processor_execute_bit(void)
 	}
 
 exit:
-	TEST_TRACE(result);
+	TRACE_RESULT(result);
 
 	return result;
 }
@@ -1287,7 +1287,7 @@ nes_test_processor_execute_bitwise(void)
 	}
 
 exit:
-	TEST_TRACE(result);
+	TRACE_RESULT(result);
 
 	return result;
 }
@@ -1823,7 +1823,7 @@ nes_test_processor_execute_branch(void)
 	}
 
 exit:
-	TEST_TRACE(result);
+	TRACE_RESULT(result);
 
 	return result;
 }
@@ -1893,7 +1893,7 @@ nes_test_processor_execute_breakpoint(void)
 	}
 
 exit:
-	TEST_TRACE(result);
+	TRACE_RESULT(result);
 
 	return result;
 }
@@ -2120,7 +2120,7 @@ nes_test_processor_execute_clear(void)
 	}
 
 exit:
-	TEST_TRACE(result);
+	TRACE_RESULT(result);
 
 	return result;
 }
@@ -2261,7 +2261,7 @@ nes_test_processor_execute_compare(void)
 	}
 
 exit:
-	TEST_TRACE(result);
+	TRACE_RESULT(result);
 
 	return result;
 }
@@ -2497,7 +2497,7 @@ nes_test_processor_execute_decrement(void)
 	}
 
 exit:
-	TEST_TRACE(result);
+	TRACE_RESULT(result);
 
 	return result;
 }
@@ -2545,7 +2545,7 @@ nes_test_processor_execute_illegal(void)
 	}
 
 exit:
-	TEST_TRACE(result);
+	TRACE_RESULT(result);
 
 	return result;
 }
@@ -2781,7 +2781,7 @@ nes_test_processor_execute_increment(void)
 	}
 
 exit:
-	TEST_TRACE(result);
+	TRACE_RESULT(result);
 
 	return result;
 }
@@ -2917,7 +2917,7 @@ nes_test_processor_execute_jump(void)
 	}
 
 exit:
-	TEST_TRACE(result);
+	TRACE_RESULT(result);
 
 	return result;
 }
@@ -3094,7 +3094,7 @@ nes_test_processor_execute_load(void)
 	}
 
 exit:
-	TEST_TRACE(result);
+	TRACE_RESULT(result);
 
 	return result;
 }
@@ -3138,7 +3138,7 @@ nes_test_processor_execute_no_operation(void)
 	}
 
 exit:
-	TEST_TRACE(result);
+	TRACE_RESULT(result);
 
 	return result;
 }
@@ -3218,7 +3218,7 @@ nes_test_processor_execute_pull(void)
 	}
 
 exit:
-	TEST_TRACE(result);
+	TRACE_RESULT(result);
 
 	return result;
 }
@@ -3296,7 +3296,7 @@ nes_test_processor_execute_push(void)
 	}
 
 exit:
-	TEST_TRACE(result);
+	TRACE_RESULT(result);
 
 	return result;
 }
@@ -3374,7 +3374,7 @@ nes_test_processor_execute_return(void)
 	}
 
 exit:
-	TEST_TRACE(result);
+	TRACE_RESULT(result);
 
 	return result;
 }
@@ -3478,7 +3478,7 @@ nes_test_processor_execute_rotate(void)
 	}
 
 exit:
-	TEST_TRACE(result);
+	TRACE_RESULT(result);
 
 	return result;
 }
@@ -3652,7 +3652,7 @@ nes_test_processor_execute_set(void)
 	}
 
 exit:
-	TEST_TRACE(result);
+	TRACE_RESULT(result);
 
 	return result;
 }
@@ -3756,7 +3756,7 @@ nes_test_processor_execute_shift(void)
 	}
 
 exit:
-	TEST_TRACE(result);
+	TRACE_RESULT(result);
 
 	return result;
 }
@@ -3887,7 +3887,7 @@ nes_test_processor_execute_store(void)
 	}
 
 exit:
-	TEST_TRACE(result);
+	TRACE_RESULT(result);
 
 	return result;
 }
@@ -4097,7 +4097,7 @@ nes_test_processor_execute_transfer(void)
 	}
 
 exit:
-	TEST_TRACE(result);
+	TRACE_RESULT(result);
 
 	return result;
 }
@@ -4127,7 +4127,7 @@ nes_test_processor_fetch_absolute(void)
 	}
 
 exit:
-	TEST_TRACE(result);
+	TRACE_RESULT(result);
 
 	return result;
 }
@@ -4178,7 +4178,7 @@ nes_test_processor_fetch_absolute_x(void)
 	}
 
 exit:
-	TEST_TRACE(result);
+	TRACE_RESULT(result);
 
 	return result;
 }
@@ -4229,7 +4229,7 @@ nes_test_processor_fetch_absolute_y(void)
 	}
 
 exit:
-	TEST_TRACE(result);
+	TRACE_RESULT(result);
 
 	return result;
 }
@@ -4258,7 +4258,7 @@ nes_test_processor_fetch_immediate(void)
 	}
 
 exit:
-	TEST_TRACE(result);
+	TRACE_RESULT(result);
 
 	return result;
 }
@@ -4287,7 +4287,7 @@ nes_test_processor_fetch_implied(void)
 	}
 
 exit:
-	TEST_TRACE(result);
+	TRACE_RESULT(result);
 
 	return result;
 }
@@ -4335,7 +4335,7 @@ nes_test_processor_fetch_indirect(void)
 	}
 
 exit:
-	TEST_TRACE(result);
+	TRACE_RESULT(result);
 
 	return result;
 }
@@ -4370,7 +4370,7 @@ nes_test_processor_fetch_indirect_x(void)
 	}
 
 exit:
-	TEST_TRACE(result);
+	TRACE_RESULT(result);
 
 	return result;
 }
@@ -4426,7 +4426,7 @@ nes_test_processor_fetch_indirect_y(void)
 	}
 
 exit:
-	TEST_TRACE(result);
+	TRACE_RESULT(result);
 
 	return result;
 }
@@ -4470,7 +4470,7 @@ nes_test_processor_fetch_relative(void)
 	}
 
 exit:
-	TEST_TRACE(result);
+	TRACE_RESULT(result);
 
 	return result;
 }
@@ -4500,7 +4500,7 @@ nes_test_processor_fetch_zeropage(void)
 	}
 
 exit:
-	TEST_TRACE(result);
+	TRACE_RESULT(result);
 
 	return result;
 }
@@ -4532,7 +4532,7 @@ nes_test_processor_fetch_zeropage_x(void)
 	}
 
 exit:
-	TEST_TRACE(result);
+	TRACE_RESULT(result);
 
 	return result;
 }
@@ -4564,7 +4564,7 @@ nes_test_processor_fetch_zeropage_y(void)
 	}
 
 exit:
-	TEST_TRACE(result);
+	TRACE_RESULT(result);
 
 	return result;
 }
@@ -4637,7 +4637,7 @@ nes_test_processor_interrupt_maskable(void)
 	}
 
 exit:
-	TEST_TRACE(result);
+	TRACE_RESULT(result);
 
 	return result;
 }
@@ -4714,7 +4714,7 @@ nes_test_processor_interrupt_non_maskable(void)
 	}
 
 exit:
-	TEST_TRACE(result);
+	TRACE_RESULT(result);
 
 	return result;
 }
@@ -4744,7 +4744,7 @@ nes_test_processor_reset(void)
 	}
 
 exit:
-	TEST_TRACE(result);
+	TRACE_RESULT(result);
 
 	return result;
 }
@@ -4762,9 +4762,16 @@ main(
 	__in char *argv[]
 	)
 {
-	int result;
+	int result, seed;
 
-	srand(time(NULL));
+	if(argc > 1) {
+		seed = strtol(argv[1], NULL, 16);
+	} else {
+		seed = time(NULL);
+	}
+
+	srand(seed);
+	TRACE_SEED(seed);
 
 	if((result = nes_buffer_allocate(&g_test.memory, UINT16_MAX + 1)) != NES_OK) {
 		goto exit;

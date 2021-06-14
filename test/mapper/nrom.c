@@ -98,7 +98,7 @@ nes_test_mapper_nrom_load(void)
 	}
 
 exit:
-	TEST_TRACE(result);
+	TRACE_RESULT(result);
 
 	return result;
 }
@@ -142,7 +142,7 @@ nes_test_mapper_nrom_read_ram(void)
 	}
 
 exit:
-	TEST_TRACE(result);
+	TRACE_RESULT(result);
 
 	return result;
 }
@@ -242,7 +242,7 @@ nes_test_mapper_nrom_read_rom(void)
 	}
 
 exit:
-	TEST_TRACE(result);
+	TRACE_RESULT(result);
 
 	return result;
 }
@@ -285,7 +285,7 @@ nes_test_mapper_nrom_write_ram(void)
 	}
 
 exit:
-	TEST_TRACE(result);
+	TRACE_RESULT(result);
 
 	return result;
 }
@@ -385,7 +385,7 @@ nes_test_mapper_nrom_write_rom(void)
 	}
 
 exit:
-	TEST_TRACE(result);
+	TRACE_RESULT(result);
 
 	return result;
 }
@@ -410,9 +410,16 @@ main(
 	__in char *argv[]
 	)
 {
-	int result = NES_OK;
+	int result = NES_OK, seed;
 
-	srand(time(NULL));
+	if(argc > 1) {
+		seed = strtol(argv[1], NULL, 16);
+	} else {
+		seed = time(NULL);
+	}
+
+	srand(seed);
+	TRACE_SEED(seed);
 
 	for(size_t test = 0; test < TEST_COUNT(TEST); ++test) {
 

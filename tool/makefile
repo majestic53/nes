@@ -25,7 +25,7 @@ DIR_BUILD=../build/
 DIR_ROOT=./
 
 FLAGS=-std=c11 -Wall -Werror
-FLAGS_LIB=-lSDL2 -lSDL2main
+FLAGS_LIB=-lreadline -lSDL2 -lSDL2main
 
 LIB=libnes.a
 

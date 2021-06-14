@@ -46,9 +46,12 @@ static const char *LEVEL_COL[] = {
 #define TEST_COUNT(_TESTS_) \
 	sizeof(_TESTS_) / sizeof(*(_TESTS_))
 
-#define TEST_TRACE(_RESULT_) \
+#define TRACE_RESULT(_RESULT_) \
 	fprintf(((_RESULT_) != NES_OK) ? stderr : stdout, "[%s%s%s] %s\n", LEVEL_COLOR(((_RESULT_) != NES_OK) ? LEVEL_ERROR : LEVEL_INFORMATION), \
 		((_RESULT_) != NES_OK) ? "FAIL" : "PASS", LEVEL_COLOR(LEVEL_MAX), __FUNCTION__)
+
+#define TRACE_SEED(_SEED_) \
+        fprintf(stdout, "[%sSEED%s] %x\n", LEVEL_COLOR(LEVEL_INFORMATION), LEVEL_COLOR(LEVEL_MAX), _SEED_)
 
 typedef int (*nes_test)(void);
 
