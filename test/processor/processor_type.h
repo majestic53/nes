@@ -127,6 +127,8 @@ int nes_test_processor_interrupt_non_maskable(void);
 
 int nes_test_processor_reset(void);
 
+int nes_test_processor_transfer(void);
+
 void nes_test_initialize(void);
 
 void nes_test_uninitialize(void);
@@ -168,6 +170,7 @@ static const nes_test TEST[] = {
         nes_test_processor_interrupt_maskable,
         nes_test_processor_interrupt_non_maskable,
 	nes_test_processor_reset,
+        nes_test_processor_transfer,
 	};
 
 #ifdef __cplusplus

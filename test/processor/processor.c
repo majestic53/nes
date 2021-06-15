@@ -320,10 +320,8 @@ nes_test_processor_execute_bitwise(void)
 	int result = NES_OK;
 
 	for(size_t trial = 0; trial < TRIALS; ++trial) {
-		nes_processor_register_t accumulator = {}, address = { .word = (rand() % 0x2000) + 512 },
-			address_absolute = { .word = (rand() % 0x2000) + 0x4000 + 512 },
-			address_indirect = { .word = (rand() % 0x2000) + 0x2000 + 512 },
-			address_offset = {}, data = {}, index = {}, status = {};
+		nes_processor_register_t accumulator = {}, address = { .word = (rand() % 0x2000) + 512 }, address_absolute = { .word = (rand() % 0x2000) + 0x4000 + 512 },
+			address_indirect = { .word = (rand() % 0x2000) + 0x2000 + 512 }, address_offset = {}, data = {}, index = {}, status = {};
 
 		if(ASSERT((INSTRUCTION[0x2d].opcode == OPCODE_AND)
 				&& (INSTRUCTION[0x2d].mode == MODE_ABSOLUTE)
@@ -2131,10 +2129,8 @@ nes_test_processor_execute_compare(void)
 	int result = NES_OK;
 
 	for(size_t trial = 0; trial < TRIALS; ++trial) {
-		nes_processor_register_t accumulator = {}, address = { .word = (rand() % 0x2000) + 512 },
-			address_absolute = { .word = (rand() % 0x2000) + 0x4000 + 512 },
-			address_indirect = { .word = (rand() % 0x2000) + 0x2000 + 512 },
-			address_offset = {}, data = {}, index = {}, status = {};
+		nes_processor_register_t accumulator = {}, address = { .word = (rand() % 0x2000) + 512 }, address_absolute = { .word = (rand() % 0x2000) + 0x4000 + 512 },
+			address_indirect = { .word = (rand() % 0x2000) + 0x2000 + 512 }, address_offset = {}, data = {}, index = {}, status = {};
 
 		if(ASSERT((INSTRUCTION[0xcd].opcode == OPCODE_CMP)
 				&& (INSTRUCTION[0xcd].mode == MODE_ABSOLUTE)
@@ -3365,10 +3361,8 @@ nes_test_processor_execute_load(void)
 	int result = NES_OK;
 
 	for(size_t trial = 0; trial < TRIALS; ++trial) {
-		nes_processor_register_t address = { .word = (rand() % 0x2000) + 512 },
-			address_absolute = { .word = (rand() % 0x2000) + 0x4000 + 512 },
-			address_indirect = { .word = (rand() % 0x2000) + 0x2000 + 512 },
-			address_offset = {}, data = {}, index = {}, status = {};
+		nes_processor_register_t address = { .word = (rand() % 0x2000) + 512 }, address_absolute = { .word = (rand() % 0x2000) + 0x4000 + 512 },
+			address_indirect = { .word = (rand() % 0x2000) + 0x2000 + 512 }, address_offset = {}, data = {}, index = {}, status = {};
 
 		if(ASSERT((INSTRUCTION[0xad].opcode == OPCODE_LDA)
 				&& (INSTRUCTION[0xad].mode == MODE_ABSOLUTE)
@@ -4700,10 +4694,8 @@ nes_test_processor_execute_store(void)
 	int result = NES_OK;
 
 	for(size_t trial = 0; trial < TRIALS; ++trial) {
-		nes_processor_register_t address = { .word = (rand() % 0x2000) + 512 },
-			address_absolute = { .word = (rand() % 0x2000) + 0x4000 + 512 },
-			address_indirect = { .word = (rand() % 0x2000) + 0x2000 + 512 },
-			data = {}, index = {}, status = {};
+		nes_processor_register_t address = { .word = (rand() % 0x2000) + 512 }, address_absolute = { .word = (rand() % 0x2000) + 0x4000 + 512 },
+			address_indirect = { .word = (rand() % 0x2000) + 0x2000 + 512 }, data = {}, index = {}, status = {};
 
 		if(ASSERT((INSTRUCTION[0x8d].opcode == OPCODE_STA)
 				&& (INSTRUCTION[0x8d].mode == MODE_ABSOLUTE)
@@ -6026,6 +6018,21 @@ nes_test_processor_reset(void)
 	}
 
 exit:
+	TRACE_RESULT(result);
+
+	return result;
+}
+
+int
+nes_test_processor_transfer(void)
+{
+	int result = NES_OK;
+
+	for(size_t trial = 0; trial < TRIALS; ++trial) {
+
+		/* TODO: TEST TRANSFER */
+	}
+
 	TRACE_RESULT(result);
 
 	return result;
