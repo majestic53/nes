@@ -32,6 +32,7 @@ nes_processor_execute_arithmetic(
         )
 {
         uint8_t result = 0;
+        nes_processor_register_t value = {};
 
         switch(instruction->opcode) {
                 case OPCODE_ADC:
@@ -45,11 +46,13 @@ nes_processor_execute_arithmetic(
                         break;
         }
 
-        /* TODO: PERFORM ADDITION INTO ACCUMULATOR AND SET STATUS FLAGS
-        processor->status.carry = ;
-        precessor->status.negative = processor->accumulator.negative;
-        precessor->status.overflow = ;
-        precessor->status.zero = !processor->accumulator.low;*/
+        value.word = processor->accumulator.low + processor->fetched.operand.data.low + (processor->status.carry ? 1 : 0);
+        processor->status.carry = value.word > UINT8_MAX;
+        processor->status.overflow = !(processor->accumulator.negative ^ processor->fetched.operand.data.negative)
+                                        && (processor->accumulator.negative ^ value.negative);
+        processor->accumulator.low = value.low;
+        processor->status.negative = processor->accumulator.negative;
+        processor->status.zero = !processor->accumulator.low;
 
         if(processor->fetched.operand.page_boundary) {
                 ++result;
