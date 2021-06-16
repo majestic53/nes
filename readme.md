@@ -10,7 +10,7 @@ Features
 
 __NOTE__: This project is a work-in-progress and is missing a lot of functionality. See the table below for the current implementation status:
 
-|Subsystem|                  |Description                          |
+|Subsystem|Complete          |Description                          |
 |:--------|:-----------------|:------------------------------------|
 |Audio    |                  |Still to be started                  |
 |Input    |                  |Still to be started                  |
