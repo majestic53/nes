@@ -4312,6 +4312,9 @@ nes_test_processor_execute_rotate(void)
 	int result = NES_OK;
 
 	for(size_t trial = 0; trial < TRIALS; ++trial) {
+		bool carry;
+		nes_processor_register_t address = { .word = (rand() % 0x2000) + 512 }, address_indirect = { .word = (rand() % 0x2000) + 0x2000 + 512 },
+			data = {}, index = {}, status = {};
 
 		if(ASSERT((INSTRUCTION[0x2e].opcode == OPCODE_ROL)
 				&& (INSTRUCTION[0x2e].mode == MODE_ABSOLUTE)
@@ -4320,7 +4323,39 @@ nes_test_processor_execute_rotate(void)
 			goto exit;
 		}
 
-		/* TODO: ROL ABS */
+		nes_test_initialize();
+		data.low = rand();
+		nes_processor_write_word(&g_test.processor, RESET_ADDRESS, address.word);
+		nes_processor_write(&g_test.processor, address.word, 0x2e);
+		nes_processor_write_word(&g_test.processor, address.word + 1, address_indirect.word);
+		nes_processor_write(&g_test.processor, address_indirect.word, data.low);
+		nes_processor_reset(&g_test.processor);
+
+		while(g_test.processor.cycles > 0) {
+			nes_processor_step(&g_test.processor);
+		}
+
+		status.carry = !(rand() % 2) ? true : false;
+		status.low = g_test.processor.status.low;
+		carry = data.negative;
+		data.low <<= 1;
+		data.carry = status.carry;
+		status.carry = carry;
+		status.negative = data.negative;
+		status.zero = !data.low;
+		nes_processor_step(&g_test.processor);
+
+		if(ASSERT((g_test.processor.cycles == 5)
+				&& (g_test.processor.program_counter.word == ((address.word + 3) & UINT16_MAX))
+				&& (g_test.processor.stack_pointer.low == 0xfd)
+				&& (g_test.processor.status.low == status.low)
+				&& (g_test.processor.accumulator.low == 0)
+				&& (g_test.processor.index_x.low == 0)
+				&& (g_test.processor.index_y.low == 0)
+				&& (nes_processor_read(&g_test.processor, address_indirect.word) == data.low))) {
+			result = NES_ERR;
+			goto exit;
+		}
 
 		if(ASSERT((INSTRUCTION[0x3e].opcode == OPCODE_ROL)
 				&& (INSTRUCTION[0x3e].mode == MODE_ABSOLUTE_X)
@@ -4329,7 +4364,41 @@ nes_test_processor_execute_rotate(void)
 			goto exit;
 		}
 
-		/* TODO: ROL ABS,X */
+		nes_test_initialize();
+		data.low = rand();
+		index.low = rand();
+		nes_processor_write_word(&g_test.processor, RESET_ADDRESS, address.word);
+		nes_processor_write(&g_test.processor, address.word, 0x3e);
+		nes_processor_write_word(&g_test.processor, address.word + 1, address_indirect.word);
+		nes_processor_write(&g_test.processor, address_indirect.word + index.low, data.low);
+		nes_processor_reset(&g_test.processor);
+
+		while(g_test.processor.cycles > 0) {
+			nes_processor_step(&g_test.processor);
+		}
+
+		g_test.processor.index_x.low = index.low;
+		status.carry = !(rand() % 2) ? true : false;
+		status.low = g_test.processor.status.low;
+		carry = data.negative;
+		data.low <<= 1;
+		data.carry = status.carry;
+		status.carry = carry;
+		status.negative = data.negative;
+		status.zero = !data.low;
+		nes_processor_step(&g_test.processor);
+
+		if(ASSERT((g_test.processor.cycles == 6)
+				&& (g_test.processor.program_counter.word == ((address.word + 3) & UINT16_MAX))
+				&& (g_test.processor.stack_pointer.low == 0xfd)
+				&& (g_test.processor.status.low == status.low)
+				&& (g_test.processor.accumulator.low == 0)
+				&& (g_test.processor.index_x.low == index.low)
+				&& (g_test.processor.index_y.low == 0)
+				&& (nes_processor_read(&g_test.processor, address_indirect.word + index.low) == data.low))) {
+			result = NES_ERR;
+			goto exit;
+		}
 
 		if(ASSERT((INSTRUCTION[0x2a].opcode == OPCODE_ROL)
 				&& (INSTRUCTION[0x2a].mode == MODE_IMPLIED)
@@ -4338,7 +4407,37 @@ nes_test_processor_execute_rotate(void)
 			goto exit;
 		}
 
-		/* TODO: ROL IMP */
+		nes_test_initialize();
+		data.low = rand();
+		nes_processor_write_word(&g_test.processor, RESET_ADDRESS, address.word);
+		nes_processor_write(&g_test.processor, address.word, 0x2a);
+		nes_processor_reset(&g_test.processor);
+
+		while(g_test.processor.cycles > 0) {
+			nes_processor_step(&g_test.processor);
+		}
+
+		g_test.processor.accumulator.low = data.low;
+		status.carry = !(rand() % 2) ? true : false;
+		status.low = g_test.processor.status.low;
+		carry = data.negative;
+		data.low <<= 1;
+		data.carry = status.carry;
+		status.carry = carry;
+		status.negative = data.negative;
+		status.zero = !data.low;
+		nes_processor_step(&g_test.processor);
+
+		if(ASSERT((g_test.processor.cycles == 1)
+				&& (g_test.processor.program_counter.word == ((address.word + 1) & UINT16_MAX))
+				&& (g_test.processor.stack_pointer.low == 0xfd)
+				&& (g_test.processor.status.low == status.low)
+				&& (g_test.processor.accumulator.low == data.low)
+				&& (g_test.processor.index_x.low == 0)
+				&& (g_test.processor.index_y.low == 0))) {
+			result = NES_ERR;
+			goto exit;
+		}
 
 		if(ASSERT((INSTRUCTION[0x26].opcode == OPCODE_ROL)
 				&& (INSTRUCTION[0x26].mode == MODE_ZEROPAGE)
@@ -4347,7 +4446,39 @@ nes_test_processor_execute_rotate(void)
 			goto exit;
 		}
 
-		/* TODO: ROL ZP */
+		nes_test_initialize();
+		data.low = rand();
+		nes_processor_write_word(&g_test.processor, RESET_ADDRESS, address.word);
+		nes_processor_write(&g_test.processor, address.word, 0x26);
+		nes_processor_write(&g_test.processor, address.word + 1, address_indirect.low);
+		nes_processor_write(&g_test.processor, address_indirect.low, data.low);
+		nes_processor_reset(&g_test.processor);
+
+		while(g_test.processor.cycles > 0) {
+			nes_processor_step(&g_test.processor);
+		}
+
+		status.carry = !(rand() % 2) ? true : false;
+		status.low = g_test.processor.status.low;
+		carry = data.negative;
+		data.low <<= 1;
+		data.carry = status.carry;
+		status.carry = carry;
+		status.negative = data.negative;
+		status.zero = !data.low;
+		nes_processor_step(&g_test.processor);
+
+		if(ASSERT((g_test.processor.cycles == 4)
+				&& (g_test.processor.program_counter.word == ((address.word + 2) & UINT16_MAX))
+				&& (g_test.processor.stack_pointer.low == 0xfd)
+				&& (g_test.processor.status.low == status.low)
+				&& (g_test.processor.accumulator.low == 0)
+				&& (g_test.processor.index_x.low == 0)
+				&& (g_test.processor.index_y.low == 0)
+				&& (nes_processor_read(&g_test.processor, address_indirect.low) == data.low))) {
+			result = NES_ERR;
+			goto exit;
+		}
 
 		if(ASSERT((INSTRUCTION[0x36].opcode == OPCODE_ROL)
 				&& (INSTRUCTION[0x36].mode == MODE_ZEROPAGE_X)
@@ -4356,7 +4487,41 @@ nes_test_processor_execute_rotate(void)
 			goto exit;
 		}
 
-		/* TODO: ROL ZP,X */
+		nes_test_initialize();
+		data.low = rand();
+		index.low = rand();
+		nes_processor_write_word(&g_test.processor, RESET_ADDRESS, address.word);
+		nes_processor_write(&g_test.processor, address.word, 0x36);
+		nes_processor_write(&g_test.processor, address.word + 1, address_indirect.low);
+		nes_processor_write(&g_test.processor, (address_indirect.low + index.low) & UINT8_MAX, data.low);
+		nes_processor_reset(&g_test.processor);
+
+		while(g_test.processor.cycles > 0) {
+			nes_processor_step(&g_test.processor);
+		}
+
+		g_test.processor.index_x.low = index.low;
+		status.carry = !(rand() % 2) ? true : false;
+		status.low = g_test.processor.status.low;
+		carry = data.negative;
+		data.low <<= 1;
+		data.carry = status.carry;
+		status.carry = carry;
+		status.negative = data.negative;
+		status.zero = !data.low;
+		nes_processor_step(&g_test.processor);
+
+		if(ASSERT((g_test.processor.cycles == 5)
+				&& (g_test.processor.program_counter.word == ((address.word + 2) & UINT16_MAX))
+				&& (g_test.processor.stack_pointer.low == 0xfd)
+				&& (g_test.processor.status.low == status.low)
+				&& (g_test.processor.accumulator.low == 0)
+				&& (g_test.processor.index_x.low == index.low)
+				&& (g_test.processor.index_y.low == 0)
+				&& (nes_processor_read(&g_test.processor, (address_indirect.low + index.low) & UINT8_MAX) == data.low))) {
+			result = NES_ERR;
+			goto exit;
+		}
 
 		if(ASSERT((INSTRUCTION[0x6e].opcode == OPCODE_ROR)
 				&& (INSTRUCTION[0x6e].mode == MODE_ABSOLUTE)
@@ -4365,7 +4530,39 @@ nes_test_processor_execute_rotate(void)
 			goto exit;
 		}
 
-		/* TODO: ROR ABS */
+		nes_test_initialize();
+		data.low = rand();
+		nes_processor_write_word(&g_test.processor, RESET_ADDRESS, address.word);
+		nes_processor_write(&g_test.processor, address.word, 0x6e);
+		nes_processor_write_word(&g_test.processor, address.word + 1, address_indirect.word);
+		nes_processor_write(&g_test.processor, address_indirect.word, data.low);
+		nes_processor_reset(&g_test.processor);
+
+		while(g_test.processor.cycles > 0) {
+			nes_processor_step(&g_test.processor);
+		}
+
+		status.carry = !(rand() % 2) ? true : false;
+		status.low = g_test.processor.status.low;
+		carry = data.carry;
+		data.low >>= 1;
+		data.negative = status.carry;
+		status.carry = carry;
+		status.negative = data.negative;
+		status.zero = !data.low;
+		nes_processor_step(&g_test.processor);
+
+		if(ASSERT((g_test.processor.cycles == 5)
+				&& (g_test.processor.program_counter.word == ((address.word + 3) & UINT16_MAX))
+				&& (g_test.processor.stack_pointer.low == 0xfd)
+				&& (g_test.processor.status.low == status.low)
+				&& (g_test.processor.accumulator.low == 0)
+				&& (g_test.processor.index_x.low == 0)
+				&& (g_test.processor.index_y.low == 0)
+				&& (nes_processor_read(&g_test.processor, address_indirect.word) == data.low))) {
+			result = NES_ERR;
+			goto exit;
+		}
 
 		if(ASSERT((INSTRUCTION[0x7e].opcode == OPCODE_ROR)
 				&& (INSTRUCTION[0x7e].mode == MODE_ABSOLUTE_X)
@@ -4374,7 +4571,41 @@ nes_test_processor_execute_rotate(void)
 			goto exit;
 		}
 
-		/* TODO: ROR ABS,X */
+		nes_test_initialize();
+		data.low = rand();
+		index.low = rand();
+		nes_processor_write_word(&g_test.processor, RESET_ADDRESS, address.word);
+		nes_processor_write(&g_test.processor, address.word, 0x7e);
+		nes_processor_write_word(&g_test.processor, address.word + 1, address_indirect.word);
+		nes_processor_write(&g_test.processor, address_indirect.word + index.low, data.low);
+		nes_processor_reset(&g_test.processor);
+
+		while(g_test.processor.cycles > 0) {
+			nes_processor_step(&g_test.processor);
+		}
+
+		g_test.processor.index_x.low = index.low;
+		status.carry = !(rand() % 2) ? true : false;
+		status.low = g_test.processor.status.low;
+		carry = data.carry;
+		data.low >>= 1;
+		data.negative = status.carry;
+		status.carry = carry;
+		status.negative = data.negative;
+		status.zero = !data.low;
+		nes_processor_step(&g_test.processor);
+
+		if(ASSERT((g_test.processor.cycles == 6)
+				&& (g_test.processor.program_counter.word == ((address.word + 3) & UINT16_MAX))
+				&& (g_test.processor.stack_pointer.low == 0xfd)
+				&& (g_test.processor.status.low == status.low)
+				&& (g_test.processor.accumulator.low == 0)
+				&& (g_test.processor.index_x.low == index.low)
+				&& (g_test.processor.index_y.low == 0)
+				&& (nes_processor_read(&g_test.processor, address_indirect.word + index.low) == data.low))) {
+			result = NES_ERR;
+			goto exit;
+		}
 
 		if(ASSERT((INSTRUCTION[0x6a].opcode == OPCODE_ROR)
 				&& (INSTRUCTION[0x6a].mode == MODE_IMPLIED)
@@ -4383,7 +4614,37 @@ nes_test_processor_execute_rotate(void)
 			goto exit;
 		}
 
-		/* TODO: ROR IMP */
+		nes_test_initialize();
+		data.low = rand();
+		nes_processor_write_word(&g_test.processor, RESET_ADDRESS, address.word);
+		nes_processor_write(&g_test.processor, address.word, 0x6a);
+		nes_processor_reset(&g_test.processor);
+
+		while(g_test.processor.cycles > 0) {
+			nes_processor_step(&g_test.processor);
+		}
+
+		g_test.processor.accumulator.low = data.low;
+		status.carry = !(rand() % 2) ? true : false;
+		status.low = g_test.processor.status.low;
+		carry = data.carry;
+		data.low >>= 1;
+		data.negative = status.carry;
+		status.carry = carry;
+		status.negative = data.negative;
+		status.zero = !data.low;
+		nes_processor_step(&g_test.processor);
+
+		if(ASSERT((g_test.processor.cycles == 1)
+				&& (g_test.processor.program_counter.word == ((address.word + 1) & UINT16_MAX))
+				&& (g_test.processor.stack_pointer.low == 0xfd)
+				&& (g_test.processor.status.low == status.low)
+				&& (g_test.processor.accumulator.low == data.low)
+				&& (g_test.processor.index_x.low == 0)
+				&& (g_test.processor.index_y.low == 0))) {
+			result = NES_ERR;
+			goto exit;
+		}
 
 		if(ASSERT((INSTRUCTION[0x66].opcode == OPCODE_ROR)
 				&& (INSTRUCTION[0x66].mode == MODE_ZEROPAGE)
@@ -4392,7 +4653,39 @@ nes_test_processor_execute_rotate(void)
 			goto exit;
 		}
 
-		/* TODO: ROR ZP */
+		nes_test_initialize();
+		data.low = rand();
+		nes_processor_write_word(&g_test.processor, RESET_ADDRESS, address.word);
+		nes_processor_write(&g_test.processor, address.word, 0x66);
+		nes_processor_write(&g_test.processor, address.word + 1, address_indirect.low);
+		nes_processor_write(&g_test.processor, address_indirect.low, data.low);
+		nes_processor_reset(&g_test.processor);
+
+		while(g_test.processor.cycles > 0) {
+			nes_processor_step(&g_test.processor);
+		}
+
+		status.carry = !(rand() % 2) ? true : false;
+		status.low = g_test.processor.status.low;
+		carry = data.carry;
+		data.low >>= 1;
+		data.negative = status.carry;
+		status.carry = carry;
+		status.negative = data.negative;
+		status.zero = !data.low;
+		nes_processor_step(&g_test.processor);
+
+		if(ASSERT((g_test.processor.cycles == 4)
+				&& (g_test.processor.program_counter.word == ((address.word + 2) & UINT16_MAX))
+				&& (g_test.processor.stack_pointer.low == 0xfd)
+				&& (g_test.processor.status.low == status.low)
+				&& (g_test.processor.accumulator.low == 0)
+				&& (g_test.processor.index_x.low == 0)
+				&& (g_test.processor.index_y.low == 0)
+				&& (nes_processor_read(&g_test.processor, address_indirect.low) == data.low))) {
+			result = NES_ERR;
+			goto exit;
+		}
 
 		if(ASSERT((INSTRUCTION[0x76].opcode == OPCODE_ROR)
 				&& (INSTRUCTION[0x76].mode == MODE_ZEROPAGE_X)
@@ -4401,7 +4694,41 @@ nes_test_processor_execute_rotate(void)
 			goto exit;
 		}
 
-		/* TODO: ROR ZP,X */
+		nes_test_initialize();
+		data.low = rand();
+		index.low = rand();
+		nes_processor_write_word(&g_test.processor, RESET_ADDRESS, address.word);
+		nes_processor_write(&g_test.processor, address.word, 0x76);
+		nes_processor_write(&g_test.processor, address.word + 1, address_indirect.low);
+		nes_processor_write(&g_test.processor, (address_indirect.low + index.low) & UINT8_MAX, data.low);
+		nes_processor_reset(&g_test.processor);
+
+		while(g_test.processor.cycles > 0) {
+			nes_processor_step(&g_test.processor);
+		}
+
+		g_test.processor.index_x.low = index.low;
+		status.carry = !(rand() % 2) ? true : false;
+		status.low = g_test.processor.status.low;
+		carry = data.carry;
+		data.low >>= 1;
+		data.negative = status.carry;
+		status.carry = carry;
+		status.negative = data.negative;
+		status.zero = !data.low;
+		nes_processor_step(&g_test.processor);
+
+		if(ASSERT((g_test.processor.cycles == 5)
+				&& (g_test.processor.program_counter.word == ((address.word + 2) & UINT16_MAX))
+				&& (g_test.processor.stack_pointer.low == 0xfd)
+				&& (g_test.processor.status.low == status.low)
+				&& (g_test.processor.accumulator.low == 0)
+				&& (g_test.processor.index_x.low == index.low)
+				&& (g_test.processor.index_y.low == 0)
+				&& (nes_processor_read(&g_test.processor, (address_indirect.low + index.low) & UINT8_MAX) == data.low))) {
+			result = NES_ERR;
+			goto exit;
+		}
 	}
 
 exit:
@@ -4590,6 +4917,8 @@ nes_test_processor_execute_shift(void)
 	int result = NES_OK;
 
 	for(size_t trial = 0; trial < TRIALS; ++trial) {
+		nes_processor_register_t address = { .word = (rand() % 0x2000) + 512 }, address_indirect = { .word = (rand() % 0x2000) + 0x2000 + 512 },
+			data = {}, index = {}, status = {};
 
 		if(ASSERT((INSTRUCTION[0x0e].opcode == OPCODE_ASL)
 				&& (INSTRUCTION[0x0e].mode == MODE_ABSOLUTE)
@@ -4598,7 +4927,36 @@ nes_test_processor_execute_shift(void)
 			goto exit;
 		}
 
-		/* TODO: ASL ABS */
+		nes_test_initialize();
+		data.low = rand();
+		nes_processor_write_word(&g_test.processor, RESET_ADDRESS, address.word);
+		nes_processor_write(&g_test.processor, address.word, 0x0e);
+		nes_processor_write_word(&g_test.processor, address.word + 1, address_indirect.word);
+		nes_processor_write(&g_test.processor, address_indirect.word, data.low);
+		nes_processor_reset(&g_test.processor);
+
+		while(g_test.processor.cycles > 0) {
+			nes_processor_step(&g_test.processor);
+		}
+
+		status.low = g_test.processor.status.low;
+		status.carry = data.negative;
+		data.low <<= 1;
+		status.negative = data.negative;
+		status.zero = !data.low;
+		nes_processor_step(&g_test.processor);
+
+		if(ASSERT((g_test.processor.cycles == 5)
+				&& (g_test.processor.program_counter.word == ((address.word + 3) & UINT16_MAX))
+				&& (g_test.processor.stack_pointer.low == 0xfd)
+				&& (g_test.processor.status.low == status.low)
+				&& (g_test.processor.accumulator.low == 0)
+				&& (g_test.processor.index_x.low == 0)
+				&& (g_test.processor.index_y.low == 0)
+				&& (nes_processor_read(&g_test.processor, address_indirect.word) == data.low))) {
+			result = NES_ERR;
+			goto exit;
+		}
 
 		if(ASSERT((INSTRUCTION[0x1e].opcode == OPCODE_ASL)
 				&& (INSTRUCTION[0x1e].mode == MODE_ABSOLUTE_X)
@@ -4607,7 +4965,38 @@ nes_test_processor_execute_shift(void)
 			goto exit;
 		}
 
-		/* TODO: ASL ABS,X */
+		nes_test_initialize();
+		data.low = rand();
+		index.low = rand();
+		nes_processor_write_word(&g_test.processor, RESET_ADDRESS, address.word);
+		nes_processor_write(&g_test.processor, address.word, 0x1e);
+		nes_processor_write_word(&g_test.processor, address.word + 1, address_indirect.word);
+		nes_processor_write(&g_test.processor, address_indirect.word + index.low, data.low);
+		nes_processor_reset(&g_test.processor);
+
+		while(g_test.processor.cycles > 0) {
+			nes_processor_step(&g_test.processor);
+		}
+
+		g_test.processor.index_x.low = index.low;
+		status.low = g_test.processor.status.low;
+		status.carry = data.negative;
+		data.low <<= 1;
+		status.negative = data.negative;
+		status.zero = !data.low;
+		nes_processor_step(&g_test.processor);
+
+		if(ASSERT((g_test.processor.cycles == 6)
+				&& (g_test.processor.program_counter.word == ((address.word + 3) & UINT16_MAX))
+				&& (g_test.processor.stack_pointer.low == 0xfd)
+				&& (g_test.processor.status.low == status.low)
+				&& (g_test.processor.accumulator.low == 0)
+				&& (g_test.processor.index_x.low == index.low)
+				&& (g_test.processor.index_y.low == 0)
+				&& (nes_processor_read(&g_test.processor, address_indirect.word + index.low) == data.low))) {
+			result = NES_ERR;
+			goto exit;
+		}
 
 		if(ASSERT((INSTRUCTION[0x0a].opcode == OPCODE_ASL)
 				&& (INSTRUCTION[0x0a].mode == MODE_IMPLIED)
@@ -4616,7 +5005,34 @@ nes_test_processor_execute_shift(void)
 			goto exit;
 		}
 
-		/* TODO: ASL IMP */
+		nes_test_initialize();
+		data.low = rand();
+		nes_processor_write_word(&g_test.processor, RESET_ADDRESS, address.word);
+		nes_processor_write(&g_test.processor, address.word, 0x0a);
+		nes_processor_reset(&g_test.processor);
+
+		while(g_test.processor.cycles > 0) {
+			nes_processor_step(&g_test.processor);
+		}
+
+		g_test.processor.accumulator.low = data.low;
+		status.low = g_test.processor.status.low;
+		status.carry = data.negative;
+		data.low <<= 1;
+		status.negative = data.negative;
+		status.zero = !data.low;
+		nes_processor_step(&g_test.processor);
+
+		if(ASSERT((g_test.processor.cycles == 1)
+				&& (g_test.processor.program_counter.word == ((address.word + 1) & UINT16_MAX))
+				&& (g_test.processor.stack_pointer.low == 0xfd)
+				&& (g_test.processor.status.low == status.low)
+				&& (g_test.processor.accumulator.low == data.low)
+				&& (g_test.processor.index_x.low == 0)
+				&& (g_test.processor.index_y.low == 0))) {
+			result = NES_ERR;
+			goto exit;
+		}
 
 		if(ASSERT((INSTRUCTION[0x06].opcode == OPCODE_ASL)
 				&& (INSTRUCTION[0x06].mode == MODE_ZEROPAGE)
@@ -4625,7 +5041,36 @@ nes_test_processor_execute_shift(void)
 			goto exit;
 		}
 
-		/* TODO: ASL ZP */
+		nes_test_initialize();
+		data.low = rand();
+		nes_processor_write_word(&g_test.processor, RESET_ADDRESS, address.word);
+		nes_processor_write(&g_test.processor, address.word, 0x06);
+		nes_processor_write(&g_test.processor, address.word + 1, address_indirect.low);
+		nes_processor_write(&g_test.processor, address_indirect.low, data.low);
+		nes_processor_reset(&g_test.processor);
+
+		while(g_test.processor.cycles > 0) {
+			nes_processor_step(&g_test.processor);
+		}
+
+		status.low = g_test.processor.status.low;
+		status.carry = data.negative;
+		data.low <<= 1;
+		status.negative = data.negative;
+		status.zero = !data.low;
+		nes_processor_step(&g_test.processor);
+
+		if(ASSERT((g_test.processor.cycles == 4)
+				&& (g_test.processor.program_counter.word == ((address.word + 2) & UINT16_MAX))
+				&& (g_test.processor.stack_pointer.low == 0xfd)
+				&& (g_test.processor.status.low == status.low)
+				&& (g_test.processor.accumulator.low == 0)
+				&& (g_test.processor.index_x.low == 0)
+				&& (g_test.processor.index_y.low == 0)
+				&& (nes_processor_read(&g_test.processor, address_indirect.low) == data.low))) {
+			result = NES_ERR;
+			goto exit;
+		}
 
 		if(ASSERT((INSTRUCTION[0x16].opcode == OPCODE_ASL)
 				&& (INSTRUCTION[0x16].mode == MODE_ZEROPAGE_X)
@@ -4634,7 +5079,38 @@ nes_test_processor_execute_shift(void)
 			goto exit;
 		}
 
-		/* TODO: ASL ZP,X */
+		nes_test_initialize();
+		data.low = rand();
+		index.low = rand();
+		nes_processor_write_word(&g_test.processor, RESET_ADDRESS, address.word);
+		nes_processor_write(&g_test.processor, address.word, 0x16);
+		nes_processor_write(&g_test.processor, address.word + 1, address_indirect.low);
+		nes_processor_write(&g_test.processor, (address_indirect.low + index.low) & UINT8_MAX, data.low);
+		nes_processor_reset(&g_test.processor);
+
+		while(g_test.processor.cycles > 0) {
+			nes_processor_step(&g_test.processor);
+		}
+
+		g_test.processor.index_x.low = index.low;
+		status.low = g_test.processor.status.low;
+		status.carry = data.negative;
+		data.low <<= 1;
+		status.negative = data.negative;
+		status.zero = !data.low;
+		nes_processor_step(&g_test.processor);
+
+		if(ASSERT((g_test.processor.cycles == 5)
+				&& (g_test.processor.program_counter.word == ((address.word + 2) & UINT16_MAX))
+				&& (g_test.processor.stack_pointer.low == 0xfd)
+				&& (g_test.processor.status.low == status.low)
+				&& (g_test.processor.accumulator.low == 0)
+				&& (g_test.processor.index_x.low == index.low)
+				&& (g_test.processor.index_y.low == 0)
+				&& (nes_processor_read(&g_test.processor, (address_indirect.low + index.low) & UINT8_MAX) == data.low))) {
+			result = NES_ERR;
+			goto exit;
+		}
 
 		if(ASSERT((INSTRUCTION[0x4e].opcode == OPCODE_LSR)
 				&& (INSTRUCTION[0x4e].mode == MODE_ABSOLUTE)
@@ -4643,7 +5119,36 @@ nes_test_processor_execute_shift(void)
 			goto exit;
 		}
 
-		/* TODO: LSR ABS */
+		nes_test_initialize();
+		data.low = rand();
+		nes_processor_write_word(&g_test.processor, RESET_ADDRESS, address.word);
+		nes_processor_write(&g_test.processor, address.word, 0x4e);
+		nes_processor_write_word(&g_test.processor, address.word + 1, address_indirect.word);
+		nes_processor_write(&g_test.processor, address_indirect.word, data.low);
+		nes_processor_reset(&g_test.processor);
+
+		while(g_test.processor.cycles > 0) {
+			nes_processor_step(&g_test.processor);
+		}
+
+		status.low = g_test.processor.status.low;
+		status.carry = data.carry;
+		data.low >>= 1;
+		status.negative = data.negative;
+		status.zero = !data.low;
+		nes_processor_step(&g_test.processor);
+
+		if(ASSERT((g_test.processor.cycles == 5)
+				&& (g_test.processor.program_counter.word == ((address.word + 3) & UINT16_MAX))
+				&& (g_test.processor.stack_pointer.low == 0xfd)
+				&& (g_test.processor.status.low == status.low)
+				&& (g_test.processor.accumulator.low == 0)
+				&& (g_test.processor.index_x.low == 0)
+				&& (g_test.processor.index_y.low == 0)
+				&& (nes_processor_read(&g_test.processor, address_indirect.word) == data.low))) {
+			result = NES_ERR;
+			goto exit;
+		}
 
 		if(ASSERT((INSTRUCTION[0x5e].opcode == OPCODE_LSR)
 				&& (INSTRUCTION[0x5e].mode == MODE_ABSOLUTE_X)
@@ -4652,7 +5157,38 @@ nes_test_processor_execute_shift(void)
 			goto exit;
 		}
 
-		/* TODO: LSR ABS,X */
+		nes_test_initialize();
+		data.low = rand();
+		index.low = rand();
+		nes_processor_write_word(&g_test.processor, RESET_ADDRESS, address.word);
+		nes_processor_write(&g_test.processor, address.word, 0x5e);
+		nes_processor_write_word(&g_test.processor, address.word + 1, address_indirect.word);
+		nes_processor_write(&g_test.processor, address_indirect.word + index.low, data.low);
+		nes_processor_reset(&g_test.processor);
+
+		while(g_test.processor.cycles > 0) {
+			nes_processor_step(&g_test.processor);
+		}
+
+		g_test.processor.index_x.low = index.low;
+		status.low = g_test.processor.status.low;
+		status.carry = data.carry;
+		data.low >>= 1;
+		status.negative = data.negative;
+		status.zero = !data.low;
+		nes_processor_step(&g_test.processor);
+
+		if(ASSERT((g_test.processor.cycles == 6)
+				&& (g_test.processor.program_counter.word == ((address.word + 3) & UINT16_MAX))
+				&& (g_test.processor.stack_pointer.low == 0xfd)
+				&& (g_test.processor.status.low == status.low)
+				&& (g_test.processor.accumulator.low == 0)
+				&& (g_test.processor.index_x.low == index.low)
+				&& (g_test.processor.index_y.low == 0)
+				&& (nes_processor_read(&g_test.processor, address_indirect.word + index.low) == data.low))) {
+			result = NES_ERR;
+			goto exit;
+		}
 
 		if(ASSERT((INSTRUCTION[0x4a].opcode == OPCODE_LSR)
 				&& (INSTRUCTION[0x4a].mode == MODE_IMPLIED)
@@ -4661,7 +5197,34 @@ nes_test_processor_execute_shift(void)
 			goto exit;
 		}
 
-		/* TODO: LSR IMP */
+		nes_test_initialize();
+		data.low = rand();
+		nes_processor_write_word(&g_test.processor, RESET_ADDRESS, address.word);
+		nes_processor_write(&g_test.processor, address.word, 0x4a);
+		nes_processor_reset(&g_test.processor);
+
+		while(g_test.processor.cycles > 0) {
+			nes_processor_step(&g_test.processor);
+		}
+
+		g_test.processor.accumulator.low = data.low;
+		status.low = g_test.processor.status.low;
+		status.carry = data.carry;
+		data.low >>= 1;
+		status.negative = data.negative;
+		status.zero = !data.low;
+		nes_processor_step(&g_test.processor);
+
+		if(ASSERT((g_test.processor.cycles == 1)
+				&& (g_test.processor.program_counter.word == ((address.word + 1) & UINT16_MAX))
+				&& (g_test.processor.stack_pointer.low == 0xfd)
+				&& (g_test.processor.status.low == status.low)
+				&& (g_test.processor.accumulator.low == data.low)
+				&& (g_test.processor.index_x.low == 0)
+				&& (g_test.processor.index_y.low == 0))) {
+			result = NES_ERR;
+			goto exit;
+		}
 
 		if(ASSERT((INSTRUCTION[0x46].opcode == OPCODE_LSR)
 				&& (INSTRUCTION[0x46].mode == MODE_ZEROPAGE)
@@ -4670,7 +5233,36 @@ nes_test_processor_execute_shift(void)
 			goto exit;
 		}
 
-		/* TODO: LSR ZP */
+		nes_test_initialize();
+		data.low = rand();
+		nes_processor_write_word(&g_test.processor, RESET_ADDRESS, address.word);
+		nes_processor_write(&g_test.processor, address.word, 0x46);
+		nes_processor_write(&g_test.processor, address.word + 1, address_indirect.low);
+		nes_processor_write(&g_test.processor, address_indirect.low, data.low);
+		nes_processor_reset(&g_test.processor);
+
+		while(g_test.processor.cycles > 0) {
+			nes_processor_step(&g_test.processor);
+		}
+
+		status.low = g_test.processor.status.low;
+		status.carry = data.carry;
+		data.low >>= 1;
+		status.negative = data.negative;
+		status.zero = !data.low;
+		nes_processor_step(&g_test.processor);
+
+		if(ASSERT((g_test.processor.cycles == 4)
+				&& (g_test.processor.program_counter.word == ((address.word + 2) & UINT16_MAX))
+				&& (g_test.processor.stack_pointer.low == 0xfd)
+				&& (g_test.processor.status.low == status.low)
+				&& (g_test.processor.accumulator.low == 0)
+				&& (g_test.processor.index_x.low == 0)
+				&& (g_test.processor.index_y.low == 0)
+				&& (nes_processor_read(&g_test.processor, address_indirect.low) == data.low))) {
+			result = NES_ERR;
+			goto exit;
+		}
 
 		if(ASSERT((INSTRUCTION[0x56].opcode == OPCODE_LSR)
 				&& (INSTRUCTION[0x56].mode == MODE_ZEROPAGE_X)
@@ -4679,7 +5271,38 @@ nes_test_processor_execute_shift(void)
 			goto exit;
 		}
 
-		/* TODO: LSR ZP,X */
+		nes_test_initialize();
+		data.low = rand();
+		index.low = rand();
+		nes_processor_write_word(&g_test.processor, RESET_ADDRESS, address.word);
+		nes_processor_write(&g_test.processor, address.word, 0x56);
+		nes_processor_write(&g_test.processor, address.word + 1, address_indirect.low);
+		nes_processor_write(&g_test.processor, (address_indirect.low + index.low) & UINT8_MAX, data.low);
+		nes_processor_reset(&g_test.processor);
+
+		while(g_test.processor.cycles > 0) {
+			nes_processor_step(&g_test.processor);
+		}
+
+		g_test.processor.index_x.low = index.low;
+		status.low = g_test.processor.status.low;
+		status.carry = data.carry;
+		data.low >>= 1;
+		status.negative = data.negative;
+		status.zero = !data.low;
+		nes_processor_step(&g_test.processor);
+
+		if(ASSERT((g_test.processor.cycles == 5)
+				&& (g_test.processor.program_counter.word == ((address.word + 2) & UINT16_MAX))
+				&& (g_test.processor.stack_pointer.low == 0xfd)
+				&& (g_test.processor.status.low == status.low)
+				&& (g_test.processor.accumulator.low == 0)
+				&& (g_test.processor.index_x.low == index.low)
+				&& (g_test.processor.index_y.low == 0)
+				&& (nes_processor_read(&g_test.processor, (address_indirect.low + index.low) & UINT8_MAX) == data.low))) {
+			result = NES_ERR;
+			goto exit;
+		}
 	}
 
 exit:
