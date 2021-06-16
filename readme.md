@@ -8,7 +8,13 @@ A lightweight NES emulator, written in C
 Features
 =
 
-```TBD```
+__NOTE__: This project is a work-in-progress and is missing a lot of functionality. See the table below for the current implementation status:
+
+|Subsystem|Complete          |Description                          |
+|Audio    |                  |Still to be started                  |
+|Input    |                  |Still to be started                  |
+|Processor|:heavy_check_mark:|Support for all official 6502 opcodes|
+|Video    |                  |Still to be started                  |
 
 Latest Release
 =
