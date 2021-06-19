@@ -45,6 +45,41 @@ enum {
 };
 
 /**
+ * NES action enum
+ */
+enum {
+        NES_ACTION_RUN = 0, /* Run emulator */
+        NES_ACTION_STEP, /* Step emulator */
+        NES_ACTION_BUS_READ, /* Read byte from bus */
+        NES_ACTION_BUS_WRITE, /* Write byte to bus */
+        NES_ACTION_PROCESSOR_READ, /* Read processor register */
+        NES_ACTION_PROCESSOR_WRITE, /* Write processor register */
+        NES_ACTION_MAX,
+};
+
+/**
+ * NES processor enum
+ */
+enum {
+        NES_PROCESSOR_PROGRAM_COUNTER = 0, /* Processor program counter register */
+        NES_PROCESSOR_STACK_POINTER, /* Processor stack pointer register */
+        NES_PROCESSOR_STATUS, /* Processor status register */
+        NES_PROCESSOR_ACCUMULATOR, /* Processor accumulator register */
+        NES_PROCESSOR_INDEX_X, /* Processor index-x register */
+        NES_PROCESSOR_INDEX_Y, /* Processor index-y register */
+        NES_PROCESSOR_MAX,
+};
+
+/**
+ * NES action struct
+ */
+typedef struct {
+        int type; /* Action type */
+        uint16_t address; /* Action address */
+        uint16_t data; /* Action data */
+} nes_action_t;
+
+/**
  * NES buffer struct
  */
 typedef struct {
@@ -76,11 +111,24 @@ extern "C" {
 #endif /* __cplusplus */
 
 /**
- * Run NES emulator
+ * Load NES emulator
  * @param[in] Pointer to configuration struct
  * @return NES_OK on success, NES_ERR otherwise
  */
-int nes(const nes_t *);
+int nes_load(const nes_t *);
+
+/**
+ * Unload NES emulator
+ */
+void nes_unload(void);
+
+/**
+ * Run NES action in emulator
+ * @param[in] Pointer to request action struct
+ * @param[inout] Pointer to response action struct
+ * @return NES_OK on success, NES_ERR otherwise
+ */
+int nes_action(const nes_action_t *, nes_action_t *);
 
 /**
  * Retrieve NES emulator error

@@ -19,64 +19,43 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef NES_LAUNCHER_TYPE_H_
-#define NES_LAUNCHER_TYPE_H_
+#ifndef NES_TEST_ACTION_TYPE_H_
+#define NES_TEST_ACTION_TYPE_H_
 
-#include <getopt.h>
-#include "../include/common.h"
-
-#define NOTICE "Copyright (C) 2021 David Jolly"
-
-#define OPTION_HELP 'h'
-#define OPTION_VERSION 'v'
-#define OPTIONS "hv"
-
-#define USAGE "nes [options] file"
-
-enum {
-	FLAG_HELP = 0,
-	FLAG_VERSION,
-	FLAG_MAX,
-};
-
-static const char *FLAG[] = {
-	"-h", /* FLAG_HELP */
-	"-v", /* FLAG_VERSION */
-	};
-
-static const char *FLAG_DESC[] = {
-	"Display help information", /* FLAG_HELP */
-	"Display version information", /* FLAG_VERSION */
-	};
+#include "../../src/action_type.h"
+#include "../common.h"
 
 typedef struct {
-	nes_t configuration;
-	const char *path;
-	nes_action_t request;
-	nes_action_t response;
-	const nes_version_t *version;
-} nes_launcher_t;
+        uint16_t address;
+        nes_bus_t bus;
+        uint16_t data;
+        nes_action_t request;
+        nes_action_t response;
+} nes_test_action_t;
 
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
 
-int nes_launcher_load(void);
+int nes_test_action_bus_read(void);
 
-void nes_launcher_unload(void);
+int nes_test_action_bus_write(void);
 
-void nes_launcher_usage(
-	__in FILE *stream,
-	__in bool verbose
-	);
+int nes_test_action_processor_read(void);
 
-void nes_launcher_version(
-	__in FILE *stream,
-	__in bool verbose
-	);
+int nes_test_action_processor_write(void);
+
+void nes_test_initialize(void);
+
+static const nes_test TEST[] = {
+        nes_test_action_bus_read,
+        nes_test_action_bus_write,
+        nes_test_action_processor_read,
+        nes_test_action_processor_write,
+	};
 
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
 
-#endif /* NES_LAUNCHER_TYPE_H_ */
+#endif /* NES_TEST_ACTION_TYPE_H_ */

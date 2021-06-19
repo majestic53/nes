@@ -131,8 +131,6 @@ int nes_test_processor_transfer(void);
 
 void nes_test_initialize(void);
 
-void nes_test_uninitialize(void);
-
 static const nes_test TEST[] = {
         nes_test_processor_execute_arithmetic,
         nes_test_processor_execute_bit,

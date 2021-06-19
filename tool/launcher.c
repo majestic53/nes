@@ -172,11 +172,18 @@ main(
 		goto exit;
 	}
 
-	if((result = nes(&g_launcher.configuration)) != NES_OK) {
+	if((result = nes_load(&g_launcher.configuration)) != NES_OK) {
+		fprintf(stderr, "%s: %s\n", g_launcher.path, nes_error());
+	}
+
+	g_launcher.request.type = NES_ACTION_RUN;
+
+	if((result = nes_action(&g_launcher.request, NULL)) != NES_OK) {
 		fprintf(stderr, "%s: %s\n", g_launcher.path, nes_error());
 	}
 
 exit:
+	nes_unload();
 	nes_launcher_unload();
 
 	return result;

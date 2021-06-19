@@ -35,7 +35,10 @@ LIB=libnes.a
 
 build: build_base build_common build_mapper build_service build_system
 
-build_base: base_bus.o
+build_base: base_action.o base_bus.o
+
+base_action.o: $(DIR_ROOT)action.c
+	$(CC) $(FLAGS) $(BUILD_FLAGS) -c $(DIR_ROOT)action.c -o $(DIR_BUILD)base_action.o
 
 base_bus.o: $(DIR_ROOT)bus.c $(DIR_INCLUDE)bus.h
 	$(CC) $(FLAGS) $(BUILD_FLAGS) -c $(DIR_ROOT)bus.c -o $(DIR_BUILD)base_bus.o
@@ -78,7 +81,7 @@ system_processor.o: $(DIR_ROOT_SYSTEM)processor.c $(DIR_INCLUDE_SYSTEM)processor
 archive:
 	@echo ''
 	@echo '--- BUILDING LIBRARY ----------------------------------------------------------'
-	ar rcs $(DIR_BIN_LIB)$(LIB) $(DIR_BUILD)base_bus.o \
+	ar rcs $(DIR_BIN_LIB)$(LIB) $(DIR_BUILD)base_action.o $(DIR_BUILD)base_bus.o \
 		$(DIR_BUILD)common_buffer.o $(DIR_BUILD)common_cartridge.o $(DIR_BUILD)common_error.o $(DIR_BUILD)common_mapper.o $(DIR_BUILD)common_trace.o \
 			$(DIR_BUILD)common_version.o \
 		$(DIR_BUILD)mapper_nrom.o \

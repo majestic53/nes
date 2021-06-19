@@ -37,6 +37,8 @@ typedef struct {
 extern "C" {
 #endif /* __cplusplus */
 
+nes_bus_t *nes_bus(void);
+
 int nes_bus_load(
 	__in const nes_t *configuration
 	);

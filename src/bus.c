@@ -27,62 +27,10 @@ static nes_bus_t g_bus = {};
 extern "C" {
 #endif /* __cplusplus */
 
-int
-nes(
-	__in const nes_t *configuration
-	)
+nes_bus_t *
+nes_bus(void)
 {
-	int result = NES_OK;
-
-	if(!configuration) {
-		result = ERROR(NES_ERR, "invalid configuration -- %p", configuration);
-		goto exit;
-	}
-
-	TRACE(LEVEL_INFORMATION, "%s ver.%i.%i.%i", NES, nes_version()->major, nes_version()->minor, nes_version()->patch);
-	TRACE(LEVEL_VERBOSE, "Configuration PATH: \"%s\"", configuration->path);
-	TRACE(LEVEL_VERBOSE, "Configuration ROM: %p, %.02f KB (%u bytes)", configuration->rom.data, configuration->rom.length / (float)BYTES_PER_KBYTE,
-		configuration->rom.length);
-
-	if((result = nes_bus_load(configuration)) != NES_OK) {
-		goto exit;
-	}
-
-	if((result = nes_service_load(configuration)) != NES_OK) {
-		goto exit;
-	}
-
-	TRACE(LEVEL_INFORMATION, "%s", "Emulation started");
-	TRACE_RESET();
-
-	for(;;) {
-		uint16_t cycle = 0;
-
-		if(nes_service_poll() != NES_OK) {
-			result = (result == NES_EVT) ? NES_OK : result;
-			break;
-		}
-
-		/* TODO: STEP SUBSYSTEMS */
-		do {
-			nes_processor_step(&g_bus.processor);
-			TRACE_STEP();
-		} while(cycle++ < CYCLES_PER_FRAME);
-		/* --- */
-
-		if((result = nes_service_show()) != NES_OK) {
-			break;
-		}
-	}
-
-	TRACE(LEVEL_INFORMATION, "%s", "Emulation stopped");
-	TRACE_RESET();
-
-exit:
-	nes_service_unload();
-	nes_bus_unload();
-
-	return result;
+	return &g_bus;
 }
 
 int
@@ -193,6 +141,48 @@ nes_bus_write(
 			TRACE(LEVEL_WARNING, "Invalid bus type: %i", bus);
 			break;
 	}
+}
+
+int
+nes_load(
+	__in const nes_t *configuration
+	)
+{
+	int result = NES_OK;
+
+	if(!configuration) {
+		result = ERROR(NES_ERR, "invalid configuration -- %p", configuration);
+		goto exit;
+	}
+
+	TRACE(LEVEL_INFORMATION, "%s ver.%i.%i.%i", NES, nes_version()->major, nes_version()->minor, nes_version()->patch);
+	TRACE(LEVEL_VERBOSE, "Configuration PATH: \"%s\"", configuration->path);
+	TRACE(LEVEL_VERBOSE, "Configuration ROM: %p, %.02f KB (%u bytes)", configuration->rom.data, configuration->rom.length / (float)BYTES_PER_KBYTE,
+		configuration->rom.length);
+
+	if((result = nes_service_load(configuration)) != NES_OK) {
+		goto exit;
+	}
+
+	if((result = nes_bus_load(configuration)) != NES_OK) {
+		goto exit;
+	}
+
+	TRACE(LEVEL_INFORMATION, "%s", "Emulation loaded");
+	TRACE_RESET();
+
+exit:
+	return result;
+}
+
+void
+nes_unload(void)
+{
+	TRACE(LEVEL_INFORMATION, "%s", "Emulation unloaded");
+	TRACE_RESET();
+
+	nes_bus_unload();
+	nes_service_unload();
 }
 
 #ifdef __cplusplus
