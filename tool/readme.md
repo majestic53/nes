@@ -38,7 +38,7 @@ To launch nes with the display fullscreen, run the following command:
 $ ./bin/nes <PATH_TO_FILE> -f
 ```
 
-Fullscreen mode an be toggled via the ```F11``` key.
+Fullscreen mode can be toggled via the ```F11``` key.
 
 To launch nes with the display scaled, run the following command:
 
@@ -46,7 +46,7 @@ To launch nes with the display scaled, run the following command:
 $ ./bin/nes <PATH_TO_FILE> -s <SCALE>
 ```
 
-Valid scaling is between 1-4.
+Valid scaling values fall between 1-4.
 
 Trademark
 =
