@@ -37,7 +37,7 @@ nes_bus_read(
 
 	switch(bus) {
 		case BUS_PROCESSOR:
-			result = g_test.memory.data[address];
+			result = g_test.memory.ptr[address];
 			break;
 		default:
 			break;
@@ -56,7 +56,7 @@ nes_bus_write(
 
 	switch(bus) {
 		case BUS_PROCESSOR:
-			g_test.memory.data[address] = data;
+			g_test.memory.ptr[address] = data;
 			break;
 		default:
 			break;
@@ -7720,7 +7720,7 @@ nes_test_processor_transfer(void)
 void
 nes_test_initialize(void)
 {
-	memset(g_test.memory.data, 0xea, g_test.memory.length);
+	memset(g_test.memory.ptr, 0xea, g_test.memory.length);
 	memset(&g_test.processor, 0, sizeof(g_test.processor));
 }
 

@@ -30,7 +30,8 @@
 
 #define KEY_FULLSCREEN SDL_SCANCODE_F11
 
-#define SCALE 2
+#define SCALE_MAX 4
+#define SCALE_MIN 1
 
 #define TITLE_MAX 128
 
@@ -45,6 +46,7 @@ typedef struct {
 	bool fullscreen;
 	nes_color_t pixel[WINDOW_HEIGHT][WINDOW_WIDTH];
 	SDL_Renderer *renderer;
+        uint8_t scale;
 	SDL_Texture *texture;
 	char title[TITLE_MAX];
 	SDL_version version;

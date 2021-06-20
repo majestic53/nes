@@ -33,8 +33,8 @@ nes_launcher_load(void)
 	FILE *file;
 	int length, result = NES_OK;
 
-	if(!(file = fopen(g_launcher.configuration.path, "rb"))) {
-		fprintf(stderr, "%s: file not found -- %s\n", g_launcher.path, g_launcher.configuration.path);
+	if(!(file = fopen(g_launcher.configuration.rom.path, "rb"))) {
+		fprintf(stderr, "%s: file not found -- %s\n", g_launcher.path, g_launcher.configuration.rom.path);
 		result = NES_ERR;
 		goto exit;
 	}
@@ -44,23 +44,23 @@ nes_launcher_load(void)
 	fseek(file, 0, SEEK_SET);
 
 	if(length < 0) {
-		fprintf(stderr, "%s: malformed file -- %s\n", g_launcher.path, g_launcher.configuration.path);
+		fprintf(stderr, "%s: malformed file -- %s\n", g_launcher.path, g_launcher.configuration.rom.path);
 		result = NES_ERR;
 		goto exit;
 	} else if(!length) {
-		fprintf(stderr, "%s: empty file -- %s\n", g_launcher.path, g_launcher.configuration.path);
+		fprintf(stderr, "%s: empty file -- %s\n", g_launcher.path, g_launcher.configuration.rom.path);
 		result = NES_ERR;
 		goto exit;
 	}
 
-	if((result = nes_buffer_allocate(&g_launcher.configuration.rom, length)) != NES_OK) {
+	if((result = nes_buffer_allocate(&g_launcher.configuration.rom.data, length)) != NES_OK) {
 		fprintf(stderr, "%s: %s\n", g_launcher.path, nes_error());
 		goto exit;
 	}
 
-	if(fread(g_launcher.configuration.rom.data, sizeof(uint8_t), g_launcher.configuration.rom.length, file) != g_launcher.configuration.rom.length) {
-		fprintf(stderr, "%s: file read error -- %s {%.02f KB (%zu bytes)}\n", g_launcher.path, g_launcher.configuration.path,
-			g_launcher.configuration.rom.length / (float)BYTES_PER_KBYTE, g_launcher.configuration.rom.length);
+	if(fread(g_launcher.configuration.rom.data.ptr, sizeof(uint8_t), g_launcher.configuration.rom.data.length, file) != g_launcher.configuration.rom.data.length) {
+		fprintf(stderr, "%s: file read error -- %s {%.02f KB (%zu bytes)}\n", g_launcher.path, g_launcher.configuration.rom.path,
+			g_launcher.configuration.rom.data.length / (float)BYTES_PER_KBYTE, g_launcher.configuration.rom.data.length);
 		result = NES_ERR;
 		goto exit;
 	}
@@ -78,7 +78,7 @@ exit:
 void
 nes_launcher_unload(void)
 {
-	nes_buffer_free(&g_launcher.configuration.rom);
+	nes_buffer_free(&g_launcher.configuration.rom.data);
 	memset(&g_launcher, 0, sizeof(g_launcher));
 }
 
@@ -123,6 +123,8 @@ main(
 
 	g_launcher.path = argv[0];
 	g_launcher.version = nes_version();
+	g_launcher.configuration.display.fullscreen = DISPLAY_FULLSCREEN;
+	g_launcher.configuration.display.scale = DISPLAY_SCALE;
 
 	if(!argc) {
 		nes_launcher_usage(stderr, false);
@@ -135,9 +137,18 @@ main(
 	while((option = getopt(argc, argv, OPTIONS)) != -1) {
 
 		switch(option) {
+			case OPTION_DEBUG:
+				g_launcher.debug = true;
+				break;
+			case OPTION_FULLSCREEN:
+				g_launcher.configuration.display.fullscreen = true;
+				break;
 			case OPTION_HELP:
 				nes_launcher_usage(stdout, true);
 				goto exit;
+			case OPTION_SCALE:
+				g_launcher.configuration.display.scale = strtol(optarg, NULL, 10);
+				break;
 			case OPTION_VERSION:
 				nes_launcher_version(stdout, false);
 				goto exit;
@@ -151,17 +162,17 @@ main(
 
 	for(option = optind; option < argc; ++option) {
 
-		if(g_launcher.configuration.path) {
+		if(g_launcher.configuration.rom.path) {
 			fprintf(stderr, "%s: redefined file path -- %s\n", g_launcher.path, argv[option]);
 			nes_launcher_usage(stderr, false);
 			result = NES_ERR;
 			goto exit;
 		}
 
-		g_launcher.configuration.path = argv[option];
+		g_launcher.configuration.rom.path = argv[option];
 	}
 
-	if(!g_launcher.configuration.path) {
+	if(!g_launcher.configuration.rom.path) {
 		fprintf(stderr, "%s: undefined file path\n", g_launcher.path);
 		nes_launcher_usage(stderr, false);
 		result = NES_ERR;
@@ -176,10 +187,16 @@ main(
 		fprintf(stderr, "%s: %s\n", g_launcher.path, nes_error());
 	}
 
-	g_launcher.request.type = NES_ACTION_RUN;
+	if(g_launcher.debug) {
 
-	if((result = nes_action(&g_launcher.request, NULL)) != NES_OK) {
-		fprintf(stderr, "%s: %s\n", g_launcher.path, nes_error());
+		// TODO: DEBUG CONSOLE
+
+	} else {
+		g_launcher.request.type = NES_ACTION_RUN;
+
+		if((result = nes_action(&g_launcher.request, NULL)) != NES_OK) {
+			fprintf(stderr, "%s: %s\n", g_launcher.path, nes_error());
+		}
 	}
 
 exit:

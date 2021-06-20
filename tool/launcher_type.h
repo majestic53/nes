@@ -25,32 +25,48 @@
 #include <getopt.h>
 #include "../include/common.h"
 
+#define DISPLAY_FULLSCREEN false
+#define DISPLAY_SCALE 2
+
 #define NOTICE "Copyright (C) 2021 David Jolly"
 
+#define OPTION_DEBUG 'd'
+#define OPTION_FULLSCREEN 'f'
 #define OPTION_HELP 'h'
+#define OPTION_SCALE 's'
 #define OPTION_VERSION 'v'
-#define OPTIONS "hv"
+#define OPTIONS "dfhs:v"
 
 #define USAGE "nes [options] file"
 
 enum {
-	FLAG_HELP = 0,
+	FLAG_DEBUG = 0,
+	FLAG_FULLSCREEN,
+	FLAG_HELP,
+	FLAG_SCALE,
 	FLAG_VERSION,
 	FLAG_MAX,
 };
 
 static const char *FLAG[] = {
+	"-d", /* FLAG_DEBUG */
+	"-f", /* FLAG_FULLSCREEN */
 	"-h", /* FLAG_HELP */
+	"-s", /* FLAG_SCALE */
 	"-v", /* FLAG_VERSION */
 	};
 
 static const char *FLAG_DESC[] = {
-	"Display help information", /* FLAG_HELP */
-	"Display version information", /* FLAG_VERSION */
+	"Enable debug mode", /* FLAG_DEBUG */
+	"Fullscreen display", /* FLAG_FULLSCREEN */
+	"Show help information", /* FLAG_HELP */
+	"Scale display", /* FLAG_SCALE */
+	"Show version information", /* FLAG_VERSION */
 	};
 
 typedef struct {
 	nes_t configuration;
+	bool debug;
 	const char *path;
 	nes_action_t request;
 	nes_action_t response;

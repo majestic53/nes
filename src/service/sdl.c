@@ -85,15 +85,26 @@ nes_service_load(
 	SDL_GetVersion(&g_sdl.version);
 	TRACE(LEVEL_INFORMATION, "SDL ver.%i.%i.%i", g_sdl.version.major, g_sdl.version.minor, g_sdl.version.patch);
 
-	snprintf(g_sdl.title, TITLE_MAX, "%s -- %s", basename((char *)configuration->path), NES);
+	snprintf(g_sdl.title, TITLE_MAX, "%s -- %s", basename((char *)configuration->rom.path), NES);
 	TRACE(LEVEL_VERBOSE, "Service title: \"%s\"", g_sdl.title);
+
+	g_sdl.scale = configuration->display.scale;
+	if(g_sdl.scale < SCALE_MIN) {
+		TRACE(LEVEL_WARNING, "Service scale too small: %u (must be a least %u)", g_sdl.scale, SCALE_MIN);
+		g_sdl.scale = SCALE_MIN;
+	} else if(g_sdl.scale > SCALE_MAX) {
+		TRACE(LEVEL_WARNING, "Service scale too large: %u (must be a most %u)", g_sdl.scale, SCALE_MAX);
+		g_sdl.scale = SCALE_MAX;
+	}
+
+	TRACE(LEVEL_VERBOSE, "Service scale: %u", g_sdl.scale);
 
 	if(SDL_Init(SDL_INIT_VIDEO)) {
 		result = ERROR(NES_ERR, "sdl error -- %s", SDL_GetError());
 		goto exit;
 	}
 
-	if(!(g_sdl.window = SDL_CreateWindow(g_sdl.title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_WIDTH * SCALE, WINDOW_HEIGHT * SCALE,
+	if(!(g_sdl.window = SDL_CreateWindow(g_sdl.title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_WIDTH * g_sdl.scale, WINDOW_HEIGHT * g_sdl.scale,
 			SDL_WINDOW_RESIZABLE))) {
 		result = ERROR(NES_ERR, "sdl error -- %s", SDL_GetError());
 		goto exit;
@@ -124,8 +135,12 @@ nes_service_load(
 		goto exit;
 	}
 
-	if((result = nes_service_clear()) != NES_ERR) {
+	if((result = nes_service_clear()) != NES_OK) {
 		goto exit;
+	}
+
+	if(configuration->display.fullscreen) {
+		nes_service_fullscreen();
 	}
 
 	TRACE(LEVEL_VERBOSE, "%s", "Service loaded");

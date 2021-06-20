@@ -169,7 +169,7 @@ nes_processor_execute_breakpoint(
 {
         nes_processor_register_t status = { .low = processor->status.low };
 
-        TRACE(LEVEL_VERBOSE, "Processor BRK [%04X]", processor->fetched.address.word);
+        TRACE(LEVEL_VERBOSE, "Processor breakpoint [%04X]", processor->fetched.address.word);
         nes_processor_push_word(processor, processor->program_counter.word);
         status.breakpoint = BREAKPOINT_SET;
         nes_processor_push(processor, status.low);
@@ -797,7 +797,7 @@ nes_processor_interrupt_maskable(
 {
         nes_processor_register_t status = { .low = processor->status.low };
 
-        TRACE(LEVEL_VERBOSE, "%s", "Processor IRQ");
+        TRACE(LEVEL_VERBOSE, "%s", "Processor maskable interrupt");
         nes_processor_push_word(processor, processor->program_counter.word);
         status.breakpoint = BREAKPOINT_CLEAR;
         nes_processor_push(processor, status.low);
@@ -814,7 +814,7 @@ nes_processor_interrupt_non_maskable(
 {
         nes_processor_register_t status = { .low = processor->status.low };
 
-        TRACE(LEVEL_VERBOSE, "%s", "Processor NMI");
+        TRACE(LEVEL_VERBOSE, "%s", "Processor non-maskable interrupt");
         nes_processor_push_word(processor, processor->program_counter.word);
         status.breakpoint = BREAKPOINT_CLEAR;
         nes_processor_push(processor, status.low);
@@ -882,7 +882,7 @@ nes_processor_reset(
         __inout nes_processor_t *processor
         )
 {
-        TRACE(LEVEL_VERBOSE, "%s", "Processor RESET");
+        TRACE(LEVEL_VERBOSE, "%s", "Processor reset");
         memset(processor, 0, sizeof(*processor));
         nes_processor_push_word(processor, processor->program_counter.word);
         nes_processor_push(processor, processor->status.low);
@@ -930,29 +930,29 @@ nes_processor_trace(
 {
 
         if(level <= LEVEL) {
-                TRACE(level, "Processor CYCLES: %u", processor->cycles);
-                TRACE(level, "Processor REG-PC: %04X", processor->program_counter.word);
-                TRACE(level, "Processor REG-SP: %02X", processor->stack_pointer.low);
-                TRACE(level, "Processor REG-S: %02X [%c%c%c%c%c%c%c]", processor->status.low,
+                TRACE(level, "Processor cycles: %u", processor->cycles);
+                TRACE(level, "Processor PC: %04X", processor->program_counter.word);
+                TRACE(level, "Processor SP: %02X", processor->stack_pointer.low);
+                TRACE(level, "Processor S: %02X [%c%c%c%c%c%c%c]", processor->status.low,
                         processor->status.negative ? 'N' : '-', processor->status.overflow ? 'O' : '-',
                         processor->status.breakpoint ? 'B' : '-', processor->status.decimal ? 'D' : '-',
                         processor->status.interrupt_disabled ? 'I' : '-', processor->status.zero ? 'Z' : '-',
                         processor->status.carry ? 'C' : '-');
 
                 if(processor->pending.transfer) {
-                        TRACE(level, "Processor REG-P: %02X [%c%c%c], %04X (%u/%u)", processor->pending.low,
+                        TRACE(level, "Processor P: %02X [%c%c%c], %04X (%u/%u)", processor->pending.low,
                                 processor->pending.maskable ? 'M' : '-', processor->pending.non_maskable ? 'N' : '-',
                                 processor->pending.transfer ? 'T' : '-', processor->transfer.source.word,
                                 processor->transfer.offset.low + 1, PAGE_WIDTH);
                 } else {
-                        TRACE(level, "Processor REG-P: %02X [%c%c%c]", processor->pending.low,
+                        TRACE(level, "Processor P: %02X [%c%c%c]", processor->pending.low,
                                 processor->pending.maskable ? 'M' : '-', processor->pending.non_maskable ? 'N' : '-',
                                 processor->pending.transfer ? 'T' : '-');
                 }
 
-                TRACE(level, "Processor REG-A: %02X", processor->accumulator.low);
-                TRACE(level, "Processor REG-X: %02X", processor->index_x.low);
-                TRACE(level, "Processor REG-Y: %02X", processor->index_y.low);
+                TRACE(level, "Processor A: %02X", processor->accumulator.low);
+                TRACE(level, "Processor X: %02X", processor->index_x.low);
+                TRACE(level, "Processor Y: %02X", processor->index_y.low);
         }
 }
 

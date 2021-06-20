@@ -17,8 +17,11 @@ $ nes [options] file
 The following options are available:
 
 ```
--h	Display help information
--v	Display version information
+-d	Enable debug mode
+-f	Fullscreen display
+-h	Show help information
+-s	Scale display
+-v	Show version information
 ```
 
 #### Examples
@@ -28,6 +31,22 @@ To launch nes with a file, run the following command:
 ```
 $ ./bin/nes <PATH_TO_FILE>
 ```
+
+To launch nes with the display fullscreen, run the following command:
+
+```
+$ ./bin/nes <PATH_TO_FILE> -f
+```
+
+__NOTE__: Fullscreen mode an be toggled via the ```F11``` key.
+
+To launch nes with the display scaled, run the following command:
+
+```
+$ ./bin/nes <PATH_TO_FILE> -s <SCALE>
+```
+
+__NOTE__: Valid scaling is between 1-4
 
 Trademark
 =

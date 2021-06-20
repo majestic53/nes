@@ -156,9 +156,10 @@ nes_load(
 	}
 
 	TRACE(LEVEL_INFORMATION, "%s ver.%i.%i.%i", NES, nes_version()->major, nes_version()->minor, nes_version()->patch);
-	TRACE(LEVEL_VERBOSE, "Configuration PATH: \"%s\"", configuration->path);
-	TRACE(LEVEL_VERBOSE, "Configuration ROM: %p, %.02f KB (%u bytes)", configuration->rom.data, configuration->rom.length / (float)BYTES_PER_KBYTE,
-		configuration->rom.length);
+	TRACE(LEVEL_VERBOSE, "Configuration path: \"%s\"", configuration->rom.path);
+	TRACE(LEVEL_VERBOSE, "Configuration rom: %p, %.02f KB (%u bytes)", configuration->rom.data.ptr, configuration->rom.data.length / (float)BYTES_PER_KBYTE,
+		configuration->rom.data.length);
+	TRACE(LEVEL_VERBOSE, "Configuration display: %sx%u", configuration->display.fullscreen ? "Fullscreen" : "Windowed", configuration->display.scale);
 
 	if((result = nes_service_load(configuration)) != NES_OK) {
 		goto exit;

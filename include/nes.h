@@ -83,9 +83,25 @@ typedef struct {
  * NES buffer struct
  */
 typedef struct {
-	uint8_t *data; /* Pointer to data */
+	uint8_t *ptr; /* Pointer to data */
 	size_t length; /* Data length in bytes */
 } nes_buffer_t;
+
+/**
+ * NES display struct
+ */
+typedef struct {
+        bool fullscreen; /* DIsplay fullscreen */
+        unsigned scale; /* Display scale */
+} nes_display_t;
+
+/**
+ * NES ROM struct
+ */
+typedef struct {
+        nes_buffer_t data; /* ROM data */
+        const char *path; /* ROM path */
+} nes_rom_t;
 
 /**
  * NES version struct
@@ -101,8 +117,8 @@ typedef struct {
  */
 typedef struct {
 #if NES_API_VERSION >= NES_API_VERSION_1
-	const char *path; /* ROM path */
-	nes_buffer_t rom; /* ROM data */
+        nes_display_t display; /* Display configuration */
+        nes_rom_t rom; /* ROM configuration */
 #endif /* NES_API_VERSION >= NES_API_VERSION_1 */
 } nes_t;
 

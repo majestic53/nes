@@ -33,14 +33,14 @@ nes_buffer_allocate(
 {
 	int result = NES_OK;
 
-	if(!(buffer->data = calloc(length, sizeof(uint8_t)))) {
+	if(!(buffer->ptr = calloc(length, sizeof(uint8_t)))) {
 		result = ERROR(NES_ERR, "failed to allocate buffer -- %.02f KB (%u bytes)", length / (float)BYTES_PER_KBYTE, length);
 		goto exit;
 	}
 
 	buffer->length = length;
-	memset(buffer->data, BUFFER_FILL, buffer->length);
-	TRACE(LEVEL_VERBOSE, "Buffer allocate %p, %.02f KB (%u bytes)", buffer->data, buffer->length / (float)BYTES_PER_KBYTE, buffer->length);
+	memset(buffer->ptr, BUFFER_FILL, buffer->length);
+	TRACE(LEVEL_VERBOSE, "Buffer allocate %p, %.02f KB (%u bytes)", buffer->ptr, buffer->length / (float)BYTES_PER_KBYTE, buffer->length);
 
 exit:
 	return result;
@@ -52,9 +52,9 @@ nes_buffer_free(
 	)
 {
 
-	if(buffer->data) {
-		free(buffer->data);
-		TRACE(LEVEL_VERBOSE, "Buffer free %p", buffer->data);
+	if(buffer->ptr) {
+		free(buffer->ptr);
+		TRACE(LEVEL_VERBOSE, "Buffer free %p", buffer->ptr);
 	}
 
 	memset(buffer, 0, sizeof(*buffer));

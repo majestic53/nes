@@ -45,13 +45,13 @@ nes_cartridge_load(
 
 	TRACE(LEVEL_VERBOSE, "%s", "Cartridge loading");
 
-	if(configuration->rom.length < sizeof(*cartridge->header)) {
+	if(configuration->rom.data.length < sizeof(*cartridge->header)) {
 		result = ERROR(NES_ERR, "cartridge is too small -- expecting %.02f KB (%u bytes)", sizeof(*cartridge->header) / (float)BYTES_PER_KBYTE,
 				sizeof(*cartridge->header));
 		goto exit;
 	}
 
-	cartridge->header = (const nes_cartridge_header_t *)configuration->rom.data;
+	cartridge->header = (const nes_cartridge_header_t *)configuration->rom.data.ptr;
 
 	if(strncmp((char *)cartridge->header->magic, HEADER_MAGIC, strlen(HEADER_MAGIC))) {
 		result = ERROR(NES_ERR, "cartridge magic mismatch -- expecting \"%s\"", HEADER_MAGIC);
@@ -66,7 +66,7 @@ nes_cartridge_load(
 			goto exit;
 	}
 
-	data = (configuration->rom.data + sizeof(*cartridge->header));
+	data = (configuration->rom.data.ptr + sizeof(*cartridge->header));
 	length += sizeof(*cartridge->header);
 
 	if(cartridge->header->flag_6.trainer) {
@@ -90,15 +90,15 @@ nes_cartridge_load(
 	cartridge->rom[ROM_CHARACTER].length = cartridge->rom_count[ROM_CHARACTER] * ROM_CHARACTER_BANK_WIDTH;
 	length += cartridge->rom[ROM_CHARACTER].length;
 
-	if(length != configuration->rom.length) {
+	if(length != configuration->rom.data.length) {
 		result = ERROR(NES_ERR, "cartridge length mismatch -- expecting %.02f KB (%u bytes), found %.02f KB (%u bytes)", length / (float)BYTES_PER_KBYTE,
 				length, cartridge->rom->length / (float)BYTES_PER_KBYTE, cartridge->rom->length);
 		goto exit;
 	}
 
-	cartridge->rom[ROM_PROGRAM].data = data;
+	cartridge->rom[ROM_PROGRAM].ptr = data;
 	data += cartridge->rom[ROM_PROGRAM].length;
-	cartridge->rom[ROM_CHARACTER].data = data;
+	cartridge->rom[ROM_CHARACTER].ptr = data;
 	cartridge->ram_count = cartridge->header->ram_program_count ? cartridge->header->ram_program_count : 1;
 
 	if((result = nes_buffer_allocate(&cartridge->ram, cartridge->ram_count * RAM_BANK_WIDTH)) != NES_OK) {
@@ -106,7 +106,7 @@ nes_cartridge_load(
 	}
 
 	TRACE(LEVEL_VERBOSE, "%s", "Cartridge loaded");
-	TRACE(LEVEL_VERBOSE, "Cartridge MAPPER: %i (%s)", cartridge->mapper, MAPPER[cartridge->mapper]);
+	TRACE(LEVEL_VERBOSE, "Cartridge mapper: %i (%s)", cartridge->mapper, MAPPER[cartridge->mapper]);
 	TRACE(LEVEL_VERBOSE, "Cartridge ROM-PRG: %u, %.02f KB (%u bytes)", cartridge->rom_count[ROM_PROGRAM],
 		cartridge->rom[ROM_PROGRAM].length / (float)BYTES_PER_KBYTE, cartridge->rom[ROM_PROGRAM].length);
 	TRACE(LEVEL_VERBOSE, "Cartridge ROM-CHR: %u, %.02f KB (%u bytes)", cartridge->rom_count[ROM_CHARACTER],
@@ -124,7 +124,7 @@ nes_cartridge_read_ram(
 	__in size_t address
 	)
 {
-	return cartridge->ram.data[address];
+	return cartridge->ram.ptr[address];
 }
 
 uint8_t
@@ -134,7 +134,7 @@ nes_cartridge_read_rom(
 	__in size_t address
 	)
 {
-	return cartridge->rom[type].data[address];
+	return cartridge->rom[type].ptr[address];
 }
 
 void
@@ -157,7 +157,7 @@ nes_cartridge_write_ram(
 	__in uint8_t data
 	)
 {
-	cartridge->ram.data[address] = data;
+	cartridge->ram.ptr[address] = data;
 }
 
 #ifdef __cplusplus
