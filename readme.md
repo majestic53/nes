@@ -8,7 +8,7 @@ A lightweight NES emulator, written in C
 Features
 =
 
-__NOTE__: This project is a work-in-progress and is missing a lot of functionality. See the table below for the current implementation status:
+This project is a work-in-progress and is missing a lot of functionality. See the table below for the current implementation status:
 
 |Subsystem|Complete          |Description                          |
 |:--------|:-----------------|:------------------------------------|
@@ -25,7 +25,7 @@ The latest release can be found here: ```TBD```
 Building from Source
 =
 
-__NOTE__: This project is tested under GNU/Linux, using the GCC C compiler. Some modifications will be required to build with a different OS/compiler.
+This project is tested under GNU/Linux, using the GCC C compiler. Some modifications will be required to build with a different OS/compiler.
 
 ### Preparing to build
 
@@ -48,8 +48,8 @@ $ make [<BUILD>] [LEVLE=<LEVEL>]
 |Field   |Supported values                           |Description                                                                                                  |
 |:-------|:------------------------------------------|:------------------------------------------------------------------------------------------------------------|
 |COMPILER|```gcc```                                  |Specifies the compiler to be used                                                                            |
-|BUILD   |```debug```, ```release```                 |Optionally specifies the build type (__NOTE__: defaults to release)                                          |
-|LEVEL   |```0```, ```1```, ```2```, ```3```, ```4```|Optionally specifies the debug tracing level (__NOTE__: 0=None, 1=Error, 2=Warning, 3=Information, 4=Verbose)|
+|BUILD   |```debug```, ```release```                 |Optionally specifies the build type (defaults to release)                                          |
+|LEVEL   |```0```, ```1```, ```2```, ```3```, ```4```|Optionally specifies the debug tracing level (0=None, 1=Error, 2=Warning, 3=Information, 4=Verbose)|
 
 If the build succeeds, the binary files can be found under ```bin/```
 
