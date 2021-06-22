@@ -12,7 +12,7 @@ Launch from the project root directory:
 $ nes [options] file
 ```
 
-#### Options
+### Options
 
 The following options are available:
 
@@ -54,7 +54,7 @@ $ ./bin/nes <PATH_TO_FILE> -s <SCALE>
 
 Valid scaling values fall between 1-4.
 
-#### Debug commands
+### Debug commands
 
 The following commands are available in debug mode:
 

@@ -74,7 +74,7 @@ Using the Library
 
 This project is implemented in C and exposes a simple API, described in ```include/nes.h```:
 
-#### Routines
+### Routines
 
 |Name       |Signature                                                 |Description               |
 |:----------|:---------------------------------------------------------|:-------------------------|
@@ -84,7 +84,7 @@ This project is implemented in C and exposes a simple API, described in ```inclu
 |nes_error  |```const char *nes_error(void)```                         |Retrieve emulator error   |
 |nes_version|```const nes_version_t *nes_version(void)```              |Retrieve emulator version |
 
-#### Actions
+### Actions
 
 |Name                      |Input/Output    |Description|
 |:-------------------------|:---------------|:-----------------------|
