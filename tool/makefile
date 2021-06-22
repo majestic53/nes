@@ -31,7 +31,10 @@ LIB=libnes.a
 
 build: build_tool link
 
-build_tool: tool_launcher.o
+build_tool: tool_debug.o tool_launcher.o
+
+tool_debug.o: $(DIR_ROOT)debug.c
+	$(CC) $(FLAGS) $(BUILD_FLAGS) -c $(DIR_ROOT)debug.c -o $(DIR_BUILD)tool_debug.o
 
 tool_launcher.o: $(DIR_ROOT)launcher.c
 	$(CC) $(FLAGS) $(BUILD_FLAGS) -c $(DIR_ROOT)launcher.c -o $(DIR_BUILD)tool_launcher.o
@@ -39,7 +42,7 @@ tool_launcher.o: $(DIR_ROOT)launcher.c
 link:
 	@echo ''
 	@echo '--- BUILDING TOOL -------------------------------------------------------------'
-	$(CC) $(FLAGS) $(BUILD_FLAGS) $(DIR_BUILD)tool_launcher.o $(DIR_BIN_LIB)$(LIB) $(FLAGS_LIB) -o $(DIR_BIN)$(BIN)
+	$(CC) $(FLAGS) $(BUILD_FLAGS) $(DIR_BUILD)tool_debug.o $(DIR_BUILD)tool_launcher.o $(DIR_BIN_LIB)$(LIB) $(FLAGS_LIB) -o $(DIR_BIN)$(BIN)
 	@echo '--- DONE ----------------------------------------------------------------------'
 	@echo ''
 

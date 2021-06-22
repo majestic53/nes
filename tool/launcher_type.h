@@ -22,8 +22,12 @@
 #ifndef NES_LAUNCHER_TYPE_H_
 #define NES_LAUNCHER_TYPE_H_
 
+#include <readline/history.h>
+#include <readline/readline.h>
 #include <getopt.h>
 #include "../include/common.h"
+
+#define ARGUMENT_MAX 10
 
 #define DISPLAY_FULLSCREEN false
 #define DISPLAY_SCALE 2
@@ -37,7 +41,19 @@
 #define OPTION_VERSION 'v'
 #define OPTIONS "dfhs:v"
 
+#define PROMPT_ERROR "????"
+#define PROMPT_MAX 32
+#define PROMPT_POSTFIX "] $ "
+#define PROMPT_PREFIX "\n["
+
 #define USAGE "nes [options] file"
+
+enum {
+	COMMAND_EXIT = 0,
+	COMMAND_HELP,
+	COMMAND_VERSION,
+	COMMAND_MAX,
+};
 
 enum {
 	FLAG_DEBUG = 0,
@@ -48,22 +64,6 @@ enum {
 	FLAG_MAX,
 };
 
-static const char *FLAG[] = {
-	"-d", /* FLAG_DEBUG */
-	"-f", /* FLAG_FULLSCREEN */
-	"-h", /* FLAG_HELP */
-	"-s", /* FLAG_SCALE */
-	"-v", /* FLAG_VERSION */
-	};
-
-static const char *FLAG_DESC[] = {
-	"Enable debug mode", /* FLAG_DEBUG */
-	"Fullscreen display", /* FLAG_FULLSCREEN */
-	"Show help information", /* FLAG_HELP */
-	"Scale display", /* FLAG_SCALE */
-	"Show version information", /* FLAG_VERSION */
-	};
-
 typedef struct {
 	nes_t configuration;
 	bool debug;
@@ -73,9 +73,31 @@ typedef struct {
 	const nes_version_t *version;
 } nes_launcher_t;
 
+typedef int (*nes_launcher_debug_hdlr)(
+        __in const nes_launcher_t *launcher,
+        __in const char *argument[],
+        __in uint32_t count
+        );
+
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
+
+void nes_launcher_debug(
+	__in const nes_launcher_t *launcher
+	);
+
+int nes_launcher_debug_help(
+	__in const nes_launcher_t *launcher,
+        __in const char *argument[],
+        __in uint32_t count
+	);
+
+int nes_launcher_debug_version(
+	__in const nes_launcher_t *launcher,
+        __in const char *argument[],
+        __in uint32_t count
+	);
 
 int nes_launcher_load(void);
 

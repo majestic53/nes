@@ -23,6 +23,22 @@
 
 static nes_launcher_t g_launcher = {};
 
+static const char *FLAG[] = {
+	"-d", /* FLAG_DEBUG */
+	"-f", /* FLAG_FULLSCREEN */
+	"-h", /* FLAG_HELP */
+	"-s", /* FLAG_SCALE */
+	"-v", /* FLAG_VERSION */
+	};
+
+static const char *FLAG_DESC[] = {
+	"Enter debug mode", /* FLAG_DEBUG */
+	"Fullscreen display", /* FLAG_FULLSCREEN */
+	"Show help information", /* FLAG_HELP */
+	"Scale display", /* FLAG_SCALE */
+	"Show version information", /* FLAG_VERSION */
+	};
+
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
@@ -185,17 +201,17 @@ main(
 
 	if((result = nes_load(&g_launcher.configuration)) != NES_OK) {
 		fprintf(stderr, "%s: %s\n", g_launcher.path, nes_error());
+		goto exit;
 	}
 
 	if(g_launcher.debug) {
-
-		// TODO: DEBUG CONSOLE
-
+		nes_launcher_debug(&g_launcher);
 	} else {
 		g_launcher.request.type = NES_ACTION_RUN;
 
 		if((result = nes_action(&g_launcher.request, NULL)) != NES_OK) {
 			fprintf(stderr, "%s: %s\n", g_launcher.path, nes_error());
+			goto exit;
 		}
 	}
 

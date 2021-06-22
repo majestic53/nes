@@ -25,9 +25,15 @@
 #include "../include/system/processor.h"
 #include "../include/service.h"
 
+#define RAM_MIRROR 0x0800
+
+#define RAM_WIDTH \
+        ADDRESS_WIDTH(ADDRESS_RAM_BEGIN, RAM_MIRROR - 1)
+
 typedef struct {
         nes_mapper_t mapper;
         nes_processor_t processor;
+        nes_buffer_t ram;
 
 	/* TODO: ADD SUBSYSTEMS */
 

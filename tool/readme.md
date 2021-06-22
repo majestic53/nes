@@ -17,7 +17,7 @@ $ nes [options] file
 The following options are available:
 
 ```
--d	Enable debug mode
+-d	Enter debug mode
 -f	Fullscreen display
 -h	Show help information
 -s	Scale display
@@ -30,6 +30,12 @@ To launch nes with a file, run the following command:
 
 ```
 $ ./bin/nes <PATH_TO_FILE>
+```
+
+To launch nes in debug mode, run the following command:
+
+```
+$ ./bin/nes <PATH_TO_FILE> -d
 ```
 
 To launch nes with the display fullscreen, run the following command:
@@ -47,6 +53,30 @@ $ ./bin/nes <PATH_TO_FILE> -s <SCALE>
 ```
 
 Valid scaling values fall between 1-4.
+
+#### Debug commands
+
+The following commands are available in debug mode:
+
+```
+q	Exit debug mode
+h	Show help information
+v	Show version information
+```
+
+#### Examples
+
+To exit debug mode, run the following command:
+
+```
+[0000] $ q
+```
+
+To show help information in debug mode, run the following command:
+
+```
+[0000] $ h
+```
 
 Trademark
 =

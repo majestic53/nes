@@ -42,6 +42,10 @@ nes_bus_load(
 
 	TRACE(LEVEL_VERBOSE, "%s", "Bus loading");
 
+	if((result = nes_buffer_allocate(&g_bus.ram, RAM_WIDTH)) != NES_OK) {
+		goto exit;
+	}
+
 	if((result = nes_mapper_load(configuration, &g_bus.mapper)) != NES_OK) {
 		goto exit;
 	}
@@ -67,6 +71,13 @@ nes_bus_read(
 		case BUS_PROCESSOR:
 
 			switch(address) {
+				case ADDRESS_RAM_BEGIN ... ADDRESS_RAM_END:
+					result = g_bus.ram.ptr[(address - ADDRESS_RAM_BEGIN) % RAM_MIRROR];
+					break;
+				case ADDRESS_ROM_0_BEGIN ... ADDRESS_ROM_0_END:
+				case ADDRESS_ROM_1_BEGIN ... ADDRESS_ROM_1_END:
+					result = nes_mapper_read_rom(&g_bus.mapper, ROM_PROGRAM, address - ADDRESS_ROM_0_BEGIN);
+					break;
 
 				/* TODO: READ DATA FROM ADDRESS */
 
@@ -102,6 +113,7 @@ nes_bus_unload(void)
 	/* TODO: UNLOAD SUBSYSTEMS */
 
 	nes_mapper_unload(&g_bus.mapper);
+	nes_buffer_free(&g_bus.ram);
 	memset(&g_bus, 0, sizeof(g_bus));
 	TRACE(LEVEL_VERBOSE, "%s", "Bus unloaded");
 }
@@ -118,6 +130,13 @@ nes_bus_write(
 		case BUS_PROCESSOR:
 
 			switch(address) {
+				case ADDRESS_RAM_BEGIN ... ADDRESS_RAM_END:
+					g_bus.ram.ptr[(address - ADDRESS_RAM_BEGIN) % RAM_MIRROR] = data;
+					break;
+				case ADDRESS_ROM_0_BEGIN ... ADDRESS_ROM_0_END:
+				case ADDRESS_ROM_1_BEGIN ... ADDRESS_ROM_1_END:
+					nes_mapper_write_rom(&g_bus.mapper, ROM_PROGRAM, address - ADDRESS_ROM_0_BEGIN, data);
+					break;
 
 				/* TODO: READ DATA FROM ADDRESS */
 

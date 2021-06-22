@@ -25,6 +25,7 @@
 #include "./bus_type.h"
 
 typedef int (*nes_action_hdlr)(
+        __in nes_bus_t *bus,
         __in const nes_action_t *request,
         __inout nes_action_t *response
         );
@@ -34,31 +35,37 @@ extern "C" {
 #endif /* __cplusplus */
 
 int nes_action_bus_read(
+        __in nes_bus_t *bus,
         __in const nes_action_t *request,
         __inout nes_action_t *response
         );
 
 int nes_action_bus_write(
+        __in nes_bus_t *bus,
         __in const nes_action_t *request,
         __inout nes_action_t *response
         );
 
 int nes_action_processor_read(
+        __in nes_bus_t *bus,
         __in const nes_action_t *request,
         __inout nes_action_t *response
         );
 
 int nes_action_processor_write(
+        __in nes_bus_t *bus,
         __in const nes_action_t *request,
         __inout nes_action_t *response
         );
 
 int nes_action_run(
+        __in nes_bus_t *bus,
         __in const nes_action_t *request,
         __inout nes_action_t *response
         );
 
 int nes_action_step(
+        __in nes_bus_t *bus,
         __in const nes_action_t *request,
         __inout nes_action_t *response
         );
