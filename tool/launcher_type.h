@@ -51,7 +51,12 @@
 enum {
 	COMMAND_EXIT = 0,
 	COMMAND_HELP,
+	COMMAND_PROCESSOR,
+	COMMAND_READ,
+	COMMAND_RUN,
+	COMMAND_STEP,
 	COMMAND_VERSION,
+	COMMAND_WRITE,
 	COMMAND_MAX,
 };
 
@@ -93,7 +98,37 @@ int nes_launcher_debug_help(
         __in uint32_t count
 	);
 
+int nes_launcher_debug_processor(
+	__in const nes_launcher_t *launcher,
+        __in const char *argument[],
+        __in uint32_t count
+	);
+
+int nes_launcher_debug_read(
+	__in const nes_launcher_t *launcher,
+        __in const char *argument[],
+        __in uint32_t count
+	);
+
+int nes_launcher_debug_run(
+	__in const nes_launcher_t *launcher,
+        __in const char *argument[],
+        __in uint32_t count
+	);
+
+int nes_launcher_debug_step(
+	__in const nes_launcher_t *launcher,
+        __in const char *argument[],
+        __in uint32_t count
+	);
+
 int nes_launcher_debug_version(
+	__in const nes_launcher_t *launcher,
+        __in const char *argument[],
+        __in uint32_t count
+	);
+
+int nes_launcher_debug_write(
 	__in const nes_launcher_t *launcher,
         __in const char *argument[],
         __in uint32_t count

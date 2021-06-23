@@ -61,7 +61,12 @@ The following commands are available in debug mode:
 ```
 q	Exit debug mode
 h	Show help information
+p	Read/Write/Show processor
+r	Read data from address
+c	Run processor
+s	Step processor
 v	Show version information
+w	Write data to address
 ```
 
 #### Examples
@@ -72,10 +77,46 @@ To exit debug mode, run the following command:
 [0000] $ q
 ```
 
-To show help information in debug mode, run the following command:
+To show help information, run the following command:
 
 ```
 [0000] $ h
+```
+
+To step the processor, run the following command:
+
+```
+[0000] $ s
+```
+
+To run the processor, run the following command:
+
+```
+[0000] $ c
+```
+
+To read data from memory at some address, run the following command:
+
+```
+[0000] $ r <ADDRESS> [<OFFSET>]
+```
+
+To write data to memory at some address, run the following command:
+
+```
+[0000] $ w <ADDRESS> <DATA>
+```
+
+To show processor information, run the following command:
+
+```
+[0000] $ p
+```
+
+To read/write processor data at some register (```pc```, ```sp```, ```s```, ```a```, ```x```, ```y```), run the following command:
+
+```
+[0000] $ p <REGISTER> [<DATA>]
 ```
 
 Trademark

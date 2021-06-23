@@ -200,15 +200,13 @@ nes_action_run(
                         break;
                 }
 
-                /* TODO: STEP SUBSYSTEMS */
                 do {
                         nes_processor_step(&bus->processor);
 
-                        /* TODO */
+                        /* TODO: STEP SUBSYSTEMS */
 
                         TRACE_STEP();
                 } while(cycle++ < CYCLES_PER_FRAME);
-                /* --- */
 
                 if((result = nes_service_show()) != NES_OK) {
                         break;
@@ -235,6 +233,14 @@ nes_action_step(
                 result = (result == NES_EVT) ? NES_OK : result;
                 goto exit;
         }
+
+        do {
+                nes_processor_step(&bus->processor);
+
+                /* TODO: STEP SUBSYSTEMS */
+
+                TRACE_STEP();
+        } while(bus->processor.cycles);
 
         nes_processor_step(&bus->processor);
 
