@@ -19,11 +19,317 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "./processor_type.h"
+#include "./processor_trace_type.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
+
+static const nes_processor_instruction_t INSTRUCTION_FORMAT[] = {
+        /* 0x00 */
+        { 7, OPCODE_BRK, MODE_IMPLIED },
+        { 6, OPCODE_ORA, MODE_INDIRECT_X },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        { 3, OPCODE_ORA, MODE_ZEROPAGE },
+        { 5, OPCODE_ASL, MODE_ZEROPAGE },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        /* 0x08 */
+        { 3, OPCODE_PHP, MODE_IMPLIED },
+        { 2, OPCODE_ORA, MODE_IMMEDIATE },
+        { 2, OPCODE_ASL, MODE_IMPLIED },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        { 4, OPCODE_ORA, MODE_ABSOLUTE },
+        { 6, OPCODE_ASL, MODE_ABSOLUTE },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        /* 0x10 */
+        { 2, OPCODE_BPL, MODE_RELATIVE },
+        { 5, OPCODE_ORA, MODE_INDIRECT_Y },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        { 4, OPCODE_ORA, MODE_ZEROPAGE_X },
+        { 6, OPCODE_ASL, MODE_ZEROPAGE_X },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        /* 0x18 */
+        { 2, OPCODE_CLC, MODE_IMPLIED },
+        { 4, OPCODE_ORA, MODE_ABSOLUTE_Y },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        { 4, OPCODE_ORA, MODE_ABSOLUTE_X },
+        { 7, OPCODE_ASL, MODE_ABSOLUTE_X },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        /* 0x20 */
+        { 6, OPCODE_JSR, MODE_ABSOLUTE },
+        { 6, OPCODE_AND, MODE_INDIRECT_X },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        { 3, OPCODE_BIT, MODE_ZEROPAGE },
+        { 3, OPCODE_AND, MODE_ZEROPAGE },
+        { 5, OPCODE_ROL, MODE_ZEROPAGE },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        /* 0x28 */
+        { 4, OPCODE_PLP, MODE_IMPLIED },
+        { 2, OPCODE_AND, MODE_IMMEDIATE },
+        { 2, OPCODE_ROL, MODE_IMPLIED },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        { 4, OPCODE_BIT, MODE_ABSOLUTE },
+        { 4, OPCODE_AND, MODE_ABSOLUTE },
+        { 6, OPCODE_ROL, MODE_ABSOLUTE },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        /* 0x30 */
+        { 2, OPCODE_BMI, MODE_RELATIVE },
+        { 5, OPCODE_AND, MODE_INDIRECT_Y },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        { 4, OPCODE_AND, MODE_ZEROPAGE_X },
+        { 6, OPCODE_ROL, MODE_ZEROPAGE_X },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        /* 0x38 */
+        { 2, OPCODE_SEC, MODE_IMPLIED },
+        { 4, OPCODE_AND, MODE_ABSOLUTE_Y },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        { 4, OPCODE_AND, MODE_ABSOLUTE_X },
+        { 7, OPCODE_ROL, MODE_ABSOLUTE_X },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        /* 0x40 */
+        { 6, OPCODE_RTI, MODE_IMPLIED },
+        { 6, OPCODE_EOR, MODE_INDIRECT_X },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        { 3, OPCODE_EOR, MODE_ZEROPAGE },
+        { 5, OPCODE_LSR, MODE_ZEROPAGE },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        /* 0x48 */
+        { 3, OPCODE_PHA, MODE_IMPLIED },
+        { 2, OPCODE_EOR, MODE_IMMEDIATE },
+        { 2, OPCODE_LSR, MODE_IMPLIED },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        { 3, OPCODE_JMP, MODE_ABSOLUTE },
+        { 4, OPCODE_EOR, MODE_ABSOLUTE },
+        { 6, OPCODE_LSR, MODE_ABSOLUTE },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        /* 0x50 */
+        { 2, OPCODE_BVC, MODE_RELATIVE },
+        { 5, OPCODE_EOR, MODE_INDIRECT_Y },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        { 4, OPCODE_EOR, MODE_ZEROPAGE_X },
+        { 6, OPCODE_LSR, MODE_ZEROPAGE_X },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        /* 0x58 */
+        { 2, OPCODE_CLI, MODE_IMPLIED },
+        { 4, OPCODE_EOR, MODE_ABSOLUTE_Y },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        { 4, OPCODE_EOR, MODE_ABSOLUTE_X },
+        { 7, OPCODE_LSR, MODE_ABSOLUTE_X },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        /* 0x60 */
+        { 6, OPCODE_RTS, MODE_IMPLIED },
+        { 6, OPCODE_ADC, MODE_INDIRECT_X },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        { 3, OPCODE_ADC, MODE_ZEROPAGE },
+        { 5, OPCODE_ROR, MODE_ZEROPAGE },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        /* 0x68 */
+        { 4, OPCODE_PLA, MODE_IMPLIED },
+        { 2, OPCODE_ADC, MODE_IMMEDIATE },
+        { 2, OPCODE_ROR, MODE_IMPLIED },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        { 5, OPCODE_JMP, MODE_INDIRECT },
+        { 4, OPCODE_ADC, MODE_ABSOLUTE },
+        { 6, OPCODE_ROR, MODE_ABSOLUTE },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        /* 0x70 */
+        { 2, OPCODE_BVS, MODE_RELATIVE },
+        { 5, OPCODE_ADC, MODE_INDIRECT_Y },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        { 4, OPCODE_ADC, MODE_ZEROPAGE_X },
+        { 6, OPCODE_ROR, MODE_ZEROPAGE_X },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        /* 0x78 */
+        { 2, OPCODE_SEI, MODE_IMPLIED },
+        { 4, OPCODE_ADC, MODE_ABSOLUTE_Y },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        { 4, OPCODE_ADC, MODE_ABSOLUTE_X },
+        { 7, OPCODE_ROR, MODE_ABSOLUTE_X },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        /* 0x80 */
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        { 6, OPCODE_STA, MODE_INDIRECT_X },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        { 3, OPCODE_STY, MODE_ZEROPAGE },
+        { 3, OPCODE_STA, MODE_ZEROPAGE },
+        { 3, OPCODE_STX, MODE_ZEROPAGE },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        /* 0x88 */
+        { 2, OPCODE_DEY, MODE_IMPLIED },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        { 2, OPCODE_TXA, MODE_IMPLIED },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        { 4, OPCODE_STY, MODE_ABSOLUTE },
+        { 4, OPCODE_STA, MODE_ABSOLUTE },
+        { 4, OPCODE_STX, MODE_ABSOLUTE },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        /* 0x90 */
+        { 2, OPCODE_BCC, MODE_RELATIVE },
+        { 6, OPCODE_STA, MODE_INDIRECT_Y },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        { 4, OPCODE_STY, MODE_ZEROPAGE_X },
+        { 4, OPCODE_STA, MODE_ZEROPAGE_X },
+        { 4, OPCODE_STX, MODE_ZEROPAGE_Y },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        /* 0x98 */
+        { 2, OPCODE_TYA, MODE_IMPLIED },
+        { 5, OPCODE_STA, MODE_ABSOLUTE_Y },
+        { 2, OPCODE_TXS, MODE_IMPLIED },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        { 5, OPCODE_STA, MODE_ABSOLUTE_X },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        /* 0xa0 */
+        { 2, OPCODE_LDY, MODE_IMMEDIATE },
+        { 6, OPCODE_LDA, MODE_INDIRECT_X },
+        { 2, OPCODE_LDX, MODE_IMMEDIATE },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        { 3, OPCODE_LDY, MODE_ZEROPAGE },
+        { 3, OPCODE_LDA, MODE_ZEROPAGE },
+        { 3, OPCODE_LDX, MODE_ZEROPAGE },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        /* 0xa8 */
+        { 2, OPCODE_TAY, MODE_IMPLIED },
+        { 2, OPCODE_LDA, MODE_IMMEDIATE },
+        { 2, OPCODE_TAX, MODE_IMPLIED },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        { 4, OPCODE_LDY, MODE_ABSOLUTE },
+        { 4, OPCODE_LDA, MODE_ABSOLUTE },
+        { 4, OPCODE_LDX, MODE_ABSOLUTE },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        /* 0xb0 */
+        { 2, OPCODE_BCS, MODE_RELATIVE },
+        { 5, OPCODE_LDA, MODE_INDIRECT_Y },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        { 4, OPCODE_LDY, MODE_ZEROPAGE_X },
+        { 4, OPCODE_LDA, MODE_ZEROPAGE_X },
+        { 4, OPCODE_LDX, MODE_ZEROPAGE_Y },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        /* 0xb8 */
+        { 2, OPCODE_CLV, MODE_IMPLIED },
+        { 4, OPCODE_LDA, MODE_ABSOLUTE_Y },
+        { 2, OPCODE_TSX, MODE_IMPLIED },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        { 4, OPCODE_LDY, MODE_ABSOLUTE_X },
+        { 4, OPCODE_LDA, MODE_ABSOLUTE_X },
+        { 4, OPCODE_LDX, MODE_ABSOLUTE_Y },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        /* 0xc0 */
+        { 2, OPCODE_CPY, MODE_IMMEDIATE },
+        { 6, OPCODE_CMP, MODE_INDIRECT_X },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        { 3, OPCODE_CPY, MODE_ZEROPAGE },
+        { 3, OPCODE_CMP, MODE_ZEROPAGE },
+        { 5, OPCODE_DEC, MODE_ZEROPAGE },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        /* 0xc8 */
+        { 2, OPCODE_INY, MODE_IMPLIED },
+        { 2, OPCODE_CMP, MODE_IMMEDIATE },
+        { 2, OPCODE_DEX, MODE_IMPLIED },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        { 4, OPCODE_CPY, MODE_ABSOLUTE },
+        { 4, OPCODE_CMP, MODE_ABSOLUTE },
+        { 6, OPCODE_DEC, MODE_ABSOLUTE },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        /* 0xd0 */
+        { 2, OPCODE_BNE, MODE_RELATIVE },
+        { 5, OPCODE_CMP, MODE_INDIRECT_Y },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        { 4, OPCODE_CMP, MODE_ZEROPAGE_X },
+        { 6, OPCODE_DEC, MODE_ZEROPAGE_X },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        /* 0xd8 */
+        { 2, OPCODE_CLD, MODE_IMPLIED },
+        { 4, OPCODE_CMP, MODE_ABSOLUTE_Y },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        { 4, OPCODE_CMP, MODE_ABSOLUTE_X },
+        { 7, OPCODE_DEC, MODE_ABSOLUTE_X },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        /* 0xe0 */
+        { 2, OPCODE_CPX, MODE_IMMEDIATE },
+        { 6, OPCODE_SBC, MODE_INDIRECT_X },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        { 3, OPCODE_CPX, MODE_ZEROPAGE },
+        { 3, OPCODE_SBC, MODE_ZEROPAGE },
+        { 5, OPCODE_INC, MODE_ZEROPAGE },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        /* 0xe8 */
+        { 2, OPCODE_INX, MODE_IMPLIED },
+        { 2, OPCODE_SBC, MODE_IMMEDIATE },
+        { 2, OPCODE_NOP, MODE_IMPLIED },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        { 4, OPCODE_CPX, MODE_ABSOLUTE },
+        { 4, OPCODE_SBC, MODE_ABSOLUTE },
+        { 6, OPCODE_INC, MODE_ABSOLUTE },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        /* 0xf0 */
+        { 2, OPCODE_BEQ, MODE_RELATIVE },
+        { 5, OPCODE_SBC, MODE_INDIRECT_Y },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        { 4, OPCODE_SBC, MODE_ZEROPAGE_X },
+        { 6, OPCODE_INC, MODE_ZEROPAGE_X },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        /* 0xf8 */
+        { 2, OPCODE_SED, MODE_IMPLIED },
+        { 4, OPCODE_SBC, MODE_ABSOLUTE_Y },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        { 4, OPCODE_SBC, MODE_ABSOLUTE_X },
+        { 7, OPCODE_INC, MODE_ABSOLUTE_X },
+        { 2, OPCODE_XXX, MODE_IMPLIED },
+        };
+
+void
+nes_processor_execute(
+        __inout nes_processor_t *processor
+        )
+{
+        const nes_processor_instruction_t *instruction;
+
+        processor->fetched.address.word = processor->program_counter.word;
+        processor->fetched.opcode = nes_processor_fetch(processor);
+        instruction = nes_processor_instruction(processor->fetched.opcode);
+        nes_processor_fetch_operand(processor, instruction->mode);
+        TRACE_PROCESSOR_INSTRUCTION(LEVEL_VERBOSE, processor, instruction);
+        processor->cycles = instruction->cycles + INSTRUCTION_HDLR[processor->fetched.opcode](processor, instruction);
+}
 
 uint8_t
 nes_processor_execute_arithmetic(
@@ -761,19 +1067,12 @@ nes_processor_fetch_word(
         return nes_processor_fetch(processor) | (nes_processor_fetch(processor) << CHAR_BIT);
 }
 
-void
+const nes_processor_instruction_t *
 nes_processor_instruction(
-        __inout nes_processor_t *processor
+        __in uint8_t opcode
         )
 {
-        const nes_processor_instruction_t *instruction;
-
-        processor->fetched.address.word = processor->program_counter.word;
-        processor->fetched.opcode = nes_processor_fetch(processor);
-        instruction = &INSTRUCTION[processor->fetched.opcode];
-        nes_processor_fetch_operand(processor, instruction->mode);
-        TRACE_PROCESSOR_INSTRUCTION(LEVEL_VERBOSE, processor, instruction);
-        processor->cycles = instruction->cycles + HANDLER[processor->fetched.opcode](processor, instruction);
+        return &INSTRUCTION_FORMAT[opcode];
 }
 
 void
@@ -910,7 +1209,7 @@ nes_processor_step(
                         } else if(processor->pending.maskable && !processor->status.interrupt_disabled) {
                                 nes_processor_interrupt_maskable(processor);
                         } else {
-                                nes_processor_instruction(processor);
+                                nes_processor_execute(processor);
                         }
 
                         TRACE_PROCESSOR(LEVEL_VERBOSE, processor);
@@ -919,223 +1218,6 @@ nes_processor_step(
 
         --processor->cycles;
 }
-
-#ifndef NDEBUG
-
-void
-nes_processor_trace(
-        __in int level,
-        __in const nes_processor_t *processor
-        )
-{
-
-        if(level <= LEVEL) {
-                TRACE(level, "Processor cycles: %u", processor->cycles);
-                TRACE(level, "Processor PC: %04X", processor->program_counter.word);
-                TRACE(level, "Processor SP: %02X", processor->stack_pointer.low);
-                TRACE(level, "Processor S: %02X [%c%c%c%c%c%c%c]", processor->status.low,
-                        processor->status.negative ? 'N' : '-', processor->status.overflow ? 'O' : '-',
-                        processor->status.breakpoint ? 'B' : '-', processor->status.decimal ? 'D' : '-',
-                        processor->status.interrupt_disabled ? 'I' : '-', processor->status.zero ? 'Z' : '-',
-                        processor->status.carry ? 'C' : '-');
-
-                if(processor->pending.transfer) {
-                        TRACE(level, "Processor P: %02X [%c%c%c], %04X (%u/%u)", processor->pending.low,
-                                processor->pending.maskable ? 'M' : '-', processor->pending.non_maskable ? 'N' : '-',
-                                processor->pending.transfer ? 'T' : '-', processor->transfer.source.word,
-                                processor->transfer.offset.low + 1, PAGE_WIDTH);
-                } else {
-                        TRACE(level, "Processor P: %02X [%c%c%c]", processor->pending.low,
-                                processor->pending.maskable ? 'M' : '-', processor->pending.non_maskable ? 'N' : '-',
-                                processor->pending.transfer ? 'T' : '-');
-                }
-
-                TRACE(level, "Processor A: %02X", processor->accumulator.low);
-                TRACE(level, "Processor X: %02X", processor->index_x.low);
-                TRACE(level, "Processor Y: %02X", processor->index_y.low);
-        }
-}
-
-static const char *MODE_STR[] = {
-        " [%04X]->%02X", /* MODE_ABSOLUTE */
-        " %04X+X [%04X]->%02X", /* MODE_ABSOLUTE_X */
-        " %04X+Y [%04X]->%02X", /* MODE_ABSOLUTE_Y */
-        " %02X", /* MODE_IMMEDIATE */
-        "", /* MODE_IMPLIED */
-        " (%04X) [%04X]", /* MODE_INDIRECT */
-        " (%02X,X) [%04X]->%02X", /* MODE_INDIRECT_X */
-        " (%02X),Y [%04X]->%02X", /* MODE_INDIRECT_Y */
-        " %02X(%i) [%04X]", /* MODE_RELATIVE */
-        " [%02X]->%02X", /* MODE_ZEROPAGE */
-        " %02X+X [%02X]->%02X", /* MODE_ZEROPAGE_X */
-        " %02X+Y [%02X]->%02X", /* MODE_ZEROPAGE_Y */
-        };
-
-static const char *OPCODE_STR[] = {
-        "ADC", /* OPCODE_ADC */
-        "AND", /* OPCODE_AND */
-        "ASL", /* OPCODE_ASL */
-        "BCC", /* OPCODE_BCC */
-        "BCS", /* OPCODE_BCS */
-        "BEQ", /* OPCODE_BEQ */
-        "BIT", /* OPCODE_BIT */
-        "BMI", /* OPCODE_BMI */
-        "BNE", /* OPCODE_BNE */
-        "BPL", /* OPCODE_BPL */
-        "BRK", /* OPCODE_BRK */
-        "BVC", /* OPCODE_BVC */
-        "BVS", /* OPCODE_BVS */
-        "CLC", /* OPCODE_CLC */
-        "CLD", /* OPCODE_CLD */
-        "CLI", /* OPCODE_CLI */
-        "CLV", /* OPCODE_CLV */
-        "CMP", /* OPCODE_CMP */
-        "CPX", /* OPCODE_CPX */
-        "CPY", /* OPCODE_CPY */
-        "DEC", /* OPCODE_DEC */
-        "DEX", /* OPCODE_DEX */
-        "DEY", /* OPCODE_DEY */
-        "EOR", /* OPCODE_EOR */
-        "INC", /* OPCODE_INC */
-        "INX", /* OPCODE_INX */
-        "INY", /* OPCODE_INY */
-        "JMP", /* OPCODE_JMP */
-        "JSR", /* OPCODE_JSR */
-        "LDA", /* OPCODE_LDA */
-        "LDX", /* OPCODE_LDX */
-        "LDY", /* OPCODE_LDY */
-        "LSR", /* OPCODE_LSR */
-        "NOP", /* OPCODE_NOP */
-        "ORA", /* OPCODE_ORA */
-        "PHA", /* OPCODE_PHA */
-        "PHP", /* OPCODE_PHP */
-        "PLA", /* OPCODE_PLA */
-        "PLP", /* OPCODE_PLP */
-        "ROL", /* OPCODE_ROL */
-        "ROR", /* OPCODE_ROR */
-        "RTI", /* OPCODE_RTI */
-        "RTS", /* OPCODE_RTS */
-        "SBC", /* OPCODE_SBC */
-        "SEC", /* OPCODE_SEC */
-        "SED", /* OPCODE_SED */
-        "SEI", /* OPCODE_SEI */
-        "STA", /* OPCODE_STA */
-        "STX", /* OPCODE_STX */
-        "STY", /* OPCODE_STY */
-        "TAX", /* OPCODE_TAX */
-        "TAY", /* OPCODE_TAY */
-        "TSX", /* OPCODE_TSX */
-        "TXA", /* OPCODE_TXA */
-        "TXS", /* OPCODE_TXS */
-        "TYA", /* OPCODE_TYA */
-        "XXX", /* OPCODE_XXX */
-        };
-
-void
-nes_processor_trace_instruction(
-        __in int level,
-        __inout nes_processor_t *processor,
-        __in const nes_processor_instruction_t *instruction
-        )
-{
-
-        if(level <= LEVEL) {
-                memset(processor->format, 0, FORMAT_MAX);
-                snprintf(processor->format, FORMAT_MAX, "[%04X] %02X", processor->fetched.address.word, processor->fetched.opcode);
-
-                switch(instruction->mode) {
-                        case MODE_ABSOLUTE:
-                                snprintf(processor->format + strlen(processor->format), FORMAT_MAX - strlen(processor->format), " %02X %02X",
-                                        processor->fetched.operand.address.low, processor->fetched.operand.address.high);
-                                break;
-                        case MODE_ABSOLUTE_X:
-                        case MODE_ABSOLUTE_Y:
-                                snprintf(processor->format + strlen(processor->format), FORMAT_MAX - strlen(processor->format), " %02X %02X",
-                                        processor->fetched.operand.address_indirect.low, processor->fetched.operand.address_indirect.high);
-                                break;
-                        case MODE_IMMEDIATE:
-                        case MODE_RELATIVE:
-                                snprintf(processor->format + strlen(processor->format), FORMAT_MAX - strlen(processor->format), " %02X",
-                                        processor->fetched.operand.data.low);
-                                break;
-                        case MODE_INDIRECT:
-                                snprintf(processor->format + strlen(processor->format), FORMAT_MAX - strlen(processor->format), " %02X %02X",
-                                        processor->fetched.operand.address_indirect.low, processor->fetched.operand.address_indirect.high);
-                                break;
-                        case MODE_INDIRECT_X:
-                        case MODE_INDIRECT_Y:
-                                snprintf(processor->format + strlen(processor->format), FORMAT_MAX - strlen(processor->format), " %02X",
-                                        processor->fetched.operand.address_indirect.low);
-                                break;
-                        case MODE_ZEROPAGE:
-                                snprintf(processor->format + strlen(processor->format), FORMAT_MAX - strlen(processor->format), " %02X",
-                                        processor->fetched.operand.address.low);
-                                break;
-                        case MODE_ZEROPAGE_X:
-                        case MODE_ZEROPAGE_Y:
-                                snprintf(processor->format + strlen(processor->format), FORMAT_MAX - strlen(processor->format), " %02X",
-                                        processor->fetched.operand.address_indirect.low);
-                                break;
-                        case MODE_IMPLIED:
-                        default:
-                                break;
-                }
-
-                snprintf(processor->format + strlen(processor->format), FORMAT_MAX - strlen(processor->format), " %s", OPCODE_STR[instruction->opcode]);
-
-                switch(instruction->mode) {
-                        case MODE_ABSOLUTE:
-                                snprintf(processor->format + strlen(processor->format), FORMAT_MAX - strlen(processor->format), MODE_STR[instruction->mode],
-                                        processor->fetched.operand.address.word, processor->fetched.operand.data.low);
-                                break;
-                        case MODE_ABSOLUTE_X:
-                        case MODE_ABSOLUTE_Y:
-                                snprintf(processor->format + strlen(processor->format), FORMAT_MAX - strlen(processor->format), MODE_STR[instruction->mode],
-                                        processor->fetched.operand.address_indirect.word, processor->fetched.operand.address.word,
-                                        processor->fetched.operand.data.low);
-                                break;
-                        case MODE_IMMEDIATE:
-                                snprintf(processor->format + strlen(processor->format), FORMAT_MAX - strlen(processor->format), MODE_STR[instruction->mode],
-                                        processor->fetched.operand.data.low);
-                                break;
-                        case MODE_INDIRECT:
-                                snprintf(processor->format + strlen(processor->format), FORMAT_MAX - strlen(processor->format), MODE_STR[instruction->mode],
-                                        processor->fetched.operand.address_indirect.word, processor->fetched.operand.address.word);
-                                break;
-                        case MODE_INDIRECT_X:
-                        case MODE_INDIRECT_Y:
-                                snprintf(processor->format + strlen(processor->format), FORMAT_MAX - strlen(processor->format), MODE_STR[instruction->mode],
-                                        processor->fetched.operand.address_indirect.low, processor->fetched.operand.address.word,
-                                        processor->fetched.operand.data.low);
-                                break;
-                        case MODE_RELATIVE:
-                                snprintf(processor->format + strlen(processor->format), FORMAT_MAX - strlen(processor->format), MODE_STR[instruction->mode],
-                                        processor->fetched.operand.data.low, processor->fetched.operand.data.low, processor->fetched.operand.address.word);
-                                break;
-                        case MODE_ZEROPAGE:
-                                snprintf(processor->format + strlen(processor->format), FORMAT_MAX - strlen(processor->format), MODE_STR[instruction->mode],
-                                        processor->fetched.operand.address.low, processor->fetched.operand.data.low);
-                                break;
-                        case MODE_ZEROPAGE_X:
-                        case MODE_ZEROPAGE_Y:
-                                snprintf(processor->format + strlen(processor->format), FORMAT_MAX - strlen(processor->format), MODE_STR[instruction->mode],
-                                        processor->fetched.operand.address_indirect.low, processor->fetched.operand.address.low,
-                                        processor->fetched.operand.data.low);
-                                break;
-                        case MODE_IMPLIED:
-                        default:
-                                break;
-                }
-
-                if(processor->fetched.operand.page_boundary) {
-                        snprintf(processor->format + strlen(processor->format), FORMAT_MAX - strlen(processor->format), " (PAGE-BOUNDARY)");
-                }
-
-                TRACE(level, "%s", processor->format);
-        }
-}
-
-#endif /* NDEBUG */
 
 void
 nes_processor_transfer(

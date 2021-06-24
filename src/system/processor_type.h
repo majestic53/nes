@@ -102,6 +102,7 @@ enum {
         OPCODE_TXS,
         OPCODE_TYA,
         OPCODE_XXX,
+        OPCODE_MAX,
 };
 
 enum {
@@ -117,6 +118,7 @@ enum {
         MODE_ZEROPAGE,
         MODE_ZEROPAGE_X,
         MODE_ZEROPAGE_Y,
+        MODE_MAX,
 };
 
 typedef struct {
@@ -124,297 +126,6 @@ typedef struct {
         int opcode;
         int mode;
 } nes_processor_instruction_t;
-
-static const nes_processor_instruction_t INSTRUCTION[] = {
-        /* 0x00 */
-        { 7, OPCODE_BRK, MODE_IMPLIED },
-        { 6, OPCODE_ORA, MODE_INDIRECT_X },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        { 3, OPCODE_ORA, MODE_ZEROPAGE },
-        { 5, OPCODE_ASL, MODE_ZEROPAGE },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        /* 0x08 */
-        { 3, OPCODE_PHP, MODE_IMPLIED },
-        { 2, OPCODE_ORA, MODE_IMMEDIATE },
-        { 2, OPCODE_ASL, MODE_IMPLIED },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        { 4, OPCODE_ORA, MODE_ABSOLUTE },
-        { 6, OPCODE_ASL, MODE_ABSOLUTE },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        /* 0x10 */
-        { 2, OPCODE_BPL, MODE_RELATIVE },
-        { 5, OPCODE_ORA, MODE_INDIRECT_Y },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        { 4, OPCODE_ORA, MODE_ZEROPAGE_X },
-        { 6, OPCODE_ASL, MODE_ZEROPAGE_X },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        /* 0x18 */
-        { 2, OPCODE_CLC, MODE_IMPLIED },
-        { 4, OPCODE_ORA, MODE_ABSOLUTE_Y },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        { 4, OPCODE_ORA, MODE_ABSOLUTE_X },
-        { 7, OPCODE_ASL, MODE_ABSOLUTE_X },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        /* 0x20 */
-        { 6, OPCODE_JSR, MODE_ABSOLUTE },
-        { 6, OPCODE_AND, MODE_INDIRECT_X },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        { 3, OPCODE_BIT, MODE_ZEROPAGE },
-        { 3, OPCODE_AND, MODE_ZEROPAGE },
-        { 5, OPCODE_ROL, MODE_ZEROPAGE },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        /* 0x28 */
-        { 4, OPCODE_PLP, MODE_IMPLIED },
-        { 2, OPCODE_AND, MODE_IMMEDIATE },
-        { 2, OPCODE_ROL, MODE_IMPLIED },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        { 4, OPCODE_BIT, MODE_ABSOLUTE },
-        { 4, OPCODE_AND, MODE_ABSOLUTE },
-        { 6, OPCODE_ROL, MODE_ABSOLUTE },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        /* 0x30 */
-        { 2, OPCODE_BMI, MODE_RELATIVE },
-        { 5, OPCODE_AND, MODE_INDIRECT_Y },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        { 4, OPCODE_AND, MODE_ZEROPAGE_X },
-        { 6, OPCODE_ROL, MODE_ZEROPAGE_X },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        /* 0x38 */
-        { 2, OPCODE_SEC, MODE_IMPLIED },
-        { 4, OPCODE_AND, MODE_ABSOLUTE_Y },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        { 4, OPCODE_AND, MODE_ABSOLUTE_X },
-        { 7, OPCODE_ROL, MODE_ABSOLUTE_X },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        /* 0x40 */
-        { 6, OPCODE_RTI, MODE_IMPLIED },
-        { 6, OPCODE_EOR, MODE_INDIRECT_X },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        { 3, OPCODE_EOR, MODE_ZEROPAGE },
-        { 5, OPCODE_LSR, MODE_ZEROPAGE },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        /* 0x48 */
-        { 3, OPCODE_PHA, MODE_IMPLIED },
-        { 2, OPCODE_EOR, MODE_IMMEDIATE },
-        { 2, OPCODE_LSR, MODE_IMPLIED },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        { 3, OPCODE_JMP, MODE_ABSOLUTE },
-        { 4, OPCODE_EOR, MODE_ABSOLUTE },
-        { 6, OPCODE_LSR, MODE_ABSOLUTE },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        /* 0x50 */
-        { 2, OPCODE_BVC, MODE_RELATIVE },
-        { 5, OPCODE_EOR, MODE_INDIRECT_Y },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        { 4, OPCODE_EOR, MODE_ZEROPAGE_X },
-        { 6, OPCODE_LSR, MODE_ZEROPAGE_X },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        /* 0x58 */
-        { 2, OPCODE_CLI, MODE_IMPLIED },
-        { 4, OPCODE_EOR, MODE_ABSOLUTE_Y },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        { 4, OPCODE_EOR, MODE_ABSOLUTE_X },
-        { 7, OPCODE_LSR, MODE_ABSOLUTE_X },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        /* 0x60 */
-        { 6, OPCODE_RTS, MODE_IMPLIED },
-        { 6, OPCODE_ADC, MODE_INDIRECT_X },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        { 3, OPCODE_ADC, MODE_ZEROPAGE },
-        { 5, OPCODE_ROR, MODE_ZEROPAGE },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        /* 0x68 */
-        { 4, OPCODE_PLA, MODE_IMPLIED },
-        { 2, OPCODE_ADC, MODE_IMMEDIATE },
-        { 2, OPCODE_ROR, MODE_IMPLIED },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        { 5, OPCODE_JMP, MODE_INDIRECT },
-        { 4, OPCODE_ADC, MODE_ABSOLUTE },
-        { 6, OPCODE_ROR, MODE_ABSOLUTE },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        /* 0x70 */
-        { 2, OPCODE_BVS, MODE_RELATIVE },
-        { 5, OPCODE_ADC, MODE_INDIRECT_Y },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        { 4, OPCODE_ADC, MODE_ZEROPAGE_X },
-        { 6, OPCODE_ROR, MODE_ZEROPAGE_X },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        /* 0x78 */
-        { 2, OPCODE_SEI, MODE_IMPLIED },
-        { 4, OPCODE_ADC, MODE_ABSOLUTE_Y },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        { 4, OPCODE_ADC, MODE_ABSOLUTE_X },
-        { 7, OPCODE_ROR, MODE_ABSOLUTE_X },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        /* 0x80 */
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        { 6, OPCODE_STA, MODE_INDIRECT_X },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        { 3, OPCODE_STY, MODE_ZEROPAGE },
-        { 3, OPCODE_STA, MODE_ZEROPAGE },
-        { 3, OPCODE_STX, MODE_ZEROPAGE },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        /* 0x88 */
-        { 2, OPCODE_DEY, MODE_IMPLIED },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        { 2, OPCODE_TXA, MODE_IMPLIED },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        { 4, OPCODE_STY, MODE_ABSOLUTE },
-        { 4, OPCODE_STA, MODE_ABSOLUTE },
-        { 4, OPCODE_STX, MODE_ABSOLUTE },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        /* 0x90 */
-        { 2, OPCODE_BCC, MODE_RELATIVE },
-        { 6, OPCODE_STA, MODE_INDIRECT_Y },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        { 4, OPCODE_STY, MODE_ZEROPAGE_X },
-        { 4, OPCODE_STA, MODE_ZEROPAGE_X },
-        { 4, OPCODE_STX, MODE_ZEROPAGE_Y },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        /* 0x98 */
-        { 2, OPCODE_TYA, MODE_IMPLIED },
-        { 5, OPCODE_STA, MODE_ABSOLUTE_Y },
-        { 2, OPCODE_TXS, MODE_IMPLIED },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        { 5, OPCODE_STA, MODE_ABSOLUTE_X },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        /* 0xa0 */
-        { 2, OPCODE_LDY, MODE_IMMEDIATE },
-        { 6, OPCODE_LDA, MODE_INDIRECT_X },
-        { 2, OPCODE_LDX, MODE_IMMEDIATE },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        { 3, OPCODE_LDY, MODE_ZEROPAGE },
-        { 3, OPCODE_LDA, MODE_ZEROPAGE },
-        { 3, OPCODE_LDX, MODE_ZEROPAGE },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        /* 0xa8 */
-        { 2, OPCODE_TAY, MODE_IMPLIED },
-        { 2, OPCODE_LDA, MODE_IMMEDIATE },
-        { 2, OPCODE_TAX, MODE_IMPLIED },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        { 4, OPCODE_LDY, MODE_ABSOLUTE },
-        { 4, OPCODE_LDA, MODE_ABSOLUTE },
-        { 4, OPCODE_LDX, MODE_ABSOLUTE },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        /* 0xb0 */
-        { 2, OPCODE_BCS, MODE_RELATIVE },
-        { 5, OPCODE_LDA, MODE_INDIRECT_Y },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        { 4, OPCODE_LDY, MODE_ZEROPAGE_X },
-        { 4, OPCODE_LDA, MODE_ZEROPAGE_X },
-        { 4, OPCODE_LDX, MODE_ZEROPAGE_Y },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        /* 0xb8 */
-        { 2, OPCODE_CLV, MODE_IMPLIED },
-        { 4, OPCODE_LDA, MODE_ABSOLUTE_Y },
-        { 2, OPCODE_TSX, MODE_IMPLIED },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        { 4, OPCODE_LDY, MODE_ABSOLUTE_X },
-        { 4, OPCODE_LDA, MODE_ABSOLUTE_X },
-        { 4, OPCODE_LDX, MODE_ABSOLUTE_Y },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        /* 0xc0 */
-        { 2, OPCODE_CPY, MODE_IMMEDIATE },
-        { 6, OPCODE_CMP, MODE_INDIRECT_X },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        { 3, OPCODE_CPY, MODE_ZEROPAGE },
-        { 3, OPCODE_CMP, MODE_ZEROPAGE },
-        { 5, OPCODE_DEC, MODE_ZEROPAGE },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        /* 0xc8 */
-        { 2, OPCODE_INY, MODE_IMPLIED },
-        { 2, OPCODE_CMP, MODE_IMMEDIATE },
-        { 2, OPCODE_DEX, MODE_IMPLIED },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        { 4, OPCODE_CPY, MODE_ABSOLUTE },
-        { 4, OPCODE_CMP, MODE_ABSOLUTE },
-        { 6, OPCODE_DEC, MODE_ABSOLUTE },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        /* 0xd0 */
-        { 2, OPCODE_BNE, MODE_RELATIVE },
-        { 5, OPCODE_CMP, MODE_INDIRECT_Y },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        { 4, OPCODE_CMP, MODE_ZEROPAGE_X },
-        { 6, OPCODE_DEC, MODE_ZEROPAGE_X },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        /* 0xd8 */
-        { 2, OPCODE_CLD, MODE_IMPLIED },
-        { 4, OPCODE_CMP, MODE_ABSOLUTE_Y },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        { 4, OPCODE_CMP, MODE_ABSOLUTE_X },
-        { 7, OPCODE_DEC, MODE_ABSOLUTE_X },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        /* 0xe0 */
-        { 2, OPCODE_CPX, MODE_IMMEDIATE },
-        { 6, OPCODE_SBC, MODE_INDIRECT_X },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        { 3, OPCODE_CPX, MODE_ZEROPAGE },
-        { 3, OPCODE_SBC, MODE_ZEROPAGE },
-        { 5, OPCODE_INC, MODE_ZEROPAGE },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        /* 0xe8 */
-        { 2, OPCODE_INX, MODE_IMPLIED },
-        { 2, OPCODE_SBC, MODE_IMMEDIATE },
-        { 2, OPCODE_NOP, MODE_IMPLIED },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        { 4, OPCODE_CPX, MODE_ABSOLUTE },
-        { 4, OPCODE_SBC, MODE_ABSOLUTE },
-        { 6, OPCODE_INC, MODE_ABSOLUTE },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        /* 0xf0 */
-        { 2, OPCODE_BEQ, MODE_RELATIVE },
-        { 5, OPCODE_SBC, MODE_INDIRECT_Y },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        { 4, OPCODE_SBC, MODE_ZEROPAGE_X },
-        { 6, OPCODE_INC, MODE_ZEROPAGE_X },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        /* 0xf8 */
-        { 2, OPCODE_SED, MODE_IMPLIED },
-        { 4, OPCODE_SBC, MODE_ABSOLUTE_Y },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        { 4, OPCODE_SBC, MODE_ABSOLUTE_X },
-        { 7, OPCODE_INC, MODE_ABSOLUTE_X },
-        { 2, OPCODE_XXX, MODE_IMPLIED },
-        };
 
 typedef uint8_t (*nes_processor_instruction_hdlr)(
         __inout nes_processor_t *processor,
@@ -424,6 +135,10 @@ typedef uint8_t (*nes_processor_instruction_hdlr)(
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
+
+void nes_processor_execute(
+        __inout nes_processor_t *processor
+        );
 
 uint8_t nes_processor_execute_arithmetic(
         __inout nes_processor_t *processor,
@@ -530,7 +245,7 @@ uint8_t nes_processor_execute_transfer(
         __in const nes_processor_instruction_t *instruction
         );
 
-static const nes_processor_instruction_hdlr HANDLER[] = {
+static const nes_processor_instruction_hdlr INSTRUCTION_HDLR[] = {
         /* 0x00 */
         nes_processor_execute_breakpoint,
         nes_processor_execute_bitwise,
@@ -834,8 +549,8 @@ uint16_t nes_processor_fetch_word(
         __inout nes_processor_t *processor
         );
 
-void nes_processor_instruction(
-        __inout nes_processor_t *processor
+const nes_processor_instruction_t *nes_processor_instruction(
+        __in uint8_t opcode
         );
 
 void nes_processor_interrupt_maskable(
@@ -873,28 +588,6 @@ uint16_t nes_processor_read_word(
         __in const nes_processor_t *processor,
         __in uint16_t address
         );
-
-#ifndef NDEBUG
-
-void nes_processor_trace(
-        __in int level,
-        __in const nes_processor_t *processor
-        );
-
-void nes_processor_trace_instruction(
-        __in int level,
-        __inout nes_processor_t *processor,
-        __in const nes_processor_instruction_t *instruction
-        );
-
-#define TRACE_PROCESSOR(_LEVEL_, _PROCESSOR_) \
-        if((_LEVEL_) <= (LEVEL)) nes_processor_trace(_LEVEL_, _PROCESSOR_)
-#define TRACE_PROCESSOR_INSTRUCTION(_LEVEL_, _PROCESSOR_, _INSTRUCTION_) \
-        if((_LEVEL_) <= (LEVEL)) nes_processor_trace_instruction(_LEVEL_, _PROCESSOR_, _INSTRUCTION_)
-#else
-#define TRACE_PROCESSOR(_LEVEL_, _PROCESSOR_)
-#define TRACE_PROCESSOR_INSTRUCTION(_LEVEL_, _PROCESSOR_, _INSTRUCTION_)
-#endif /* NDEBUG */
 
 void nes_processor_transfer_byte(
         __inout nes_processor_t *processor

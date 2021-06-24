@@ -19,98 +19,226 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "./launcher_type.h"
-
-#define BLOCK_WIDTH 16
-
-#define CHARACTER_FILL '.'
-
-enum {
-        PROCESSOR_SHOW = 0,
-        PROCESSOR_READ,
-        PROCESSOR_WRITE,
-};
-
-enum {
-        READ_BYTE = 1,
-        READ_MULTIBYTE,
-};
-
-enum {
-        STATUS_CARRY = (1 << 0),
-        STATUS_ZERO = (1 << 1),
-        STATUS_INTERRUPT_DISABLE = (1 << 2),
-        STATUS_DECIMAL = (1 << 3),
-        STATUS_BREAKPOINT = (1 << 4),
-        STATUS_OVERFLOW = (1 << 6),
-        STATUS_NEGATIVE = (1 << 7),
-};
-
-enum {
-        WRITE_BYTE = 2,
-};
-
-static const char COMMAND[] = {
-        'q', /* COMMAND_EXIT */
-        'h', /* COMMAND_HELP */
-        'p', /* COMMAND_PROCESSOR */
-        'r', /* COMMAND_READ */
-        'c', /* COMMAND_RUN */
-        's', /* COMMAND_STEP */
-        'v', /* COMMAND_VERSION */
-        'w', /* COMMAND_WRITE */
-        };
-
-static const char *COMMAND_DESC[] = {
-        "Exit debug mode", /* COMMAND_EXIT */
-        "Show help information", /* COMMAND_HELP */
-        "Read/Write/Show processor", /* COMMAND_PROCESSOR */
-        "Read data from address", /* COMMAND_READ */
-        "Run processor", /* COMMAND_RUN */
-        "Step processor", /* COMMAND_STEP */
-        "Show version information", /* COMMAND_VERSION */
-        "Write data to address", /* COMMAND_WRITE */
-        };
-
-static const nes_launcher_debug_hdlr HANDLER[] = {
-        NULL, /* COMMAND_EXIT */
-        nes_launcher_debug_help, /* COMMAND_HELP */
-        nes_launcher_debug_processor, /* COMMAND_PROCESSOR */
-        nes_launcher_debug_read, /* COMMAND_READ */
-        nes_launcher_debug_run, /* COMMAND_RUN */
-        nes_launcher_debug_step, /* COMMAND_STEP */
-        nes_launcher_debug_version, /* COMMAND_VERSION */
-        nes_launcher_debug_write, /* COMMAND_WRITE */
-        };
-
-#ifdef COLOR
-
-static const char *LEVEL_COL[] = {
-        "\x1b[0m", /* LEVEL_NONE */
-        "\x1b[91m", /* LEVEL_ERROR */
-        "\x1b[93m", /* LEVEL_WARNING */
-        "\x1b[94m", /* LEVEL_INFORMATION */
-        "\x1b[90m", /* LEVEL_VERBOSE */
-};
-
-#define LEVEL_COLOR(_LEVEL_) \
-        LEVEL_COL[((_LEVEL_) < LEVEL_MAX) ? (_LEVEL_) : LEVEL_NONE]
-#else
-#define LEVEL_COLOR(_LEVEL_) ""
-#endif /* COLOR */
-
-static const char *REGISTER[] = {
-        "pc", /* Processor program counter register */
-        "sp", /* Processor stack pointer register */
-        "s", /* Processor status register */
-        "a", /* Processor accumulator register */
-        "x", /* Processor index-x register */
-        "y", /* Processor index-y register */
-        };
+#include "./debug_type.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
+
+void
+nes_launcher_debug(
+        __in const nes_launcher_t *launcher
+        )
+{
+        bool complete = false;
+
+        using_history();
+        fprintf(stdout, "%s %i.%i.%i\n%s\n\n", NES, launcher->version->major, launcher->version->minor, launcher->version->patch, NOTICE);
+        fprintf(stdout, "Path: %s\nSize: %.02f KB (%zu bytes)\n", launcher->configuration.rom.path, launcher->configuration.rom.data.length / (float)BYTES_PER_KBYTE,
+                launcher->configuration.rom.data.length);
+
+        while(!complete) {
+                char *input, prompt[PROMPT_MAX] = {};
+                nes_action_t request = {}, response = {};
+
+                request.type = NES_ACTION_PROCESSOR_READ;
+                request.address = NES_PROCESSOR_PROGRAM_COUNTER;
+
+                if(nes_action(&request, &response) == NES_OK) {
+                        snprintf(prompt, PROMPT_MAX, "%s%s%04X%s%s", PROMPT_PREFIX, LEVEL_COLOR(LEVEL_INFORMATION), response.data, LEVEL_COLOR(LEVEL_MAX),
+                                        PROMPT_POSTFIX);
+                } else {
+                        snprintf(prompt, PROMPT_MAX, "%s%s%s%s%s", PROMPT_PREFIX, LEVEL_COLOR(LEVEL_INFORMATION), PROMPT_ERROR, LEVEL_COLOR(LEVEL_MAX),
+                                        PROMPT_POSTFIX);
+                }
+
+                if((input = readline(prompt))) {
+                        int command = 0;
+                        uint32_t count = 0;
+                        bool first = true, from_history = false;
+                        const char *argument[ARGUMENT_MAX] = {}, *next;
+
+                        if((from_history = !strlen(input))) {
+                                HIST_ENTRY *previous;
+
+                                if(!(previous = history_get(where_history()))) {
+                                        goto cleanup;
+                                }
+
+                                input = previous->line;
+                        }
+
+                        for(; command < COMMAND_MAX; ++command) {
+
+                                if(input[0] == COMMAND[command]) {
+                                        break;
+                                }
+                        }
+
+                        if(command >= COMMAND_MAX) {
+                                fprintf(stderr, "%sUnsupported command: %s\n%s", LEVEL_COLOR(LEVEL_ERROR), input, LEVEL_COLOR(LEVEL_MAX));
+                                goto cleanup;
+                        }
+
+                        add_history(input);
+                        next = strtok(input, " ");
+
+                        while(next) {
+
+                                if(count >= ARGUMENT_MAX) {
+                                        fprintf(stderr, "%sToo many arguments: %u\n%s", LEVEL_COLOR(LEVEL_ERROR), count + 1, LEVEL_COLOR(LEVEL_MAX));
+                                        goto cleanup;
+                                }
+
+                                if(!first) {
+                                        argument[count++] = next;
+                                }
+
+                                next = strtok(NULL, " ");
+                                first = false;
+                        }
+
+                        switch(command) {
+                                case COMMAND_EXIT:
+                                        complete = true;
+                                        break;
+                                case (COMMAND_EXIT + 1) ... (COMMAND_MAX - 1):
+
+                                        if(DEBUG_HDLR[command](launcher, argument, count) != NES_OK) {
+                                                fprintf(stderr, "%sCommand failed: %s\n%s", LEVEL_COLOR(LEVEL_ERROR), input, LEVEL_COLOR(LEVEL_MAX));
+                                        }
+                                        break;
+                                default:
+                                        fprintf(stderr, "%sUnsupported command type: %i\n%s", LEVEL_COLOR(LEVEL_ERROR), command, LEVEL_COLOR(LEVEL_MAX));
+                                        break;
+                        }
+
+cleanup:
+
+                        if(!from_history && input) {
+                                free(input);
+                        }
+                }
+        }
+
+        clear_history();
+}
+
+int
+nes_launcher_debug_disassemble(
+        __in const nes_launcher_t *launcher,
+        __in const char *argument[],
+        __in uint32_t count
+        )
+{
+        int result = NES_OK;
+        uint16_t address = 0, offset = 1;
+        nes_action_t request = { .type = NES_ACTION_BUS_READ }, response = {};
+
+        switch(count) {
+                case DISASSEMBLE_MULTIPLE:
+                        address = strtol(argument[0], NULL, 16);
+                        offset = strtol(argument[1], NULL, 10);
+                        break;
+                case DISASSEMBLE_SINGLE:
+                        address = strtol(argument[0], NULL, 16);
+                        break;
+                default:
+                        result = NES_ERR;
+                        goto exit;
+        }
+
+        for(uint16_t index = 0; index < offset; ++index) {
+                uint16_t operand = 0;
+                request.address = address++;
+                const nes_processor_instruction_t *instruction;
+
+                if((result = nes_action(&request, &response)) != NES_OK) {
+                        goto exit;
+                }
+
+                if(offset > 1) {
+                        fprintf(stdout, "%04X>\t ", response.address);
+                }
+
+                fprintf(stdout, "%02X", response.data);
+                instruction = nes_processor_instruction(response.data);
+
+                switch(instruction->mode) {
+                        case MODE_ABSOLUTE:
+                        case MODE_ABSOLUTE_X:
+                        case MODE_ABSOLUTE_Y:
+                        case MODE_INDIRECT:
+                                request.address = address++;
+
+                                if((result = nes_action(&request, &response)) != NES_OK) {
+                                        goto exit;
+                                }
+
+                                fprintf(stdout, " %02X", response.data);
+                                operand |= (response.data & UINT8_MAX);
+                                request.address = address++;
+
+                                if((result = nes_action(&request, &response)) != NES_OK) {
+                                        goto exit;
+                                }
+
+                                fprintf(stdout, " %02X  ", response.data);
+                                operand |= ((response.data & UINT8_MAX) << CHAR_BIT);
+                                break;
+                        case MODE_IMMEDIATE:
+                        case MODE_INDIRECT_X:
+                        case MODE_INDIRECT_Y:
+                        case MODE_RELATIVE:
+                        case MODE_ZEROPAGE:
+                        case MODE_ZEROPAGE_X:
+                        case MODE_ZEROPAGE_Y:
+                                request.address = address++;
+
+                                if((result = nes_action(&request, &response)) != NES_OK) {
+                                        goto exit;
+                                }
+
+                                fprintf(stdout, " %02X     ", response.data);
+                                operand |= (response.data & UINT8_MAX);
+                                break;
+                        default:
+                                fprintf(stdout, "        ");
+                                break;
+                }
+
+                fprintf(stdout, "%s", OPCODE_FORMAT[instruction->opcode]);
+
+                switch(instruction->mode) {
+                        case MODE_ABSOLUTE:
+                        case MODE_ABSOLUTE_X:
+                        case MODE_ABSOLUTE_Y:
+                        case MODE_INDIRECT:
+                                fprintf(stdout, MODE_FORMAT[instruction->mode], operand);
+                                break;
+                        case MODE_IMMEDIATE:
+                        case MODE_INDIRECT_X:
+                        case MODE_INDIRECT_Y:
+                        case MODE_ZEROPAGE:
+                        case MODE_ZEROPAGE_X:
+                        case MODE_ZEROPAGE_Y:
+                                fprintf(stdout, MODE_FORMAT[instruction->mode], operand & UINT8_MAX);
+                                break;
+                        case MODE_RELATIVE:
+                                fprintf(stdout, MODE_FORMAT[instruction->mode], operand & UINT8_MAX, (int8_t)(operand & UINT8_MAX),
+                                        address + (int8_t)(operand & UINT8_MAX));
+                                break;
+                        case MODE_IMPLIED:
+                        default:
+                                break;
+                }
+
+                fprintf(stdout, "\n");
+        }
+
+exit:
+        return result;
+}
 
 int
 nes_launcher_debug_help(
@@ -189,17 +317,17 @@ nes_launcher_debug_processor(
 
                                 switch(request.address) {
                                         case NES_PROCESSOR_PROGRAM_COUNTER:
-                                                fprintf(stdout, "%s> %04X\n", REGISTER[request.address], response.data & UINT16_MAX);
+                                                fprintf(stdout, "%s>\t%04X\n", REGISTER[request.address], response.data & UINT16_MAX);
                                                 break;
                                         case NES_PROCESSOR_STATUS:
-                                                fprintf(stdout, "%s> %02X  [%c%c%c%c%c%c%c]\n", REGISTER[request.address], response.data & UINT8_MAX,
+                                                fprintf(stdout, "%s>\t%02X  [%c%c%c%c%c%c%c]\n", REGISTER[request.address], response.data & UINT8_MAX,
                                                         (response.data & STATUS_NEGATIVE) ? 'N' : '-', (response.data & STATUS_OVERFLOW) ? 'O' : '-',
                                                         (response.data & STATUS_BREAKPOINT) ? 'B' : '-', (response.data & STATUS_DECIMAL) ? 'D' : '-',
                                                         (response.data & STATUS_INTERRUPT_DISABLE) ? 'I' : '-', (response.data & STATUS_ZERO) ? 'Z' : '-',
                                                         (response.data & STATUS_CARRY) ? 'C' : '-');
                                                 break;
                                         default:
-                                                fprintf(stdout, "%s> %02X\n", REGISTER[request.address], response.data & UINT8_MAX);
+                                                fprintf(stdout, "%s>\t%02X\n", REGISTER[request.address], response.data & UINT8_MAX);
                                                 break;
                                 }
                         }
@@ -274,7 +402,7 @@ nes_launcher_debug_read(
                                 }
 
                                 if(!count) {
-                                        fprintf(stdout, "%04X> ", request.address);
+                                        fprintf(stdout, "%04X>\t", request.address);
                                 }
 
                                 if((result = nes_action(&request, &response)) != NES_OK) {
@@ -392,105 +520,6 @@ nes_launcher_debug_write(
 
 exit:
         return result;
-}
-
-void
-nes_launcher_debug(
-        __in const nes_launcher_t *launcher
-        )
-{
-        bool complete = false;
-
-        using_history();
-        fprintf(stdout, "%s%s %i.%i.%i\n%s\n\n", LEVEL_COLOR(LEVEL_VERBOSE), NES, launcher->version->major, launcher->version->minor, launcher->version->patch, NOTICE);
-        fprintf(stdout, "Path: %s\nSize: %.02f KB (%zu bytes)\n%s", launcher->configuration.rom.path, launcher->configuration.rom.data.length / (float)BYTES_PER_KBYTE,
-                launcher->configuration.rom.data.length, LEVEL_COLOR(LEVEL_MAX));
-
-        while(!complete) {
-                char *input, prompt[PROMPT_MAX] = {};
-                nes_action_t request = {}, response = {};
-
-                request.type = NES_ACTION_PROCESSOR_READ;
-                request.address = NES_PROCESSOR_PROGRAM_COUNTER;
-
-                if(nes_action(&request, &response) == NES_OK) {
-                        snprintf(prompt, PROMPT_MAX, "%s%s%04X%s%s", PROMPT_PREFIX, LEVEL_COLOR(LEVEL_INFORMATION), response.data, LEVEL_COLOR(LEVEL_MAX),
-                                        PROMPT_POSTFIX);
-                } else {
-                        snprintf(prompt, PROMPT_MAX, "%s%s%s%s%s", PROMPT_PREFIX, LEVEL_COLOR(LEVEL_INFORMATION), PROMPT_ERROR, LEVEL_COLOR(LEVEL_MAX),
-                                        PROMPT_POSTFIX);
-                }
-
-                if((input = readline(prompt))) {
-                        int command = 0;
-                        uint32_t count = 0;
-                        bool first = true, from_history = false;
-                        const char *argument[ARGUMENT_MAX] = {}, *next;
-
-                        if((from_history = !strlen(input))) {
-                                HIST_ENTRY *previous;
-
-                                if(!(previous = history_get(where_history()))) {
-                                        goto cleanup;
-                                }
-
-                                input = previous->line;
-                        }
-
-                        for(; command < COMMAND_MAX; ++command) {
-
-                                if(input[0] == COMMAND[command]) {
-                                        break;
-                                }
-                        }
-
-                        if(command >= COMMAND_MAX) {
-                                fprintf(stderr, "%sUnsupported command: %s\n%s", LEVEL_COLOR(LEVEL_ERROR), input, LEVEL_COLOR(LEVEL_MAX));
-                                goto cleanup;
-                        }
-
-                        add_history(input);
-                        next = strtok(input, " ");
-
-                        while(next) {
-
-                                if(count >= ARGUMENT_MAX) {
-                                        fprintf(stderr, "%sToo many arguments: %u\n%s", LEVEL_COLOR(LEVEL_ERROR), count + 1, LEVEL_COLOR(LEVEL_MAX));
-                                        goto cleanup;
-                                }
-
-                                if(!first) {
-                                        argument[count++] = next;
-                                }
-
-                                next = strtok(NULL, " ");
-                                first = false;
-                        }
-
-                        switch(command) {
-                                case COMMAND_EXIT:
-                                        complete = true;
-                                        break;
-                                case (COMMAND_EXIT + 1) ... (COMMAND_MAX - 1):
-
-                                        if(HANDLER[command](launcher, argument, count) != NES_OK) {
-                                                fprintf(stderr, "%sCommand failed: %s\n%s", LEVEL_COLOR(LEVEL_ERROR), input, LEVEL_COLOR(LEVEL_MAX));
-                                        }
-                                        break;
-                                default:
-                                        fprintf(stderr, "%sUnsupported command type: %i\n%s", LEVEL_COLOR(LEVEL_ERROR), command, LEVEL_COLOR(LEVEL_MAX));
-                                        break;
-                        }
-
-cleanup:
-
-                        if(!from_history && input) {
-                                free(input);
-                        }
-                }
-        }
-
-        clear_history();
 }
 
 #ifdef __cplusplus

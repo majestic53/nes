@@ -73,10 +73,13 @@ build_service: service_sdl.o
 service_sdl.o: $(DIR_ROOT_SERVICE)sdl.c $(DIR_INCLUDE)service.h
 	$(CC) $(FLAGS) $(BUILD_FLAGS) -c $(DIR_ROOT_SERVICE)sdl.c -o $(DIR_BUILD)service_sdl.o
 
-build_system: system_processor.o
+build_system: system_processor.o system_processor_trace.o
 
 system_processor.o: $(DIR_ROOT_SYSTEM)processor.c $(DIR_INCLUDE_SYSTEM)processor.h
 	$(CC) $(FLAGS) $(BUILD_FLAGS) -c $(DIR_ROOT_SYSTEM)processor.c -o $(DIR_BUILD)system_processor.o
+
+system_processor_trace.o: $(DIR_ROOT_SYSTEM)processor_trace.c
+	$(CC) $(FLAGS) $(BUILD_FLAGS) -c $(DIR_ROOT_SYSTEM)processor_trace.c -o $(DIR_BUILD)system_processor_trace.o
 
 archive:
 	@echo ''
@@ -86,7 +89,7 @@ archive:
 			$(DIR_BUILD)common_version.o \
 		$(DIR_BUILD)mapper_nrom.o \
 		$(DIR_BUILD)service_sdl.o \
-		$(DIR_BUILD)system_processor.o
+		$(DIR_BUILD)system_processor.o $(DIR_BUILD)system_processor_trace.o
 	cp $(DIR_INCLUDE)nes.h $(DIR_BIN_INCLUDE)
 	@echo '--- DONE ----------------------------------------------------------------------'
 	@echo ''

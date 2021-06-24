@@ -70,7 +70,7 @@ int nes_action_step(
         __inout nes_action_t *response
         );
 
-static const nes_action_hdlr HANDLER[] = {
+static const nes_action_hdlr ACTION_HDLR[] = {
         nes_action_run, /* NES_ACTION_RUN */
         nes_action_step, /* NES_ACTION_STEP */
         nes_action_bus_read, /* NES_ACTION_BUS_READ */

@@ -22,17 +22,11 @@
 #ifndef NES_LAUNCHER_TYPE_H_
 #define NES_LAUNCHER_TYPE_H_
 
-#include <readline/history.h>
-#include <readline/readline.h>
 #include <getopt.h>
-#include "../include/common.h"
-
-#define ARGUMENT_MAX 10
+#include "./common.h"
 
 #define DISPLAY_FULLSCREEN false
 #define DISPLAY_SCALE 2
-
-#define NOTICE "Copyright (C) 2021 David Jolly"
 
 #define OPTION_DEBUG 'd'
 #define OPTION_FULLSCREEN 'f'
@@ -41,24 +35,7 @@
 #define OPTION_VERSION 'v'
 #define OPTIONS "dfhs:v"
 
-#define PROMPT_ERROR "????"
-#define PROMPT_MAX 32
-#define PROMPT_POSTFIX "] $ "
-#define PROMPT_PREFIX "\n["
-
 #define USAGE "nes [options] file"
-
-enum {
-	COMMAND_EXIT = 0,
-	COMMAND_HELP,
-	COMMAND_PROCESSOR,
-	COMMAND_READ,
-	COMMAND_RUN,
-	COMMAND_STEP,
-	COMMAND_VERSION,
-	COMMAND_WRITE,
-	COMMAND_MAX,
-};
 
 enum {
 	FLAG_DEBUG = 0,
@@ -69,20 +46,21 @@ enum {
 	FLAG_MAX,
 };
 
-typedef struct {
-	nes_t configuration;
-	bool debug;
-	const char *path;
-	nes_action_t request;
-	nes_action_t response;
-	const nes_version_t *version;
-} nes_launcher_t;
+static const char *FLAG[] = {
+	"-d", /* FLAG_DEBUG */
+	"-f", /* FLAG_FULLSCREEN */
+	"-h", /* FLAG_HELP */
+	"-s", /* FLAG_SCALE */
+	"-v", /* FLAG_VERSION */
+	};
 
-typedef int (*nes_launcher_debug_hdlr)(
-        __in const nes_launcher_t *launcher,
-        __in const char *argument[],
-        __in uint32_t count
-        );
+static const char *FLAG_DESC[] = {
+	"Enter debug mode", /* FLAG_DEBUG */
+	"Fullscreen display", /* FLAG_FULLSCREEN */
+	"Show help information", /* FLAG_HELP */
+	"Scale display", /* FLAG_SCALE */
+	"Show version information", /* FLAG_VERSION */
+	};
 
 #ifdef __cplusplus
 extern "C" {
@@ -90,48 +68,6 @@ extern "C" {
 
 void nes_launcher_debug(
 	__in const nes_launcher_t *launcher
-	);
-
-int nes_launcher_debug_help(
-	__in const nes_launcher_t *launcher,
-        __in const char *argument[],
-        __in uint32_t count
-	);
-
-int nes_launcher_debug_processor(
-	__in const nes_launcher_t *launcher,
-        __in const char *argument[],
-        __in uint32_t count
-	);
-
-int nes_launcher_debug_read(
-	__in const nes_launcher_t *launcher,
-        __in const char *argument[],
-        __in uint32_t count
-	);
-
-int nes_launcher_debug_run(
-	__in const nes_launcher_t *launcher,
-        __in const char *argument[],
-        __in uint32_t count
-	);
-
-int nes_launcher_debug_step(
-	__in const nes_launcher_t *launcher,
-        __in const char *argument[],
-        __in uint32_t count
-	);
-
-int nes_launcher_debug_version(
-	__in const nes_launcher_t *launcher,
-        __in const char *argument[],
-        __in uint32_t count
-	);
-
-int nes_launcher_debug_write(
-	__in const nes_launcher_t *launcher,
-        __in const char *argument[],
-        __in uint32_t count
 	);
 
 int nes_launcher_load(void);

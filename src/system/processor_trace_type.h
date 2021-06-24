@@ -19,13 +19,39 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef NES_VERSION_TYPE_H_
-#define NES_VERSION_TYPE_H_
+#ifndef NES_PROCESSOR_TRACE_TYPE_H_
+#define NES_PROCESSOR_TRACE_TYPE_H_
 
-#include "../../include/common.h"
+#include "./processor_type.h"
 
-#define VERSION_MAJOR 0
-#define VERSION_MINOR 1
-#define VERSION_PATCH 15
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
 
-#endif /* NES_VERSION_TYPE_H_ */
+#ifndef NDEBUG
+
+void nes_processor_trace(
+        __in int level,
+        __in const nes_processor_t *processor
+        );
+
+void nes_processor_trace_instruction(
+        __in int level,
+        __inout nes_processor_t *processor,
+        __in const nes_processor_instruction_t *instruction
+        );
+
+#define TRACE_PROCESSOR(_LEVEL_, _PROCESSOR_) \
+        if((_LEVEL_) <= (LEVEL)) nes_processor_trace(_LEVEL_, _PROCESSOR_)
+#define TRACE_PROCESSOR_INSTRUCTION(_LEVEL_, _PROCESSOR_, _INSTRUCTION_) \
+        if((_LEVEL_) <= (LEVEL)) nes_processor_trace_instruction(_LEVEL_, _PROCESSOR_, _INSTRUCTION_)
+#else
+#define TRACE_PROCESSOR(_LEVEL_, _PROCESSOR_)
+#define TRACE_PROCESSOR_INSTRUCTION(_LEVEL_, _PROCESSOR_, _INSTRUCTION_)
+#endif /* NDEBUG */
+
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
+
+#endif /* NES_PROCESSOR_TRACE_TYPE_H_ */

@@ -23,22 +23,6 @@
 
 static nes_launcher_t g_launcher = {};
 
-static const char *FLAG[] = {
-	"-d", /* FLAG_DEBUG */
-	"-f", /* FLAG_FULLSCREEN */
-	"-h", /* FLAG_HELP */
-	"-s", /* FLAG_SCALE */
-	"-v", /* FLAG_VERSION */
-	};
-
-static const char *FLAG_DESC[] = {
-	"Enter debug mode", /* FLAG_DEBUG */
-	"Fullscreen display", /* FLAG_FULLSCREEN */
-	"Show help information", /* FLAG_HELP */
-	"Scale display", /* FLAG_SCALE */
-	"Show version information", /* FLAG_VERSION */
-	};
-
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */

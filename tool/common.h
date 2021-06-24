@@ -19,13 +19,20 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef NES_VERSION_TYPE_H_
-#define NES_VERSION_TYPE_H_
+#ifndef NES_LAUNCHER_COMMON_H_
+#define NES_LAUNCHER_COMMON_H_
 
-#include "../../include/common.h"
+#include "../include/common.h"
 
-#define VERSION_MAJOR 0
-#define VERSION_MINOR 1
-#define VERSION_PATCH 15
+#define NOTICE "Copyright (C) 2021 David Jolly"
 
-#endif /* NES_VERSION_TYPE_H_ */
+typedef struct {
+        nes_t configuration;
+        bool debug;
+        const char *path;
+        nes_action_t request;
+        nes_action_t response;
+        const nes_version_t *version;
+} nes_launcher_t;
+
+#endif /* NES_LAUNCHER_COMMON_H_ */
