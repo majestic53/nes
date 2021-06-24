@@ -110,7 +110,7 @@ nes_action_processor_read(
                         TRACE(LEVEL_VERBOSE, "Processor read [PC]->%04X", response->data);
                         break;
                 case NES_PROCESSOR_STACK_POINTER:
-                        response->data = bus->processor.stack_pointer.low;
+                        response->data = (ADDRESS_STACK | bus->processor.stack_pointer.low);
                         TRACE(LEVEL_VERBOSE, "Processor read [SP]->%02X", response->data & UINT8_MAX);
                         break;
                 case NES_PROCESSOR_STATUS:

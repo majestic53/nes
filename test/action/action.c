@@ -165,7 +165,7 @@ nes_test_action_processor_read(void)
 	if(ASSERT((nes_action(&g_test.request, &g_test.response) == NES_OK)
 			&& (g_test.response.type == NES_ACTION_PROCESSOR_READ)
 			&& (g_test.response.address == NES_PROCESSOR_STACK_POINTER)
-			&& (g_test.response.data == g_test.bus.processor.stack_pointer.low))) {
+			&& (g_test.response.data == (ADDRESS_STACK | g_test.bus.processor.stack_pointer.low)))) {
 		result = NES_ERR;
 		goto exit;
 	}

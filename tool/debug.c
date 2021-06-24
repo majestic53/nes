@@ -25,6 +25,36 @@
 extern "C" {
 #endif /* __cplusplus */
 
+static uint16_t
+nes_launcher_debug_derive_address(
+        __in const char *argument
+        )
+{
+        uint16_t result = 0;
+        nes_action_t request = { .type = NES_ACTION_PROCESSOR_READ }, response = {};
+
+        for(request.address = 0; request.address < NES_PROCESSOR_MAX; ++request.address) {
+
+                if(!strcmp(REGISTER[request.address], argument)) {
+                        break;
+                }
+        }
+
+        if(request.address < NES_PROCESSOR_MAX) {
+
+                if((result = nes_action(&request, &response)) != NES_OK) {
+                        goto exit;
+                }
+
+                result = response.data;
+        } else {
+                result = strtol(argument, NULL, 16);
+        }
+
+exit:
+        return result;
+}
+
 void
 nes_launcher_debug(
         __in const nes_launcher_t *launcher
@@ -137,11 +167,11 @@ nes_launcher_debug_disassemble(
 
         switch(count) {
                 case DISASSEMBLE_MULTIPLE:
-                        address = strtol(argument[0], NULL, 16);
+                        address = nes_launcher_debug_derive_address(argument[0]);
                         offset = strtol(argument[1], NULL, 10);
                         break;
                 case DISASSEMBLE_SINGLE:
-                        address = strtol(argument[0], NULL, 16);
+                        address = nes_launcher_debug_derive_address(argument[0]);
                         break;
                 default:
                         result = NES_ERR;
@@ -162,7 +192,7 @@ nes_launcher_debug_disassemble(
                 }
 
                 fprintf(stdout, "%02X", response.data);
-                instruction = nes_processor_instruction(response.data);
+                instruction = &INSTRUCTION_FORMAT[response.data];
 
                 switch(instruction->mode) {
                         case MODE_ABSOLUTE:
@@ -293,6 +323,7 @@ nes_launcher_debug_processor(
 
                         switch(request.address) {
                                 case NES_PROCESSOR_PROGRAM_COUNTER:
+                                case NES_PROCESSOR_STACK_POINTER:
                                         fprintf(stdout, "%04X\n", response.data & UINT16_MAX);
                                         break;
                                 case NES_PROCESSOR_STATUS:
@@ -317,6 +348,7 @@ nes_launcher_debug_processor(
 
                                 switch(request.address) {
                                         case NES_PROCESSOR_PROGRAM_COUNTER:
+                                        case NES_PROCESSOR_STACK_POINTER:
                                                 fprintf(stdout, "%s>\t%04X\n", REGISTER[request.address], response.data & UINT16_MAX);
                                                 break;
                                         case NES_PROCESSOR_STATUS:
@@ -375,7 +407,7 @@ nes_launcher_debug_read(
 
         switch(count) {
                 case READ_BYTE:
-                        request.address = strtol(argument[0], NULL, 16);
+                        request.address = nes_launcher_debug_derive_address(argument[0]);
 
                         if((result = nes_action(&request, &response)) != NES_OK) {
                                 goto exit;
@@ -384,7 +416,7 @@ nes_launcher_debug_read(
                         fprintf(stdout, "%02X\n", response.data);
                         break;
                 case READ_MULTIBYTE:
-                        base = strtol(argument[0], NULL, 16);
+                        base = nes_launcher_debug_derive_address(argument[0]);
                         offset = strtol(argument[1], NULL, 16);
 
                         for(uint32_t address = base, count = 0; address < base + offset; ++address, ++count) {
@@ -509,7 +541,7 @@ nes_launcher_debug_write(
 
         switch(count) {
                 case WRITE_BYTE:
-                        request.address = strtol(argument[0], NULL, 16);
+                        request.address = nes_launcher_debug_derive_address(argument[0]);
                         request.data = strtol(argument[1], NULL, 16);
                         result = nes_action(&request, NULL);
                         break;

@@ -24,7 +24,7 @@
 
 #include <readline/history.h>
 #include <readline/readline.h>
-#include "../src/system/processor_trace_type.h"
+#include "../src/system/processor_type.h"
 #include "./common.h"
 
 #define ARGUMENT_MAX 10

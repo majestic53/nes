@@ -60,6 +60,7 @@ The following commands are available in debug mode:
 
 ```
 q	Exit debug mode
+d	Disassemble instructions
 h	Show help information
 p	Read/Write/Show processor
 r	Read data from address
@@ -68,6 +69,15 @@ s	Step processor
 v	Show version information
 w	Write data to address
 ```
+
+### Debug command parameters
+
+|Name    |Description                             |Format                                                |
+|:-------|:---------------------------------------|:-----------------------------------------------------|
+|ADDRESS |Address to read/write to/from           |```[0-9a-fA-F]{1-4}```                                |
+|DATA    |Data to read/write                      |```[0-9a-fA-F]{1-2}```                                |
+|OFFSET  |Bytes/Instructions to read/disassemble  |```[0-9]{1-6}```                                      |
+|REGISTER|Processor register to read/write to/from|```pc```, ```sp```, ```s```, ```a```, ```x```, ```y```|
 
 #### Examples
 
@@ -95,16 +105,16 @@ To run the processor, run the following command:
 [0000] $ c
 ```
 
-To read data from memory at some address, run the following command:
+To read data from memory at some address/register, run the following command:
 
 ```
-[0000] $ r <ADDRESS> [<OFFSET>]
+[0000] $ r <ADDRESS>|<REGISTER> [<OFFSET>]
 ```
 
-To write data to memory at some address, run the following command:
+To write data to memory at some address/register, run the following command:
 
 ```
-[0000] $ w <ADDRESS> <DATA>
+[0000] $ w <ADDRESS>|<REGISTER> <DATA>
 ```
 
 To show processor information, run the following command:
@@ -113,10 +123,16 @@ To show processor information, run the following command:
 [0000] $ p
 ```
 
-To read/write processor data at some register (```pc```, ```sp```, ```s```, ```a```, ```x```, ```y```), run the following command:
+To read/write processor data at some register, run the following command:
 
 ```
 [0000] $ p <REGISTER> [<DATA>]
+```
+
+To disassemble processor instructions at some address/register, run the following command:
+
+```
+[0000] $ d <ADDRESS>|<REGISTER> [<OFFSET>]
 ```
 
 Trademark
