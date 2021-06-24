@@ -72,12 +72,12 @@ w	Write data to address
 
 ### Debug command parameters
 
-|Name    |Description                             |Format                                                |
-|:-------|:---------------------------------------|:-----------------------------------------------------|
-|ADDRESS |Address to read/write to/from           |```[0-9a-fA-F]{1-4}```                                |
-|DATA    |Data to read/write                      |```[0-9a-fA-F]{1-2}```                                |
-|OFFSET  |Bytes/Instructions to read/disassemble  |```[0-9]{1-6}```                                      |
-|REGISTER|Processor register to read/write to/from|```pc```, ```sp```, ```s```, ```a```, ```x```, ```y```|
+|Name    |Description                              |Format                                                |
+|:-------|:----------------------------------------|:-----------------------------------------------------|
+|ADDRESS |Address to read from/write to            |```[0-9a-fA-F]{1-4}```                                |
+|DATA    |Data to read/write                       |```[0-9a-fA-F]{1-2}```                                |
+|COUNT   |Bytes to read/Instructions to disassemble|```[0-9]{1-6}```                                      |
+|REGISTER|Processor register to read from/write to |```pc```, ```sp```, ```s```, ```a```, ```x```, ```y```|
 
 #### Examples
 
@@ -108,7 +108,7 @@ To run the processor, run the following command:
 To read data from memory at some address/register, run the following command:
 
 ```
-[0000] $ r <ADDRESS>|<REGISTER> [<OFFSET>]
+[0000] $ r <ADDRESS>|<REGISTER> [<COUNT>]
 ```
 
 To write data to memory at some address/register, run the following command:
@@ -132,7 +132,7 @@ To read/write processor data at some register, run the following command:
 To disassemble processor instructions at some address/register, run the following command:
 
 ```
-[0000] $ d <ADDRESS>|<REGISTER> [<OFFSET>]
+[0000] $ d <ADDRESS>|<REGISTER> [<COUNT>]
 ```
 
 Trademark
