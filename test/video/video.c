@@ -19,13 +19,53 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef NES_VERSION_TYPE_H_
-#define NES_VERSION_TYPE_H_
+#include "./video_type.h"
 
-#include "../../include/common.h"
+static nes_test_video_t g_test = {};
 
-#define VERSION_MAJOR 0
-#define VERSION_MINOR 1
-#define VERSION_PATCH 16
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
 
-#endif /* NES_VERSION_TYPE_H_ */
+/* TODO */
+
+void
+nes_test_initialize(void)
+{
+
+	/* TODO */
+	memset(&g_test, 0, sizeof(g_test));
+	/* --- */
+
+}
+
+int
+main(
+	__in int argc,
+	__in char *argv[]
+	)
+{
+	int result = NES_OK, seed;
+
+	if(argc > 1) {
+		seed = strtol(argv[1], NULL, 16);
+	} else {
+		seed = time(NULL);
+	}
+
+	srand(seed);
+	TRACE_SEED(seed);
+
+	for(size_t test = 0; test < TEST_COUNT(TEST); ++test) {
+
+		if(TEST[test]() != NES_OK) {
+			result = NES_ERR;
+		}
+	}
+
+	return result;
+}
+
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */

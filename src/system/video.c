@@ -19,13 +19,14 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef NES_VERSION_TYPE_H_
-#define NES_VERSION_TYPE_H_
+#include "./video_type.h"
 
-#include "../../include/common.h"
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
 
-#define VERSION_MAJOR 0
-#define VERSION_MINOR 1
-#define VERSION_PATCH 16
+/* TODO */
 
-#endif /* NES_VERSION_TYPE_H_ */
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */

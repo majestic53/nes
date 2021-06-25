@@ -39,21 +39,21 @@
 #define PROMPT_PREFIX "\n["
 
 enum {
-	COMMAND_EXIT = 0,
-	COMMAND_DISASSEMBLE,
-	COMMAND_HELP,
-	COMMAND_PROCESSOR,
-	COMMAND_READ,
-	COMMAND_RUN,
-	COMMAND_STEP,
-	COMMAND_VERSION,
-	COMMAND_WRITE,
-	COMMAND_MAX,
+        COMMAND_EXIT = 0,
+        COMMAND_DISASSEMBLE,
+        COMMAND_HELP,
+        COMMAND_PROCESSOR,
+        COMMAND_READ,
+        COMMAND_RUN,
+        COMMAND_STEP,
+        COMMAND_VERSION,
+        COMMAND_WRITE,
+        COMMAND_MAX,
 };
 
 enum {
-	DISASSEMBLE_SINGLE = 1,
-	DISASSEMBLE_MULTIPLE,
+        DISASSEMBLE_SINGLE = 1,
+        DISASSEMBLE_MULTIPLE,
 };
 
 enum {
@@ -83,7 +83,7 @@ enum {
 
 static const char COMMAND[] = {
         'q', /* COMMAND_EXIT */
-	'd', /* COMMAND_DISASSEMBLE */
+        'd', /* COMMAND_DISASSEMBLE */
         'h', /* COMMAND_HELP */
         'p', /* COMMAND_PROCESSOR */
         'r', /* COMMAND_READ */
@@ -95,7 +95,7 @@ static const char COMMAND[] = {
 
 static const char *COMMAND_DESC[] = {
         "Exit debug mode", /* COMMAND_EXIT */
-	"Disassemble instructions", /* COMMAND_DISASSEMBLE */
+        "Disassemble instructions", /* COMMAND_DISASSEMBLE */
         "Show help information", /* COMMAND_HELP */
         "Read/Write/Show processor", /* COMMAND_PROCESSOR */
         "Read data from address", /* COMMAND_READ */

@@ -894,4 +894,4 @@ void nes_processor_write_word(
 }
 #endif /* __cplusplus */
 
-#endif /* NES_PROCESSOR_H_ */
+#endif /* NES_PROCESSOR_TYPE_H_ */

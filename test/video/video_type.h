@@ -19,13 +19,34 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef NES_VERSION_TYPE_H_
-#define NES_VERSION_TYPE_H_
+#ifndef NES_TEST_VIDEO_TYPE_H_
+#define NES_TEST_VIDEO_TYPE_H_
 
-#include "../../include/common.h"
+#include "../../src/system/video_type.h"
+#include "../common.h"
 
-#define VERSION_MAJOR 0
-#define VERSION_MINOR 1
-#define VERSION_PATCH 16
+typedef struct {
 
-#endif /* NES_VERSION_TYPE_H_ */
+        /* TODO */
+
+} nes_test_video_t;
+
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
+
+/* TODO */
+
+void nes_test_initialize(void);
+
+static const nes_test TEST[] = {
+
+        /* TODO */
+
+	};
+
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
+
+#endif /* NES_TEST_VIDEO_TYPE_H_ */
