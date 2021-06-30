@@ -26,8 +26,8 @@
 
 enum {
         BUS_OBJECT = 0,
-	BUS_PROCESSOR,
-	BUS_VIDEO,
+        BUS_PROCESSOR,
+        BUS_VIDEO,
 };
 
 #ifdef __cplusplus

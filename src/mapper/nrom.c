@@ -59,11 +59,11 @@ nes_mapper_nrom_read_ram(
 	uint8_t result = 0;
 
 	switch(type) {
-		case ROM_CHARACTER:
+		case RAM_CHARACTER:
 			result = nes_cartridge_read_ram(&mapper->cartridge, type, (mapper->ram_character * NROM_RAM_CHARACTER_BANK_WIDTH)
 					+ (address % NROM_RAM_CHARACTER_BANK_WIDTH));
 			break;
-		case ROM_PROGRAM:
+		case RAM_PROGRAM:
 			result = nes_cartridge_read_ram(&mapper->cartridge, type, (mapper->ram_program * NROM_RAM_PROGRAM_BANK_WIDTH)
 					+ (address % NROM_RAM_PROGRAM_BANK_WIDTH));
 			break;
@@ -117,11 +117,11 @@ nes_mapper_nrom_write_ram(
 {
 
 	switch(type) {
-		case ROM_CHARACTER:
+		case RAM_CHARACTER:
 			nes_cartridge_write_ram(&mapper->cartridge, type, (mapper->ram_character * NROM_RAM_CHARACTER_BANK_WIDTH)
 				+ (address % NROM_RAM_CHARACTER_BANK_WIDTH), data);
 			break;
-		case ROM_PROGRAM:
+		case RAM_PROGRAM:
 			nes_cartridge_write_ram(&mapper->cartridge, type, (mapper->ram_program * NROM_RAM_PROGRAM_BANK_WIDTH)
 				+ (address % NROM_RAM_PROGRAM_BANK_WIDTH), data);
 			break;
