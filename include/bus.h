@@ -25,7 +25,8 @@
 #include "./common.h"
 
 enum {
-	BUS_PROCESSOR = 0,
+        BUS_OBJECT = 0,
+	BUS_PROCESSOR,
 	BUS_VIDEO,
 };
 

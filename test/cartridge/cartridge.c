@@ -181,7 +181,7 @@ nes_test_cartridge_load(void)
 	header->rom_character_count = 1;
 
 	if(ASSERT((nes_cartridge_load(&g_test.configuration, &g_test.cartridge) == NES_OK)
-			&& (g_test.cartridge.ram.length == (2 * RAM_BANK_WIDTH)))) {
+			&& (g_test.cartridge.ram[RAM_PROGRAM].length == (2 * RAM_PROGRAM_BANK_WIDTH)))) {
 		result = NES_ERR;
 		goto exit;
 	}
@@ -203,7 +203,7 @@ nes_test_cartridge_load(void)
 	header->rom_character_count = 1;
 
 	if(ASSERT((nes_cartridge_load(&g_test.configuration, &g_test.cartridge) == NES_OK)
-			&& (g_test.cartridge.ram.length == RAM_BANK_WIDTH))) {
+			&& (g_test.cartridge.ram[RAM_PROGRAM].length == RAM_PROGRAM_BANK_WIDTH))) {
 		result = NES_ERR;
 		goto exit;
 	}
@@ -240,11 +240,21 @@ nes_test_cartridge_read_ram(void)
 		goto exit;
 	}
 
-	memset(g_test.cartridge.ram.ptr, 0xaa, RAM_BANK_WIDTH);
+	memset(g_test.cartridge.ram[RAM_PROGRAM].ptr, 0xaa, RAM_PROGRAM_BANK_WIDTH);
 
-	for(uint16_t address = 0; address < RAM_BANK_WIDTH; ++address) {
+	for(uint16_t address = 0; address < RAM_PROGRAM_BANK_WIDTH; ++address) {
 
-		if(ASSERT(nes_cartridge_read_ram(&g_test.cartridge, address) == 0xaa)) {
+		if(ASSERT(nes_cartridge_read_ram(&g_test.cartridge, RAM_PROGRAM, address) == 0xaa)) {
+			result = NES_ERR;
+			goto exit;
+		}
+	}
+
+	memset(g_test.cartridge.ram[RAM_CHARACTER].ptr, 0xbb, RAM_CHARACTER_BANK_WIDTH);
+
+	for(uint16_t address = 0; address < RAM_CHARACTER_BANK_WIDTH; ++address) {
+
+		if(ASSERT(nes_cartridge_read_ram(&g_test.cartridge, RAM_CHARACTER, address) == 0xbb)) {
 			result = NES_ERR;
 			goto exit;
 		}
@@ -325,7 +335,7 @@ nes_test_cartridge_read_rom(void)
 	memset(g_test.configuration.rom.data.ptr + sizeof(g_test.header) + (2 * ROM_PROGRAM_BANK_WIDTH) + TRAINER_WIDTH, 0xcc, ROM_CHARACTER_BANK_WIDTH);
 
 	if(ASSERT((nes_cartridge_load(&g_test.configuration, &g_test.cartridge) == NES_OK)
-			&& (g_test.cartridge.ram.length == RAM_BANK_WIDTH))) {
+			&& (g_test.cartridge.ram[RAM_PROGRAM].length == RAM_PROGRAM_BANK_WIDTH))) {
 		result = NES_ERR;
 		goto exit;
 	}
@@ -388,9 +398,12 @@ nes_test_cartridge_unload(void)
 	nes_cartridge_unload(&g_test.cartridge);
 
 	if(ASSERT(!g_test.cartridge.header
-			&& !g_test.cartridge.ram.ptr
-			&& !g_test.cartridge.ram.length
-			&& !g_test.cartridge.ram_count
+			&& !g_test.cartridge.ram[RAM_PROGRAM].ptr
+			&& !g_test.cartridge.ram[RAM_PROGRAM].length
+			&& !g_test.cartridge.ram[RAM_CHARACTER].ptr
+			&& !g_test.cartridge.ram[RAM_CHARACTER].length
+			&& !g_test.cartridge.ram_count[RAM_PROGRAM]
+			&& !g_test.cartridge.ram_count[RAM_CHARACTER]
 			&& !g_test.cartridge.rom[ROM_PROGRAM].ptr
 			&& !g_test.cartridge.rom[ROM_PROGRAM].length
 			&& !g_test.cartridge.rom[ROM_CHARACTER].ptr
@@ -433,10 +446,19 @@ nes_test_cartridge_write_ram(void)
 		goto exit;
 	}
 
-	for(uint16_t address = 0; address < RAM_BANK_WIDTH; ++address) {
-		nes_cartridge_write_ram(&g_test.cartridge, address, 0xaa);
+	for(uint16_t address = 0; address < RAM_PROGRAM_BANK_WIDTH; ++address) {
+		nes_cartridge_write_ram(&g_test.cartridge, RAM_PROGRAM, address, 0xaa);
 
-		if(ASSERT(g_test.cartridge.ram.ptr[address] == 0xaa)) {
+		if(ASSERT(g_test.cartridge.ram[RAM_PROGRAM].ptr[address] == 0xaa)) {
+			result = NES_ERR;
+			goto exit;
+		}
+	}
+
+	for(uint16_t address = 0; address < RAM_CHARACTER_BANK_WIDTH; ++address) {
+		nes_cartridge_write_ram(&g_test.cartridge, RAM_CHARACTER, address, 0xbb);
+
+		if(ASSERT(g_test.cartridge.ram[RAM_CHARACTER].ptr[address] == 0xbb)) {
 			result = NES_ERR;
 			goto exit;
 		}

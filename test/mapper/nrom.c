@@ -53,14 +53,15 @@ nes_test_mapper_nrom_load(void)
 		goto exit;
 	}
 
-	if(ASSERT((g_test.mapper.ram == 0)
+	if(ASSERT((g_test.mapper.ram_program == 0)
 			&& (g_test.mapper.rom_program[ROM_BANK_0] == 0)
 			&& (g_test.mapper.rom_program[ROM_BANK_1] == 0)
+			&& (g_test.mapper.ram_character == 0)
 			&& (g_test.mapper.rom_character == 0)
 			&& (g_test.mapper.read_ram == nes_mapper_nrom_read_ram)
 			&& (g_test.mapper.read_rom == nes_mapper_nrom_read_rom)
 			&& (g_test.mapper.write_ram == nes_mapper_nrom_write_ram)
-			&& (g_test.mapper.write_rom == nes_mapper_nrom_write_rom)) != NES_OK) {
+			&& (g_test.mapper.write_rom == nes_mapper_nrom_write_rom))) {
 		result = NES_ERR;
 		goto exit;
 	}
@@ -85,14 +86,15 @@ nes_test_mapper_nrom_load(void)
 		goto exit;
 	}
 
-	if(ASSERT((g_test.mapper.ram == 0)
+	if(ASSERT((g_test.mapper.ram_program == 0)
 			&& (g_test.mapper.rom_program[ROM_BANK_0] == 0)
 			&& (g_test.mapper.rom_program[ROM_BANK_1] == 1)
+			&& (g_test.mapper.ram_character == 0)
 			&& (g_test.mapper.rom_character == 0)
 			&& (g_test.mapper.read_ram == nes_mapper_nrom_read_ram)
 			&& (g_test.mapper.read_rom == nes_mapper_nrom_read_rom)
 			&& (g_test.mapper.write_ram == nes_mapper_nrom_write_ram)
-			&& (g_test.mapper.write_rom == nes_mapper_nrom_write_rom)) != NES_OK) {
+			&& (g_test.mapper.write_rom == nes_mapper_nrom_write_rom))) {
 		result = NES_ERR;
 		goto exit;
 	}
@@ -129,13 +131,25 @@ nes_test_mapper_nrom_read_ram(void)
 		goto exit;
 	}
 
-	for(uint16_t address = 0; address < NROM_RAM_BANK_WIDTH; ++address) {
-		g_test.mapper.cartridge.ram.ptr[address] = rand();
+	for(uint16_t address = 0; address < NROM_RAM_PROGRAM_BANK_WIDTH; ++address) {
+		g_test.mapper.cartridge.ram[RAM_PROGRAM].ptr[address] = rand();
 	}
 
-	for(uint16_t address = 0; address < NROM_RAM_BANK_WIDTH; ++address) {
+	for(uint16_t address = 0; address < NROM_RAM_PROGRAM_BANK_WIDTH; ++address) {
 
-		if(ASSERT(nes_mapper_read_ram(&g_test.mapper, address) == g_test.mapper.cartridge.ram.ptr[address]) != NES_OK) {
+		if(ASSERT(nes_mapper_read_ram(&g_test.mapper, RAM_PROGRAM, address) == g_test.mapper.cartridge.ram[RAM_PROGRAM].ptr[address])) {
+			result = NES_ERR;
+			goto exit;
+		}
+	}
+
+	for(uint16_t address = 0; address < NROM_RAM_CHARACTER_BANK_WIDTH; ++address) {
+		g_test.mapper.cartridge.ram[RAM_CHARACTER].ptr[address] = rand();
+	}
+
+	for(uint16_t address = 0; address < NROM_RAM_CHARACTER_BANK_WIDTH; ++address) {
+
+		if(ASSERT(nes_mapper_read_ram(&g_test.mapper, RAM_CHARACTER, address) == g_test.mapper.cartridge.ram[RAM_CHARACTER].ptr[address])) {
 			result = NES_ERR;
 			goto exit;
 		}
@@ -179,7 +193,7 @@ nes_test_mapper_nrom_read_rom(void)
 
 	for(uint16_t address = 0; address < NROM_ROM_PROGRAM_BANK_WIDTH; ++address) {
 
-		if(ASSERT(nes_mapper_read_rom(&g_test.mapper, ROM_PROGRAM, address) == g_test.mapper.cartridge.rom[ROM_PROGRAM].ptr[address]) != NES_OK) {
+		if(ASSERT(nes_mapper_read_rom(&g_test.mapper, ROM_PROGRAM, address) == g_test.mapper.cartridge.rom[ROM_PROGRAM].ptr[address])) {
 			result = NES_ERR;
 			goto exit;
 		}
@@ -191,7 +205,7 @@ nes_test_mapper_nrom_read_rom(void)
 
 	for(uint16_t address = 0; address < NROM_ROM_CHARACTER_BANK_WIDTH; ++address) {
 
-		if(ASSERT(nes_mapper_read_rom(&g_test.mapper, ROM_CHARACTER, address) == g_test.mapper.cartridge.rom[ROM_CHARACTER].ptr[address]) != NES_OK) {
+		if(ASSERT(nes_mapper_read_rom(&g_test.mapper, ROM_CHARACTER, address) == g_test.mapper.cartridge.rom[ROM_CHARACTER].ptr[address])) {
 			result = NES_ERR;
 			goto exit;
 		}
@@ -223,7 +237,7 @@ nes_test_mapper_nrom_read_rom(void)
 
 	for(uint16_t address = 0; address < (2 * NROM_ROM_PROGRAM_BANK_WIDTH); ++address) {
 
-		if(ASSERT(nes_mapper_read_rom(&g_test.mapper, ROM_PROGRAM, address) == g_test.mapper.cartridge.rom[ROM_PROGRAM].ptr[address]) != NES_OK) {
+		if(ASSERT(nes_mapper_read_rom(&g_test.mapper, ROM_PROGRAM, address) == g_test.mapper.cartridge.rom[ROM_PROGRAM].ptr[address])) {
 			result = NES_ERR;
 			goto exit;
 		}
@@ -235,7 +249,7 @@ nes_test_mapper_nrom_read_rom(void)
 
 	for(uint16_t address = 0; address < NROM_ROM_CHARACTER_BANK_WIDTH; ++address) {
 
-		if(ASSERT(nes_mapper_read_rom(&g_test.mapper, ROM_CHARACTER, address) == g_test.mapper.cartridge.rom[ROM_CHARACTER].ptr[address]) != NES_OK) {
+		if(ASSERT(nes_mapper_read_rom(&g_test.mapper, ROM_CHARACTER, address) == g_test.mapper.cartridge.rom[ROM_CHARACTER].ptr[address])) {
 			result = NES_ERR;
 			goto exit;
 		}
@@ -273,12 +287,23 @@ nes_test_mapper_nrom_write_ram(void)
 		goto exit;
 	}
 
-	for(uint16_t address = 0; address < NROM_RAM_BANK_WIDTH; ++address) {
+	for(uint16_t address = 0; address < NROM_RAM_PROGRAM_BANK_WIDTH; ++address) {
 		uint8_t data = rand();
 
-		nes_mapper_write_ram(&g_test.mapper, address, data);
+		nes_mapper_write_ram(&g_test.mapper, RAM_PROGRAM, address, data);
 
-		if(ASSERT(g_test.mapper.cartridge.ram.ptr[address] == data) != NES_OK) {
+		if(ASSERT(g_test.mapper.cartridge.ram[RAM_PROGRAM].ptr[address] == data)) {
+			result = NES_ERR;
+			goto exit;
+		}
+	}
+
+	for(uint16_t address = 0; address < NROM_RAM_CHARACTER_BANK_WIDTH; ++address) {
+		uint8_t data = rand();
+
+		nes_mapper_write_ram(&g_test.mapper, RAM_CHARACTER, address, data);
+
+		if(ASSERT(g_test.mapper.cartridge.ram[RAM_CHARACTER].ptr[address] == data)) {
 			result = NES_ERR;
 			goto exit;
 		}
@@ -322,7 +347,7 @@ nes_test_mapper_nrom_write_rom(void)
 		g_test.mapper.cartridge.rom[ROM_PROGRAM].ptr[address] = data_1;
 		nes_mapper_write_rom(&g_test.mapper, ROM_PROGRAM, address, data);
 
-		if(ASSERT(g_test.mapper.cartridge.rom[ROM_PROGRAM].ptr[address] == data_1) != NES_OK) {
+		if(ASSERT(g_test.mapper.cartridge.rom[ROM_PROGRAM].ptr[address] == data_1)) {
 			result = NES_ERR;
 			goto exit;
 		}
@@ -334,7 +359,7 @@ nes_test_mapper_nrom_write_rom(void)
 		g_test.mapper.cartridge.rom[ROM_CHARACTER].ptr[address] = data_1;
 		nes_mapper_write_rom(&g_test.mapper, ROM_CHARACTER, address, data);
 
-		if(ASSERT(g_test.mapper.cartridge.rom[ROM_CHARACTER].ptr[address] == data_1) != NES_OK) {
+		if(ASSERT(g_test.mapper.cartridge.rom[ROM_CHARACTER].ptr[address] == data_1)) {
 			result = NES_ERR;
 			goto exit;
 		}
@@ -366,7 +391,7 @@ nes_test_mapper_nrom_write_rom(void)
 		g_test.mapper.cartridge.rom[ROM_PROGRAM].ptr[address] = data_1;
 		nes_mapper_write_rom(&g_test.mapper, ROM_PROGRAM, address, data);
 
-		if(ASSERT(g_test.mapper.cartridge.rom[ROM_PROGRAM].ptr[address] == data_1) != NES_OK) {
+		if(ASSERT(g_test.mapper.cartridge.rom[ROM_PROGRAM].ptr[address] == data_1)) {
 			result = NES_ERR;
 			goto exit;
 		}
@@ -378,7 +403,7 @@ nes_test_mapper_nrom_write_rom(void)
 		g_test.mapper.cartridge.rom[ROM_CHARACTER].ptr[address] = data_1;
 		nes_mapper_write_rom(&g_test.mapper, ROM_CHARACTER, address, data);
 
-		if(ASSERT(g_test.mapper.cartridge.rom[ROM_CHARACTER].ptr[address] == data_1) != NES_OK) {
+		if(ASSERT(g_test.mapper.cartridge.rom[ROM_CHARACTER].ptr[address] == data_1)) {
 			result = NES_ERR;
 			goto exit;
 		}

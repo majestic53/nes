@@ -99,9 +99,15 @@ nes_cartridge_load(
 	cartridge->rom[ROM_PROGRAM].ptr = data;
 	data += cartridge->rom[ROM_PROGRAM].length;
 	cartridge->rom[ROM_CHARACTER].ptr = data;
-	cartridge->ram_count = cartridge->header->ram_program_count ? cartridge->header->ram_program_count : 1;
+	cartridge->ram_count[RAM_PROGRAM] = cartridge->header->ram_program_count ? cartridge->header->ram_program_count : 1;
 
-	if((result = nes_buffer_allocate(&cartridge->ram, cartridge->ram_count * RAM_BANK_WIDTH)) != NES_OK) {
+	if((result = nes_buffer_allocate(&cartridge->ram[RAM_PROGRAM], cartridge->ram_count[RAM_PROGRAM] * RAM_PROGRAM_BANK_WIDTH)) != NES_OK) {
+		goto exit;
+	}
+
+	cartridge->ram_count[RAM_CHARACTER] = 1;
+
+	if((result = nes_buffer_allocate(&cartridge->ram[RAM_CHARACTER], cartridge->ram_count[RAM_CHARACTER] * RAM_CHARACTER_BANK_WIDTH)) != NES_OK) {
 		goto exit;
 	}
 
@@ -109,10 +115,12 @@ nes_cartridge_load(
 	TRACE(LEVEL_VERBOSE, "Cartridge mapper: %i (%s)", cartridge->mapper, MAPPER[cartridge->mapper]);
 	TRACE(LEVEL_VERBOSE, "Cartridge ROM-PRG: %u, %.02f KB (%u bytes)", cartridge->rom_count[ROM_PROGRAM],
 		cartridge->rom[ROM_PROGRAM].length / (float)BYTES_PER_KBYTE, cartridge->rom[ROM_PROGRAM].length);
+	TRACE(LEVEL_VERBOSE, "Cartridge RAM-PRG: %u, %.02f KB (%u bytes)", cartridge->ram_count[RAM_PROGRAM],
+		cartridge->ram[RAM_PROGRAM].length / (float)BYTES_PER_KBYTE, cartridge->ram[RAM_PROGRAM].length);
 	TRACE(LEVEL_VERBOSE, "Cartridge ROM-CHR: %u, %.02f KB (%u bytes)", cartridge->rom_count[ROM_CHARACTER],
 		cartridge->rom[ROM_CHARACTER].length / (float)BYTES_PER_KBYTE, cartridge->rom[ROM_CHARACTER].length);
-	TRACE(LEVEL_VERBOSE, "Cartridge RAM: %u, %.02f KB (%u bytes)", cartridge->ram_count,
-		cartridge->ram.length / (float)BYTES_PER_KBYTE, cartridge->ram.length);
+	TRACE(LEVEL_VERBOSE, "Cartridge RAM-CHR: %u, %.02f KB (%u bytes)", cartridge->ram_count[RAM_CHARACTER],
+		cartridge->ram[RAM_CHARACTER].length / (float)BYTES_PER_KBYTE, cartridge->ram[RAM_CHARACTER].length);
 
 exit:
 	return result;
@@ -121,10 +129,11 @@ exit:
 uint8_t
 nes_cartridge_read_ram(
 	__in const nes_cartridge_t *cartridge,
+	__in int type,
 	__in size_t address
 	)
 {
-	return cartridge->ram.ptr[address];
+	return cartridge->ram[type].ptr[address];
 }
 
 uint8_t
@@ -144,7 +153,10 @@ nes_cartridge_unload(
 {
 	TRACE(LEVEL_VERBOSE, "%s", "Cartridge unloading");
 
-	nes_buffer_free(&cartridge->ram);
+	for(uint32_t type = 0; type < RAM_MAX; ++type) {
+		nes_buffer_free(&cartridge->ram[type]);
+	}
+
 	memset(cartridge, 0, sizeof(*cartridge));
 
 	TRACE(LEVEL_VERBOSE, "%s", "Cartridge unloaded");
@@ -153,11 +165,12 @@ nes_cartridge_unload(
 void
 nes_cartridge_write_ram(
 	__inout nes_cartridge_t *cartridge,
+	__in int type,
 	__in size_t address,
 	__in uint8_t data
 	)
 {
-	cartridge->ram.ptr[address] = data;
+	cartridge->ram[type].ptr[address] = data;
 }
 
 #ifdef __cplusplus

@@ -34,10 +34,11 @@ nes_mapper_nrom_load(
 
 	TRACE(LEVEL_VERBOSE, "%s", "NROM mapper loading");
 
-	mapper->ram = 0;
+	mapper->ram_character = 0;
+	mapper->ram_program = 0;
+	mapper->rom_character = 0;
 	mapper->rom_program[ROM_BANK_0] = 0;
 	mapper->rom_program[ROM_BANK_1] = (mapper->cartridge.rom_count[ROM_PROGRAM] > 1) ? 1 : 0;
-	mapper->rom_character = 0;
 	mapper->read_ram = nes_mapper_nrom_read_ram;
 	mapper->read_rom = nes_mapper_nrom_read_rom;
 	mapper->write_ram = nes_mapper_nrom_write_ram;
@@ -51,10 +52,27 @@ nes_mapper_nrom_load(
 uint8_t
 nes_mapper_nrom_read_ram(
 	__in const nes_mapper_t *mapper,
+	__in int type,
 	__in uint16_t address
 	)
 {
-	return nes_cartridge_read_ram(&mapper->cartridge, (mapper->ram * NROM_RAM_BANK_WIDTH) + (address % NROM_RAM_BANK_WIDTH));
+	uint8_t result = 0;
+
+	switch(type) {
+		case ROM_CHARACTER:
+			result = nes_cartridge_read_ram(&mapper->cartridge, type, (mapper->ram_character * NROM_RAM_CHARACTER_BANK_WIDTH)
+					+ (address % NROM_RAM_CHARACTER_BANK_WIDTH));
+			break;
+		case ROM_PROGRAM:
+			result = nes_cartridge_read_ram(&mapper->cartridge, type, (mapper->ram_program * NROM_RAM_PROGRAM_BANK_WIDTH)
+					+ (address % NROM_RAM_PROGRAM_BANK_WIDTH));
+			break;
+		default:
+			TRACE(LEVEL_WARNING, "Invalid RAM type: %i", type);
+			break;
+	}
+
+	return result;
 }
 
 uint8_t
@@ -92,11 +110,25 @@ nes_mapper_nrom_read_rom(
 void
 nes_mapper_nrom_write_ram(
 	__inout nes_mapper_t *mapper,
+	__in int type,
 	__in uint16_t address,
 	__in uint8_t data
 	)
 {
-	nes_cartridge_write_ram(&mapper->cartridge, (mapper->ram * NROM_RAM_BANK_WIDTH) + (address % NROM_RAM_BANK_WIDTH), data);
+
+	switch(type) {
+		case ROM_CHARACTER:
+			nes_cartridge_write_ram(&mapper->cartridge, type, (mapper->ram_character * NROM_RAM_CHARACTER_BANK_WIDTH)
+				+ (address % NROM_RAM_CHARACTER_BANK_WIDTH), data);
+			break;
+		case ROM_PROGRAM:
+			nes_cartridge_write_ram(&mapper->cartridge, type, (mapper->ram_program * NROM_RAM_PROGRAM_BANK_WIDTH)
+				+ (address % NROM_RAM_PROGRAM_BANK_WIDTH), data);
+			break;
+		default:
+			TRACE(LEVEL_WARNING, "Invalid RAM type: %i", type);
+			break;
+	}
 }
 
 void

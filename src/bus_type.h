@@ -25,15 +25,23 @@
 #include "../include/system/processor.h"
 #include "../include/service.h"
 
-#define RAM_MIRROR 0x0800
+#define PROCESSOR_RAM_MIRROR 0x0800
 
-#define RAM_WIDTH \
-        ADDRESS_WIDTH(ADDRESS_RAM_BEGIN, RAM_MIRROR - 1)
+#define OBJECT_RAM_WIDTH \
+        ADDRESS_WIDTH(ADDRESS_OBJECT_RAM_BEGIN, ADDRESS_OBJECT_RAM_END)
+
+#define PROCESSOR_RAM_WIDTH \
+        ADDRESS_WIDTH(ADDRESS_PROCESSOR_RAM_BEGIN, PROCESSOR_RAM_MIRROR - 1)
+
+#define VIDEO_RAM_WIDTH \
+        ADDRESS_WIDTH(ADDRESS_VIDEO_RAM_BEGIN, ADDRESS_VIDEO_RAM_END)
 
 typedef struct {
         nes_mapper_t mapper;
         nes_processor_t processor;
-        nes_buffer_t ram;
+        nes_buffer_t ram_object;
+        nes_buffer_t ram_processor;
+        nes_buffer_t ram_video;
 
 	/* TODO: ADD SUBSYSTEMS */
 

@@ -33,6 +33,12 @@ enum {
 };
 
 enum {
+	RAM_PROGRAM = 0,
+	RAM_CHARACTER,
+	RAM_MAX,
+};
+
+enum {
 	ROM_PROGRAM = 0,
 	ROM_CHARACTER,
 	ROM_MAX,
@@ -68,8 +74,8 @@ typedef struct {
 typedef struct {
 	const nes_cartridge_header_t *header;
 	int mapper;
-	nes_buffer_t ram;
-	size_t ram_count;
+	nes_buffer_t ram[RAM_MAX];
+	size_t ram_count[RAM_MAX];
 	nes_buffer_t rom[ROM_MAX];
 	size_t rom_count[ROM_MAX];
 } nes_cartridge_t;
@@ -85,6 +91,7 @@ int nes_cartridge_load(
 
 uint8_t nes_cartridge_read_ram(
 	__in const nes_cartridge_t *cartridge,
+	__in int type,
 	__in size_t address
 	);
 
@@ -100,6 +107,7 @@ void nes_cartridge_unload(
 
 void nes_cartridge_write_ram(
 	__inout nes_cartridge_t *cartridge,
+	__in int type,
 	__in size_t address,
 	__in uint8_t data
 	);

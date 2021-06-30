@@ -46,8 +46,9 @@ nes_mapper_load(
 	TRACE(LEVEL_VERBOSE, "%s", "Mapper loaded");
 	TRACE(LEVEL_VERBOSE, "Mapper ROM-PRG[0]: %zu", mapper->rom_program[ROM_BANK_0]);
 	TRACE(LEVEL_VERBOSE, "Mapper ROM-PRG[1]: %zu", mapper->rom_program[ROM_BANK_1]);
+	TRACE(LEVEL_VERBOSE, "Mapper RAM-PRG: %zu", mapper->ram_program);
 	TRACE(LEVEL_VERBOSE, "Mapper ROM-CHR: %zu", mapper->rom_character);
-	TRACE(LEVEL_VERBOSE, "Mapper RAM: %zu", mapper->ram);
+	TRACE(LEVEL_VERBOSE, "Mapper RAM-CHR: %zu", mapper->ram_character);
 
 exit:
 	return result;
@@ -56,10 +57,11 @@ exit:
 uint8_t
 nes_mapper_read_ram(
 	__in const nes_mapper_t *mapper,
+	__in int type,
 	__in uint16_t address
 	)
 {
-	return mapper->read_ram(mapper, address);
+	return mapper->read_ram(mapper, type, address);
 }
 
 uint8_t
@@ -88,11 +90,12 @@ nes_mapper_unload(
 void
 nes_mapper_write_ram(
 	__inout nes_mapper_t *mapper,
+	__in int type,
 	__in uint16_t address,
 	__in uint8_t data
 	)
 {
-	mapper->write_ram(mapper, address, data);
+	mapper->write_ram(mapper, type, address, data);
 }
 
 void

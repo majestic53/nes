@@ -32,12 +32,14 @@ enum {
 
 typedef struct nes_mapper_s {
 	nes_cartridge_t cartridge;
-	size_t ram;
-	size_t rom_program[ROM_BANK_MAX];
+	size_t ram_character;
+	size_t ram_program;
 	size_t rom_character;
+	size_t rom_program[ROM_BANK_MAX];
 
 	uint8_t (*read_ram)(
 			__in const struct nes_mapper_s *mapper,
+			__in int type,
 			__in uint16_t address
 			);
 
@@ -49,6 +51,7 @@ typedef struct nes_mapper_s {
 
 	void (*write_ram)(
 			__inout struct nes_mapper_s *mapper,
+			__in int type,
 			__in uint16_t address,
 			__in uint8_t data
 			);
@@ -72,6 +75,7 @@ int nes_mapper_load(
 
 uint8_t nes_mapper_read_ram(
 	__in const nes_mapper_t *mapper,
+	__in int type,
 	__in uint16_t address
 	);
 
@@ -87,6 +91,7 @@ void nes_mapper_unload(
 
 void nes_mapper_write_ram(
 	__inout nes_mapper_t *mapper,
+	__in int type,
 	__in uint16_t address,
 	__in uint8_t data
 	);

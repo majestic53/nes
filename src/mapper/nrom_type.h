@@ -22,11 +22,12 @@
 #ifndef NES_MAPPER_NROM_TYPE_H_
 #define NES_MAPPER_NROM_TYPE_H_
 
-#include "../../include/common.h"
+#include "../common/cartridge_type.h"
 
-#define NROM_RAM_BANK_WIDTH (8 * BYTES_PER_KBYTE)
-#define NROM_ROM_CHARACTER_BANK_WIDTH (8 * BYTES_PER_KBYTE)
-#define NROM_ROM_PROGRAM_BANK_WIDTH (16 * BYTES_PER_KBYTE)
+#define NROM_RAM_CHARACTER_BANK_WIDTH RAM_CHARACTER_BANK_WIDTH
+#define NROM_RAM_PROGRAM_BANK_WIDTH RAM_PROGRAM_BANK_WIDTH
+#define NROM_ROM_CHARACTER_BANK_WIDTH ROM_CHARACTER_BANK_WIDTH
+#define NROM_ROM_PROGRAM_BANK_WIDTH ROM_PROGRAM_BANK_WIDTH
 
 #ifdef __cplusplus
 extern "C" {
@@ -38,6 +39,7 @@ int nes_mapper_nrom_load(
 
 uint8_t nes_mapper_nrom_read_ram(
 	__in const nes_mapper_t *mapper,
+	__in int type,
 	__in uint16_t address
 	);
 
@@ -49,6 +51,7 @@ uint8_t nes_mapper_nrom_read_rom(
 
 void nes_mapper_nrom_write_ram(
 	__inout nes_mapper_t *mapper,
+	__in int type,
 	__in uint16_t address,
 	__in uint8_t data
 	);
