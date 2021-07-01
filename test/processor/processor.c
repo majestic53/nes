@@ -7741,7 +7741,7 @@ main(
 	srand(seed);
 	TRACE_SEED(seed);
 
-	if((result = nes_buffer_allocate(&g_test.memory, UINT16_MAX + 1)) != NES_OK) {
+	if((result = nes_buffer_allocate(&g_test.memory, UINT16_MAX + 1, 0x00)) != NES_OK) {
 		goto exit;
 	}
 

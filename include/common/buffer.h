@@ -30,7 +30,8 @@ extern "C" {
 
 int nes_buffer_allocate(
 	__inout nes_buffer_t *buffer,
-	__in size_t length
+	__in size_t length,
+        __in uint8_t fill
 	);
 
 void nes_buffer_free(

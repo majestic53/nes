@@ -27,6 +27,7 @@ DIR_BUILD=./build/
 DIR_ROOT=./
 DIR_SRC=./src/
 DIR_TEST_ACTION=./test/action/
+DIR_TEST_BUS=./test/bus/
 DIR_TEST_CARTRIDGE=./test/cartridge/
 DIR_TEST_MAPPER=./test/mapper/
 DIR_TEST_PROCESSOR=./test/processor/
@@ -70,6 +71,7 @@ library_release:
 
 test_debug:
 	cd $(DIR_TEST_ACTION) && make $(BUILD_DEBUG)$(LEVEL) build
+	cd $(DIR_TEST_BUS) && make $(BUILD_DEBUG)$(LEVEL) build
 	cd $(DIR_TEST_CARTRIDGE) && make $(BUILD_DEBUG)$(LEVEL) build
 	cd $(DIR_TEST_MAPPER) && make $(BUILD_DEBUG)$(LEVEL) build
 	cd $(DIR_TEST_PROCESSOR) && make $(BUILD_DEBUG)$(LEVEL) build
@@ -77,6 +79,7 @@ test_debug:
 
 test_release:
 	cd $(DIR_TEST_ACTION) && make $(BUILD_RELEASE) build
+	cd $(DIR_TEST_BUS) && make $(BUILD_RELEASE) build
 	cd $(DIR_TEST_CARTRIDGE) && make $(BUILD_RELEASE) build
 	cd $(DIR_TEST_MAPPER) && make $(BUILD_RELEASE) build
 	cd $(DIR_TEST_PROCESSOR) && make $(BUILD_RELEASE) build

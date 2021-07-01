@@ -53,7 +53,7 @@ nes_launcher_load(void)
 		goto exit;
 	}
 
-	if((result = nes_buffer_allocate(&g_launcher.configuration.rom.data, length)) != NES_OK) {
+	if((result = nes_buffer_allocate(&g_launcher.configuration.rom.data, length, 0)) != NES_OK) {
 		fprintf(stderr, "%s: %s\n", g_launcher.path, nes_error());
 		goto exit;
 	}

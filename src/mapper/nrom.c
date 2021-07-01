@@ -83,7 +83,6 @@ nes_mapper_nrom_read_rom(
 	)
 {
 	uint8_t result = 0;
-	size_t bank = ROM_BANK_0;
 
 	switch(type) {
 		case ROM_CHARACTER:
@@ -91,13 +90,9 @@ nes_mapper_nrom_read_rom(
 					+ (address % NROM_ROM_CHARACTER_BANK_WIDTH));
 			break;
 		case ROM_PROGRAM:
-
-			if(mapper->cartridge.rom_count[ROM_PROGRAM] > 1) {
-				bank = (address >= NROM_ROM_PROGRAM_BANK_WIDTH) ? ROM_BANK_1 : ROM_BANK_0;
-			}
-
-			result = nes_cartridge_read_rom(&mapper->cartridge, type, (mapper->rom_program[bank] * NROM_ROM_PROGRAM_BANK_WIDTH)
-					+ (address % NROM_ROM_PROGRAM_BANK_WIDTH));
+			result = nes_cartridge_read_rom(&mapper->cartridge, type,
+					(mapper->rom_program[(address >= NROM_ROM_PROGRAM_BANK_WIDTH) ? ROM_BANK_1 : ROM_BANK_0] * NROM_ROM_PROGRAM_BANK_WIDTH)
+						+ (address % NROM_ROM_PROGRAM_BANK_WIDTH));
 			break;
 		default:
 			TRACE(LEVEL_WARNING, "Invalid ROM type: %i", type);

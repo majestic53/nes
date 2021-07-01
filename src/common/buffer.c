@@ -28,7 +28,8 @@ extern "C" {
 int
 nes_buffer_allocate(
 	__inout nes_buffer_t *buffer,
-	__in size_t length
+	__in size_t length,
+	__in uint8_t fill
 	)
 {
 	int result = NES_OK;
@@ -39,7 +40,7 @@ nes_buffer_allocate(
 	}
 
 	buffer->length = length;
-	memset(buffer->ptr, BUFFER_FILL, buffer->length);
+	memset(buffer->ptr, fill, buffer->length);
 	TRACE(LEVEL_VERBOSE, "Buffer allocate %p, %.02f KB (%u bytes)", buffer->ptr, buffer->length / (float)BYTES_PER_KBYTE, buffer->length);
 
 exit:

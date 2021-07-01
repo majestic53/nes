@@ -829,7 +829,7 @@ nes_processor_pull(
         __inout nes_processor_t *processor
         )
 {
-        return nes_processor_read(processor, ADDRESS_PROCESSOR_STACK | ++processor->stack_pointer.low);
+        return nes_processor_read(processor, STACK_ADDRESS | ++processor->stack_pointer.low);
 }
 
 uint16_t
@@ -846,7 +846,7 @@ nes_processor_push(
         __in uint8_t data
         )
 {
-        nes_processor_write(processor, ADDRESS_PROCESSOR_STACK | processor->stack_pointer.low--, data);
+        nes_processor_write(processor, STACK_ADDRESS | processor->stack_pointer.low--, data);
 }
 
 void

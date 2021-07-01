@@ -24,6 +24,4 @@
 
 #include "../../include/common.h"
 
-#define BUFFER_FILL 0xea
-
 #endif /* NES_BUFFER_TYPE_H_ */

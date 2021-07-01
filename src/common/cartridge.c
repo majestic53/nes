@@ -101,13 +101,15 @@ nes_cartridge_load(
 	cartridge->rom[ROM_CHARACTER].ptr = data;
 	cartridge->ram_count[RAM_PROGRAM] = cartridge->header->ram_program_count ? cartridge->header->ram_program_count : 1;
 
-	if((result = nes_buffer_allocate(&cartridge->ram[RAM_PROGRAM], cartridge->ram_count[RAM_PROGRAM] * RAM_PROGRAM_BANK_WIDTH)) != NES_OK) {
+	if((result = nes_buffer_allocate(&cartridge->ram[RAM_PROGRAM], cartridge->ram_count[RAM_PROGRAM] * RAM_PROGRAM_BANK_WIDTH, RAM_PROGRAM_BANK_FILL))
+			!= NES_OK) {
 		goto exit;
 	}
 
 	cartridge->ram_count[RAM_CHARACTER] = 1;
 
-	if((result = nes_buffer_allocate(&cartridge->ram[RAM_CHARACTER], cartridge->ram_count[RAM_CHARACTER] * RAM_CHARACTER_BANK_WIDTH)) != NES_OK) {
+	if((result = nes_buffer_allocate(&cartridge->ram[RAM_CHARACTER], cartridge->ram_count[RAM_CHARACTER] * RAM_CHARACTER_BANK_WIDTH, RAM_PROGRAM_BANK_FILL))
+			!= NES_OK) {
 		goto exit;
 	}
 

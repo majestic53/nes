@@ -19,39 +19,48 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef NES_DEFINE_H_
-#define NES_DEFINE_H_
+#ifndef NES_TEST_BUS_TYPE_H_
+#define NES_TEST_BUS_TYPE_H_
 
-#include "../nes.h"
+#include "../../src/bus_type.h"
+#include "../common.h"
 
-#ifndef __in
-#define __in
-#endif /* __in */
+typedef struct {
+        nes_t configuration;
+        uint16_t mapper_address;
+        uint8_t mapper_data;
+        int mapper_status;
+        int mapper_type;
+        bool mapper_unload;
+        bool processor_reset;
+        nes_version_t version;
+} nes_test_bus_t;
 
-#ifndef __inout
-#define __inout
-#endif /* __inout */
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
 
-#ifndef __out
-#define __out
-#endif /* __out */
+int nes_test_bus_load(void);
 
-#define BYTES_PER_KBYTE 1024
+int nes_test_bus_read(void);
 
-#define CYCLES_PER_FRAME 29781
+int nes_test_bus_unload(void);
 
-#define FORMAT_MAX 512
+int nes_test_bus_write(void);
 
-#define FRAME_FREQUENCY (MILLISEC_PER_SEC / (float)FRAMES_PER_SEC)
-#define FRAMES_PER_SEC 60
+void nes_test_initialize(void);
 
-#define MILLISEC_PER_SEC 1000
+void nes_test_uninitialize(void);
 
-#define NES "NES"
+static const nes_test TEST[] = {
+        nes_test_bus_load,
+        nes_test_bus_read,
+        nes_test_bus_unload,
+        nes_test_bus_write,
+	};
 
-#define STACK_ADDRESS 0x0100
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
 
-#define ADDRESS_WIDTH(_BEGIN_, _END_) \
-        (((_END_) - (_BEGIN_)) + 1)
-
-#endif /* NES_DEFINE_H_ */
+#endif /* NES_TEST_BUS_TYPE_H_ */
