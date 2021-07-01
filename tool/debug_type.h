@@ -24,6 +24,7 @@
 
 #include <readline/history.h>
 #include <readline/readline.h>
+#include "../src/common/cartridge_type.h"
 #include "../src/system/processor_type.h"
 #include "./common.h"
 
@@ -195,6 +196,10 @@ static const char *LEVEL_COL[] = {
 #else
 #define LEVEL_COLOR(_LEVEL_) ""
 #endif /* COLOR */
+
+const char *MAPPER_NAME[] = {
+        "NROM", /* MAPPER_NROM */
+        };
 
 static const char *REGISTER[] = {
         "pc", /* Processor program counter register */

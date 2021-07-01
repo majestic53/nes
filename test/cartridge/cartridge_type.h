@@ -28,7 +28,7 @@
 typedef struct {
 	nes_t configuration;
 	nes_cartridge_t cartridge;
-	nes_cartridge_header_t header;
+	nes_header_t header;
 } nes_test_cartridge_t;
 
 #ifdef __cplusplus

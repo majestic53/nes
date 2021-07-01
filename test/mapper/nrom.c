@@ -31,7 +31,7 @@ int
 nes_test_mapper_nrom_load(void)
 {
 	int result = NES_OK;
-	nes_cartridge_header_t *header;
+	nes_header_t *header;
 
 	nes_test_initialize();
 
@@ -40,7 +40,7 @@ nes_test_mapper_nrom_load(void)
 		goto exit;
 	}
 
-	header = (nes_cartridge_header_t *)g_test.configuration.rom.data.ptr;
+	header = (nes_header_t *)g_test.configuration.rom.data.ptr;
 	memcpy(header->magic, HEADER_MAGIC, strlen(HEADER_MAGIC));
 	header->flag_6.mapper_low = MAPPER_NROM;
 	header->flag_6.trainer = false;
@@ -74,7 +74,7 @@ nes_test_mapper_nrom_load(void)
 		goto exit;
 	}
 
-	header = (nes_cartridge_header_t *)g_test.configuration.rom.data.ptr;
+	header = (nes_header_t *)g_test.configuration.rom.data.ptr;
 	memcpy(header->magic, HEADER_MAGIC, strlen(HEADER_MAGIC));
 	header->flag_6.mapper_low = MAPPER_NROM;
 	header->flag_6.trainer = false;
@@ -111,7 +111,7 @@ int
 nes_test_mapper_nrom_read_ram(void)
 {
 	int result = NES_OK;
-	nes_cartridge_header_t *header;
+	nes_header_t *header;
 
 	nes_test_initialize();
 
@@ -120,7 +120,7 @@ nes_test_mapper_nrom_read_ram(void)
 		goto exit;
 	}
 
-	header = (nes_cartridge_header_t *)g_test.configuration.rom.data.ptr;
+	header = (nes_header_t *)g_test.configuration.rom.data.ptr;
 	memcpy(header->magic, HEADER_MAGIC, strlen(HEADER_MAGIC));
 	header->flag_6.mapper_low = MAPPER_NROM;
 	header->flag_6.trainer = false;
@@ -168,7 +168,7 @@ int
 nes_test_mapper_nrom_read_rom(void)
 {
 	int result = NES_OK;
-	nes_cartridge_header_t *header;
+	nes_header_t *header;
 
 	nes_test_initialize();
 
@@ -177,7 +177,7 @@ nes_test_mapper_nrom_read_rom(void)
 		goto exit;
 	}
 
-	header = (nes_cartridge_header_t *)g_test.configuration.rom.data.ptr;
+	header = (nes_header_t *)g_test.configuration.rom.data.ptr;
 	memcpy(header->magic, HEADER_MAGIC, strlen(HEADER_MAGIC));
 	header->flag_6.mapper_low = MAPPER_NROM;
 	header->flag_6.trainer = false;
@@ -222,7 +222,7 @@ nes_test_mapper_nrom_read_rom(void)
 		goto exit;
 	}
 
-	header = (nes_cartridge_header_t *)g_test.configuration.rom.data.ptr;
+	header = (nes_header_t *)g_test.configuration.rom.data.ptr;
 	memcpy(header->magic, HEADER_MAGIC, strlen(HEADER_MAGIC));
 	header->flag_6.mapper_low = MAPPER_NROM;
 	header->flag_6.trainer = false;
@@ -270,7 +270,7 @@ int
 nes_test_mapper_nrom_write_ram(void)
 {
 	int result = NES_OK;
-	nes_cartridge_header_t *header;
+	nes_header_t *header;
 
 	nes_test_initialize();
 
@@ -279,7 +279,7 @@ nes_test_mapper_nrom_write_ram(void)
 		goto exit;
 	}
 
-	header = (nes_cartridge_header_t *)g_test.configuration.rom.data.ptr;
+	header = (nes_header_t *)g_test.configuration.rom.data.ptr;
 	memcpy(header->magic, HEADER_MAGIC, strlen(HEADER_MAGIC));
 	header->flag_6.mapper_low = MAPPER_NROM;
 	header->flag_6.trainer = false;
@@ -325,7 +325,7 @@ int
 nes_test_mapper_nrom_write_rom(void)
 {
 	int result = NES_OK;
-	nes_cartridge_header_t *header;
+	nes_header_t *header;
 
 	nes_test_initialize();
 
@@ -334,7 +334,7 @@ nes_test_mapper_nrom_write_rom(void)
 		goto exit;
 	}
 
-	header = (nes_cartridge_header_t *)g_test.configuration.rom.data.ptr;
+	header = (nes_header_t *)g_test.configuration.rom.data.ptr;
 	memcpy(header->magic, HEADER_MAGIC, strlen(HEADER_MAGIC));
 	header->flag_6.mapper_low = MAPPER_NROM;
 	header->flag_6.trainer = false;
@@ -379,7 +379,7 @@ nes_test_mapper_nrom_write_rom(void)
 		goto exit;
 	}
 
-	header = (nes_cartridge_header_t *)g_test.configuration.rom.data.ptr;
+	header = (nes_header_t *)g_test.configuration.rom.data.ptr;
 	memcpy(header->magic, HEADER_MAGIC, strlen(HEADER_MAGIC));
 	header->flag_6.mapper_low = MAPPER_NROM;
 	header->flag_6.trainer = false;

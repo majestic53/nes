@@ -61,15 +61,32 @@ nes_launcher_debug(
         )
 {
         bool complete = false;
+        nes_action_t request = {}, response = {};
 
         using_history();
         fprintf(stdout, "%s %i.%i.%i\n%s\n\n", NES, launcher->version->major, launcher->version->minor, launcher->version->patch, NOTICE);
         fprintf(stdout, "Path: %s\nSize: %.02f KB (%zu bytes)\n", launcher->configuration.rom.path, launcher->configuration.rom.data.length / (float)BYTES_PER_KBYTE,
                 launcher->configuration.rom.data.length);
 
+        request.type = NES_ACTION_CARTRIDGE_HEADER;
+
+        if(nes_action(&request, &response) == NES_OK) {
+                const nes_header_t *header = (const nes_header_t *)response.ptr;
+                uint8_t mapper = (header->flag_7.mapper_high << 4) | header->flag_6.mapper_low;
+                uint32_t ram_prg = header->ram_program_count ? header->ram_program_count : 1, rom_chr = header->rom_character_count,
+                        rom_prg = header->rom_program_count;
+
+                fprintf(stdout, "\nMapper: %02X (%s)\n", mapper, MAPPER_NAME[mapper]);
+                fprintf(stdout, "ROM-PRG: %u %.02f KB (%u bytes)\n", rom_prg, (rom_prg * ROM_PROGRAM_BANK_WIDTH) / (float)BYTES_PER_KBYTE,
+                        rom_prg * ROM_PROGRAM_BANK_WIDTH);
+                fprintf(stdout, "ROM-CHR: %u %.02f KB (%u bytes)\n", rom_chr, (rom_chr * ROM_CHARACTER_BANK_WIDTH) / (float)BYTES_PER_KBYTE,
+                        rom_chr * ROM_CHARACTER_BANK_WIDTH);
+                fprintf(stdout, "RAM-PRG: %u %.02f KB (%u bytes)\n", ram_prg, (ram_prg * RAM_PROGRAM_BANK_WIDTH) / (float)BYTES_PER_KBYTE,
+                        ram_prg * RAM_PROGRAM_BANK_WIDTH);
+        }
+
         while(!complete) {
                 char *input, prompt[PROMPT_MAX] = {};
-                nes_action_t request = {}, response = {};
 
                 request.type = NES_ACTION_PROCESSOR_READ;
                 request.address = NES_PROCESSOR_PROGRAM_COUNTER;
@@ -494,10 +511,15 @@ nes_launcher_debug_step(
         )
 {
         int result = NES_OK;
+        const char *address[] = { "pc" };
         nes_action_t request = { .type = NES_ACTION_STEP };
 
         if(count) {
                 result = NES_ERR;
+                goto exit;
+        }
+
+        if((result = nes_launcher_debug_disassemble(launcher, address, 1)) != NES_OK) {
                 goto exit;
         }
 

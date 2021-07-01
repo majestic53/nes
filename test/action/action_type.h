@@ -41,6 +41,8 @@ int nes_test_action_bus_read(void);
 
 int nes_test_action_bus_write(void);
 
+int nes_test_action_cartridge_header(void);
+
 int nes_test_action_processor_read(void);
 
 int nes_test_action_processor_write(void);
@@ -50,6 +52,7 @@ void nes_test_initialize(void);
 static const nes_test TEST[] = {
         nes_test_action_bus_read,
         nes_test_action_bus_write,
+        nes_test_action_cartridge_header,
         nes_test_action_processor_read,
         nes_test_action_processor_write,
 	};

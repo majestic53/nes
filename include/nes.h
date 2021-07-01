@@ -36,6 +36,16 @@
 #define NES_API_VERSION NES_API_VERSION_1
 
 /**
+ * NES iNES versions
+ */
+#define NES_INES_VERSION_1 1
+
+/**
+ * NES iNES version support
+ */
+#define NES_INES_VERSION NES_INES_VERSION_1
+
+/**
  * NES error enum
  */
 enum {
@@ -54,6 +64,7 @@ enum {
         NES_ACTION_BUS_WRITE, /* Write byte to bus */
         NES_ACTION_PROCESSOR_READ, /* Read processor register */
         NES_ACTION_PROCESSOR_WRITE, /* Write processor register */
+        NES_ACTION_CARTRIDGE_HEADER, /* Read cartridge header */
         NES_ACTION_MAX,
 };
 
@@ -76,7 +87,11 @@ enum {
 typedef struct {
         int type; /* Action type */
         uint16_t address; /* Action address */
-        uint16_t data; /* Action data */
+
+        union {
+                uint16_t data; /* Action data */
+                const void *ptr; /* Action pointer */
+        };
 } nes_action_t;
 
 /**
@@ -94,6 +109,36 @@ typedef struct {
         bool fullscreen; /* DIsplay fullscreen */
         unsigned scale; /* Display scale */
 } nes_display_t;
+
+/**
+ * NES header struct
+ */
+typedef struct {
+#if NES_INES_VERSION >= NES_INES_VERSION_1
+        uint8_t magic[4];
+        uint8_t rom_program_count;
+        uint8_t rom_character_count;
+
+        struct {
+                uint8_t mirroring : 1;
+                uint8_t battery : 1;
+                uint8_t trainer : 1;
+                uint8_t four_screen : 1;
+                uint8_t mapper_low : 4;
+        } flag_6;
+
+        struct {
+                uint8_t unused : 2;
+                uint8_t version : 2;
+                uint8_t mapper_high : 4;
+        } flag_7;
+
+        uint8_t ram_program_count;
+#endif /* NES_INES_VERSION >= NES_INES_VERSION_1 */
+#if NES_INES_VERSION == NES_INES_VERSION_1
+        uint8_t unused[7];
+#endif /* NES_INES_VERSION == NES_INES_VERSION_1 */
+} nes_header_t;
 
 /**
  * NES ROM struct

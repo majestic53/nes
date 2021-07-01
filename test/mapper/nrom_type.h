@@ -28,7 +28,7 @@
 
 typedef struct {
         nes_t configuration;
-        nes_cartridge_header_t header;
+        nes_header_t header;
         nes_mapper_t mapper;
 } nes_test_mapper_nrom_t;
 

@@ -51,7 +51,7 @@ nes_cartridge_load(
 		goto exit;
 	}
 
-	cartridge->header = (const nes_cartridge_header_t *)configuration->rom.data.ptr;
+	cartridge->header = (const nes_header_t *)configuration->rom.data.ptr;
 
 	if(strncmp((char *)cartridge->header->magic, HEADER_MAGIC, strlen(HEADER_MAGIC))) {
 		result = ERROR(NES_ERR, "cartridge magic mismatch -- expecting \"%s\"", HEADER_MAGIC);

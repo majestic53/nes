@@ -24,9 +24,6 @@
 
 #include "./buffer.h"
 
-#define INES_VERSION_1 1
-#define INES_VERSION INES_VERSION_1
-
 enum {
 	MAPPER_NROM = 0,
 	MAPPER_MAX,
@@ -45,34 +42,7 @@ enum {
 };
 
 typedef struct {
-#if INES_VERSION >= INES_VERSION_1
-	uint8_t magic[4];
-	uint8_t rom_program_count;
-	uint8_t rom_character_count;
-
-	struct {
-		uint8_t mirroring : 1;
-		uint8_t battery : 1;
-		uint8_t trainer : 1;
-		uint8_t four_screen : 1;
-		uint8_t mapper_low : 4;
-	} flag_6;
-
-	struct {
-		uint8_t unused : 2;
-		uint8_t version : 2;
-		uint8_t mapper_high : 4;
-	} flag_7;
-
-	uint8_t ram_program_count;
-#endif /* INES_VERSION >= INES_VERSION_1 */
-#if INES_VERSION == INES_VERSION_1
-	uint8_t unused[7];
-#endif /* INES_VERSION == INES_VERSION_1 */
-} nes_cartridge_header_t;
-
-typedef struct {
-	const nes_cartridge_header_t *header;
+	const nes_header_t *header;
 	int mapper;
 	nes_buffer_t ram[RAM_MAX];
 	size_t ram_count[RAM_MAX];

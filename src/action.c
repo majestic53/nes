@@ -32,6 +32,7 @@ nes_action(
         )
 {
         int result;
+        nes_bus_t *bus;
 
         if(!request) {
                 result = ERROR(NES_ERR, "invalid request -- %p", request);
@@ -43,7 +44,12 @@ nes_action(
                 goto exit;
         }
 
-        result = ACTION_HDLR[request->type](nes_bus(), request, response);
+        if(!(bus = nes_bus())->loaded) {
+                result = ERROR(NES_ERR, "%s", "invalid bus state");
+                goto exit;
+        }
+
+        result = ACTION_HDLR[request->type](bus, request, response);
 
 exit:
         return result;
@@ -84,6 +90,28 @@ nes_action_bus_write(
         nes_bus_write(BUS_PROCESSOR, request->address, request->data);
         TRACE(LEVEL_VERBOSE, "Bus write [%04X]<-%02X", request->address, request->data & UINT8_MAX);
 
+        return result;
+}
+
+int
+nes_action_cartridge_header(
+        __in nes_bus_t *bus,
+        __in const nes_action_t *request,
+        __inout nes_action_t *response
+        )
+{
+        int result = NES_OK;
+
+        if(!response) {
+                result = ERROR(NES_ERR, "invalid response -- %p", response);
+                goto exit;
+        }
+
+        response->ptr = bus->mapper.cartridge.header;
+        response->type = request->type;
+        TRACE(LEVEL_VERBOSE, "Cartridge header %p", response->ptr);
+
+exit:
         return result;
 }
 

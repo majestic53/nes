@@ -66,6 +66,7 @@ nes_bus_load(
 
 	nes_processor_reset(&g_bus.processor);
 	TRACE(LEVEL_VERBOSE, "%s", "Bus loaded");
+	g_bus.loaded = true;
 
 exit:
 	return result;

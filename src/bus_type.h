@@ -69,6 +69,7 @@
         ADDRESS_WIDTH(VIDEO_PALETTE_RAM_BEGIN, VIDEO_PALETTE_RAM_BEGIN + VIDEO_PALETTE_RAM_MIRROR - 1)
 
 typedef struct {
+        bool loaded;
         nes_mapper_t mapper;
         nes_processor_t processor;
         nes_buffer_t ram_object;

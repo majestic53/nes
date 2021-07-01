@@ -86,14 +86,15 @@ This project is implemented in C and exposes a simple API, described in ```inclu
 
 ### Actions
 
-|Name                      |Input/Output    |Description|
-|:-------------------------|:---------------|:-----------------------|
-|NES_ACTION_RUN            |Request         |Run emulator            |
-|NES_ACTION_STEP           |Request         |Step emulator           |
-|NES_ACTION_BUS_READ       |Request/Response|Read byte from bus      |
-|NES_ACTION_BUS_WRITE      |Request         |Write byte to bus       |
-|NES_ACTION_PROCESSOR_READ |Request         |Read processor register |
-|NES_ACTION_PROCESSOR_WRITE|Request/Response|Write processor register|
+|Name                       |Input/Output    |Description|
+|:--------------------------|:---------------|:-----------------------|
+|NES_ACTION_RUN             |Request         |Run emulator            |
+|NES_ACTION_STEP            |Request         |Step emulator           |
+|NES_ACTION_BUS_READ        |Request/Response|Read byte from bus      |
+|NES_ACTION_BUS_WRITE       |Request         |Write byte to bus       |
+|NES_ACTION_PROCESSOR_READ  |Request         |Read processor register |
+|NES_ACTION_PROCESSOR_WRITE |Request/Response|Write processor register|
+|NES_ACTION_CARTRIDGE_HEADER|Request/Response|Read cartridge header   |
 
 For an example of how to use this interface, see the [launcher](https://github.com/majestic53/nes/tree/master/tool) under ```tool/```
 
