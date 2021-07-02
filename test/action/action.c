@@ -91,6 +91,14 @@ nes_service_show(void)
 	return NES_OK;
 }
 
+bool
+nes_video_step(
+        __inout nes_video_t *video
+        )
+{
+	return true;
+}
+
 int
 nes_test_action_bus_read(void)
 {

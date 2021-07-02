@@ -36,7 +36,7 @@ nes_service_clear(void)
 	for(size_t y = 0; y < WINDOW_HEIGHT; ++y) {
 
 		for(size_t x = 0; x < WINDOW_WIDTH; ++x) {
-			nes_service_pixel(&FOREGROUND, x, y);
+			g_sdl.pixel[y][x].raw = FOREGROUND.raw;
 		}
 	}
 
@@ -151,12 +151,12 @@ exit:
 
 void
 nes_service_pixel(
-	__in const nes_color_t *color,
+	__in uint8_t color,
 	__in uint32_t x,
 	__in uint32_t y
 	)
 {
-	g_sdl.pixel[y][x].raw = color->raw;
+	g_sdl.pixel[y][x].raw = PALETTE[color % PALETTE_MAX].raw;
 }
 
 int

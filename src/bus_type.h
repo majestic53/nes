@@ -23,6 +23,7 @@
 #define NES_BUS_TYPE_H_
 
 #include "../include/system/processor.h"
+#include "../include/system/video.h"
 #include "../include/service.h"
 
 #define OBJECT_RAM_BEGIN 0x0000
@@ -76,9 +77,7 @@ typedef struct {
         nes_buffer_t ram_processor;
         nes_buffer_t ram_video;
         nes_buffer_t ram_video_palette;
-
-	/* TODO: ADD SUBSYSTEMS */
-
+        nes_video_t video;
 } nes_bus_t;
 
 #ifdef __cplusplus

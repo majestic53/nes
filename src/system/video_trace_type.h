@@ -19,37 +19,30 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef NES_SERVICE_H_
-#define NES_SERVICE_H_
+#ifndef NES_VIDEO_TRACE_TYPE_H_
+#define NES_VIDEO_TRACE_TYPE_H_
 
-#include "./common.h"
+#include "./video_type.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
 
-bool nes_service_key(
-	__in int key
-	);
+#ifndef NDEBUG
 
-int nes_service_load(
-	__in const nes_t *configuration
-	);
+void nes_video_trace(
+        __in int level,
+        __in const nes_video_t *video
+        );
 
-void nes_service_pixel(
-	__in uint8_t color,
-	__in uint32_t x,
-	__in uint32_t y
-	);
-
-int nes_service_poll(void);
-
-int nes_service_show(void);
-
-void nes_service_unload(void);
+#define TRACE_VIDEO(_LEVEL_, _VIDEO_) \
+        if((_LEVEL_) <= (LEVEL)) nes_video_trace(_LEVEL_, _VIDEO_)
+#else
+#define TRACE_VIDEO(_LEVEL_, _VIDEO_)
+#endif /* NDEBUG */
 
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
 
-#endif /* NES_SERVICE_H_ */
+#endif /* NES_VIDEO_TRACE_TYPE_H_ */

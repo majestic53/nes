@@ -34,6 +34,7 @@ typedef struct {
         bool mapper_unload;
         bool processor_reset;
         nes_version_t version;
+        bool video_reset;
 } nes_test_bus_t;
 
 #ifdef __cplusplus

@@ -36,7 +36,7 @@ link:
 	@echo '--- BUILDING VIDEO TEST -------------------------------------------------------'
 	$(CC) $(FLAGS) $(BUILD_FLAGS) $(DIR_BUILD)test_video.o \
 		$(DIR_BUILD)common_buffer.o $(DIR_BUILD)common_error.o $(DIR_BUILD)common_trace.o \
-			$(DIR_BUILD)system_video.o \
+			$(DIR_BUILD)system_video.o $(DIR_BUILD)system_video_trace.o \
 		-o $(DIR_BUILD)$(BIN)
 	@echo '--- DONE ----------------------------------------------------------------------'
 	@echo ''

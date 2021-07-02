@@ -62,9 +62,8 @@ nes_bus_load(
 		goto exit;
 	}
 
-	/* TODO: LOAD SUBSYSTEMS */
-
 	nes_processor_reset(&g_bus.processor);
+	nes_video_reset(&g_bus.video);
 	TRACE(LEVEL_VERBOSE, "%s", "Bus loaded");
 	g_bus.loaded = true;
 
@@ -139,9 +138,6 @@ void
 nes_bus_unload(void)
 {
 	TRACE(LEVEL_VERBOSE, "%s", "Bus unloading");
-
-	/* TODO: UNLOAD SUBSYSTEMS */
-
 	nes_mapper_unload(&g_bus.mapper);
 	nes_buffer_free(&g_bus.ram_video_palette);
 	nes_buffer_free(&g_bus.ram_video);

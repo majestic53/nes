@@ -24,7 +24,7 @@
 
 #include "../../include/system/video.h"
 
-/* TODO */
+#define VIDEO_CYCLES 3
 
 #ifdef __cplusplus
 extern "C" {

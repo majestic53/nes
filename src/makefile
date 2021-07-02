@@ -73,7 +73,7 @@ build_service: service_sdl.o
 service_sdl.o: $(DIR_ROOT_SERVICE)sdl.c $(DIR_INCLUDE)service.h
 	$(CC) $(FLAGS) $(BUILD_FLAGS) -c $(DIR_ROOT_SERVICE)sdl.c -o $(DIR_BUILD)service_sdl.o
 
-build_system: system_processor.o system_processor_trace.o system_video.o
+build_system: system_processor.o system_processor_trace.o system_video.o system_video_trace.o
 
 system_processor.o: $(DIR_ROOT_SYSTEM)processor.c $(DIR_INCLUDE_SYSTEM)processor.h
 	$(CC) $(FLAGS) $(BUILD_FLAGS) -c $(DIR_ROOT_SYSTEM)processor.c -o $(DIR_BUILD)system_processor.o
@@ -84,6 +84,9 @@ system_processor_trace.o: $(DIR_ROOT_SYSTEM)processor_trace.c
 system_video.o: $(DIR_ROOT_SYSTEM)video.c $(DIR_INCLUDE_SYSTEM)video.h
 	$(CC) $(FLAGS) $(BUILD_FLAGS) -c $(DIR_ROOT_SYSTEM)video.c -o $(DIR_BUILD)system_video.o
 
+system_video_trace.o: $(DIR_ROOT_SYSTEM)video_trace.c
+	$(CC) $(FLAGS) $(BUILD_FLAGS) -c $(DIR_ROOT_SYSTEM)video_trace.c -o $(DIR_BUILD)system_video_trace.o
+
 archive:
 	@echo ''
 	@echo '--- BUILDING LIBRARY ----------------------------------------------------------'
@@ -92,7 +95,7 @@ archive:
 			$(DIR_BUILD)common_version.o \
 		$(DIR_BUILD)mapper_nrom.o \
 		$(DIR_BUILD)service_sdl.o \
-		$(DIR_BUILD)system_processor.o $(DIR_BUILD)system_processor_trace.o $(DIR_BUILD)system_video.o
+		$(DIR_BUILD)system_processor.o $(DIR_BUILD)system_processor_trace.o $(DIR_BUILD)system_video.o $(DIR_BUILD)system_video_trace.o
 	cp $(DIR_INCLUDE)nes.h $(DIR_BIN_INCLUDE)
 	@echo '--- DONE ----------------------------------------------------------------------'
 	@echo ''

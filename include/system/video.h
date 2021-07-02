@@ -27,6 +27,8 @@
 /* TODO */
 
 typedef struct {
+        uint8_t cycles;
+        uint16_t cycles_frame;
 
         /* TODO */
 
@@ -36,7 +38,24 @@ typedef struct {
 extern "C" {
 #endif /* __cplusplus */
 
-/* TODO */
+uint8_t nes_video_port_read(
+        __inout nes_video_t *video,
+        __in uint16_t address
+        );
+
+void nes_video_port_write(
+        __inout nes_video_t *video,
+        __in uint16_t address,
+        __in uint8_t data
+        );
+
+void nes_video_reset(
+        __inout nes_video_t *video
+        );
+
+bool nes_video_step(
+        __inout nes_video_t *video
+        );
 
 #ifdef __cplusplus
 }

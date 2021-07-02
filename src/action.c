@@ -221,7 +221,7 @@ nes_action_run(
         TRACE(LEVEL_INFORMATION, "%s", "Emulation running");
 
         for(;;) {
-                uint16_t cycle = 0;
+                bool complete = false;
 
                 if(nes_service_poll() != NES_OK) {
                         result = (result == NES_EVT) ? NES_OK : result;
@@ -233,8 +233,9 @@ nes_action_run(
 
                         /* TODO: STEP SUBSYSTEMS */
 
+                        complete = nes_video_step(&bus->video);
                         TRACE_STEP();
-                } while(cycle++ < CYCLES_PER_FRAME);
+                } while(!complete);
 
                 if((result = nes_service_show()) != NES_OK) {
                         break;
@@ -267,6 +268,7 @@ nes_action_step(
 
                 /* TODO: STEP SUBSYSTEMS */
 
+                nes_video_step(&bus->video);
                 TRACE_STEP();
         } while(bus->processor.cycles);
 
@@ -274,6 +276,7 @@ nes_action_step(
 
         /* TODO: STEP SUBSYSTEMS */
 
+        nes_video_step(&bus->video);
         TRACE_STEP();
 
         if((result = nes_service_show()) != NES_OK) {

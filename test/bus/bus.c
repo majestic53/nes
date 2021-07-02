@@ -118,6 +118,14 @@ nes_service_unload(void)
 	return;
 }
 
+void
+nes_video_reset(
+        __inout nes_video_t *video
+        )
+{
+	g_test.video_reset = true;
+}
+
 const nes_version_t *
 nes_version(void)
 {
@@ -134,6 +142,7 @@ nes_test_bus_load(void)
 
 	if(ASSERT((nes_bus_load(&g_test.configuration) != NES_OK)
 			&& !g_test.processor_reset
+			&& !g_test.video_reset
 			&& !nes_bus()->loaded)) {
 		result = NES_ERR;
 		goto exit;
@@ -143,6 +152,7 @@ nes_test_bus_load(void)
 
 	if(ASSERT((nes_bus_load(&g_test.configuration) == NES_OK)
 			&& g_test.processor_reset
+			&& g_test.video_reset
 			&& nes_bus()->loaded)) {
 		result = NES_ERR;
 		goto exit;
