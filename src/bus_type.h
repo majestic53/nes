@@ -26,37 +26,6 @@
 #include "../include/system/video.h"
 #include "../include/service.h"
 
-#define OBJECT_RAM_BEGIN 0x0000
-#define OBJECT_RAM_END 0x00ff
-#define OBJECT_RAM_FILL 0x00
-
-#define PROCESSOR_RAM_BEGIN 0x0000
-#define PROCESSOR_RAM_END 0x1fff
-#define PROCESSOR_RAM_FILL 0xea
-#define PROCESSOR_RAM_MIRROR 0x0800
-
-#define PROCESSOR_ROM_0_BEGIN 0x8000
-#define PROCESSOR_ROM_0_END 0xbfff
-
-#define PROCESSOR_ROM_1_BEGIN 0xc000
-#define PROCESSOR_ROM_1_END 0xffff
-
-#define PROCESSOR_WORK_RAM_BEGIN 0x6000
-#define PROCESSOR_WORK_RAM_END 0x7fff
-
-#define VIDEO_PALETTE_RAM_BEGIN 0x3f00
-#define VIDEO_PALETTE_RAM_END 0x3fff
-#define VIDEO_PALETTE_RAM_FILL 0x3f
-#define VIDEO_PALETTE_RAM_MIRROR 0x0020
-
-#define VIDEO_RAM_BEGIN 0x2000
-#define VIDEO_RAM_END 0x3eff
-#define VIDEO_RAM_FILL 0x00
-#define VIDEO_RAM_MIRROR 0x1000
-
-#define VIDEO_ROM_BEGIN 0x0000
-#define VIDEO_ROM_END 0x1fff
-
 #define OBJECT_RAM_WIDTH \
         ADDRESS_WIDTH(OBJECT_RAM_BEGIN, OBJECT_RAM_END)
 
@@ -70,6 +39,7 @@
         ADDRESS_WIDTH(VIDEO_PALETTE_RAM_BEGIN, VIDEO_PALETTE_RAM_BEGIN + VIDEO_PALETTE_RAM_MIRROR - 1)
 
 typedef struct {
+        uint8_t data;
         bool loaded;
         nes_mapper_t mapper;
         nes_processor_t processor;

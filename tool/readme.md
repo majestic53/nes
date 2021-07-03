@@ -72,12 +72,12 @@ w	Write data to address
 
 ### Debug command parameters
 
-|Name    |Description                              |Format                                                |
-|:-------|:----------------------------------------|:-----------------------------------------------------|
-|ADDRESS |Address to read from/write to            |```[0-9a-fA-F]{1-4}```                                |
-|DATA    |Data to read/write                       |```[0-9a-fA-F]{1-2}```                                |
-|COUNT   |Bytes to read/Instructions to disassemble|```[0-9]{1-6}```                                      |
-|REGISTER|Processor register to read from/write to |```pc```, ```sp```, ```s```, ```a```, ```x```, ```y```|
+|Name    |Description                              |Format                                                         |
+|:-------|:----------------------------------------|:--------------------------------------------------------------|
+|ADDRESS |Address to read from/write to            |```[0-9a-fA-F]{1-4}```                                         |
+|DATA    |Data to read/write                       |```[0-9a-fA-F]{1-2}```                                         |
+|COUNT   |Bytes to read/Instructions to disassemble|```[0-9]{1-6}```                                               |
+|REGISTER|Processor register to read from/write to |```pc```, ```sp```, ```s```, ```p```, ```a```, ```x```, ```y```|
 
 #### Examples
 

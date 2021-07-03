@@ -24,8 +24,6 @@
 
 #include "../bus.h"
 
-/* TODO */
-
 typedef struct {
         uint8_t cycles;
         uint16_t cycles_frame;

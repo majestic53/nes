@@ -938,16 +938,16 @@ nes_processor_transfer_byte(
         __inout nes_processor_t *processor
         )
 {
+        uint16_t address = processor->transfer.source.word + processor->transfer.offset.low;
 
-        /* TODO: TRANSFER BYTE FROM PROCESSOR[SOURCE+OFFSET] TO OBJECT[OFFSET] USING VIDEO PORT */
+        nes_processor_write(processor, VIDEO_PORT_BEGIN + VIDEO_PORT_OAM_DATA, nes_processor_read(processor, address));
 
         if(processor->transfer.offset.low == UINT8_MAX) {
                 processor->pending.transfer = false;
                 memset(&processor->transfer, 0, sizeof(processor->transfer));
                 TRACE(LEVEL_VERBOSE, "%s", "Processor transfer complete");
         } else {
-                TRACE(LEVEL_VERBOSE, "Processor transfer byte: %04X (%u/%u)", processor->transfer.source.word,
-                        processor->transfer.offset.low + 1, PAGE_WIDTH);
+                TRACE(LEVEL_VERBOSE, "Processor transfer byte: %04X (%u/%u)", address, processor->transfer.offset.low + 1, PAGE_WIDTH);
                 ++processor->transfer.offset.low;
         }
 

@@ -34,11 +34,48 @@ nes_video_port_read(
         uint8_t result = 0;
 
         switch(address) {
+                case VIDEO_PORT_CONTROL: /* 0x2000 */
 
-                /* TODO: READ BYTE FROM VIDEO PORT */
+                        /* TODO */
 
+                        break;
+                case VIDEO_PORT_MASK: /* 0x2001 */
+
+                        /* TODO */
+
+                        break;
+                case VIDEO_PORT_STATUS: /* 0x2002 */
+
+                        /* TODO */
+
+                        break;
+                case VIDEO_PORT_OAM_ADDRESS: /* 0x2003 */
+
+                        /* TODO */
+
+                        break;
+                case VIDEO_PORT_OAM_DATA: /* 0x2004 */
+
+                        /* TODO */
+
+                        break;
+                case VIDEO_PORT_SCROLL: /* 0x2005 */
+
+                        /* TODO */
+
+                        break;
+                case VIDEO_PORT_ADDRESS: /* 0x2006 */
+
+                        /* TODO */
+
+                        break;
+                case VIDEO_PORT_DATA: /* 0x2007 */
+
+                        /* TODO */
+
+                        break;
                 default:
-                        TRACE(LEVEL_WARNING, "Invalid video port address: %04X", address);
+                        TRACE(LEVEL_WARNING, "Invalid video port read: [%04X]", address);
                         goto exit;
         }
 
@@ -55,11 +92,48 @@ nes_video_port_write(
 {
 
         switch(address) {
+               case VIDEO_PORT_CONTROL: /* 0x2000 */
 
-                /* TODO: WRITE BYTE TO VIDEO PORT */
+                        /* TODO */
 
+                        break;
+                case VIDEO_PORT_MASK: /* 0x2001 */
+
+                        /* TODO */
+
+                        break;
+                case VIDEO_PORT_STATUS: /* 0x2002 */
+
+                        /* TODO */
+
+                        break;
+                case VIDEO_PORT_OAM_ADDRESS: /* 0x2003 */
+
+                        /* TODO */
+
+                        break;
+                case VIDEO_PORT_OAM_DATA: /* 0x2004 */
+
+                        /* TODO */
+
+                        break;
+                case VIDEO_PORT_SCROLL: /* 0x2005 */
+
+                        /* TODO */
+
+                        break;
+                case VIDEO_PORT_ADDRESS: /* 0x2006 */
+
+                        /* TODO */
+
+                        break;
+                case VIDEO_PORT_DATA: /* 0x2007 */
+
+                        /* TODO */
+
+                        break;
                 default:
-                        TRACE(LEVEL_WARNING, "Invalid video port address: %04X", address);
+                        TRACE(LEVEL_WARNING, "Invalid video port write: [%04X]<-%02X", address, data);
                         break;
         }
 }

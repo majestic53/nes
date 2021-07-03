@@ -145,6 +145,10 @@ nes_action_processor_read(
                         response->data = bus->processor.status.low;
                         TRACE(LEVEL_VERBOSE, "Processor read [S]->%02X", response->data & UINT8_MAX);
                         break;
+                case NES_PROCESSOR_PENDING:
+                        response->data = bus->processor.pending.low;
+                        TRACE(LEVEL_VERBOSE, "Processor read [P]->%02X", response->data & UINT8_MAX);
+                        break;
                 case NES_PROCESSOR_ACCUMULATOR:
                         response->data = bus->processor.accumulator.low;
                         TRACE(LEVEL_VERBOSE, "Processor read [A]->%02X", response->data & UINT8_MAX);
@@ -187,6 +191,10 @@ nes_action_processor_write(
                 case NES_PROCESSOR_STATUS:
                         bus->processor.status.low = request->data;
                         TRACE(LEVEL_VERBOSE, "Processor write [S]<-%02X", request->data & UINT8_MAX);
+                        break;
+                case NES_PROCESSOR_PENDING:
+                        bus->processor.pending.low = request->data;
+                        TRACE(LEVEL_VERBOSE, "Processor write [P]<-%02X", request->data & UINT8_MAX);
                         break;
                 case NES_PROCESSOR_ACCUMULATOR:
                         bus->processor.accumulator.low = request->data;

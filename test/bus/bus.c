@@ -43,10 +43,10 @@ nes_mapper_read_ram(
 	__in uint16_t address
 	)
 {
-	g_test.mapper_address = address;
+	g_test.address = address;
 	g_test.mapper_type = type;
 
-	return g_test.mapper_data;
+	return g_test.data;
 }
 
 uint8_t
@@ -56,10 +56,10 @@ nes_mapper_read_rom(
 	__in uint16_t address
 	)
 {
-	g_test.mapper_address = address;
+	g_test.address = address;
 	g_test.mapper_type = type;
 
-	return g_test.mapper_data;
+	return g_test.data;
 }
 
 void
@@ -78,8 +78,8 @@ nes_mapper_write_ram(
 	__in uint8_t data
 	)
 {
-	g_test.mapper_address = address;
-	g_test.mapper_data = data;
+	g_test.address = address;
+	g_test.data = data;
 	g_test.mapper_type = type;
 }
 
@@ -91,8 +91,8 @@ nes_mapper_write_rom(
 	__in uint8_t data
 	)
 {
-	g_test.mapper_address = address;
-	g_test.mapper_data = data;
+	g_test.address = address;
+	g_test.data = data;
 	g_test.mapper_type = type;
 }
 
@@ -102,6 +102,15 @@ nes_processor_reset(
         )
 {
 	g_test.processor_reset = true;
+}
+
+void
+nes_processor_transfer(
+        __inout nes_processor_t *processor,
+        __in uint8_t page
+        )
+{
+	g_test.address = page;
 }
 
 int
@@ -116,6 +125,28 @@ void
 nes_service_unload(void)
 {
 	return;
+}
+
+uint8_t
+nes_video_port_read(
+        __inout nes_video_t *video,
+        __in uint16_t address
+        )
+{
+	g_test.address = address;
+
+	return g_test.data;
+}
+
+void
+nes_video_port_write(
+        __inout nes_video_t *video,
+        __in uint16_t address,
+        __in uint8_t data
+        )
+{
+	g_test.address = address;
+	g_test.data = data;
 }
 
 void
@@ -207,21 +238,30 @@ nes_test_bus_read(void)
 					goto exit;
 				}
 				break;
-			case PROCESSOR_WORK_RAM_BEGIN ... PROCESSOR_WORK_RAM_END:
-				g_test.mapper_data = rand();
+			case VIDEO_PORT_BEGIN ... VIDEO_PORT_END:
+				g_test.data = rand();
 
-				if(ASSERT((nes_bus_read(BUS_PROCESSOR, address) == g_test.mapper_data)
-						&& (g_test.mapper_address == address - PROCESSOR_WORK_RAM_BEGIN)
+				if(ASSERT((nes_bus_read(BUS_PROCESSOR, address) == g_test.data)
+						&& (g_test.address == (address - VIDEO_PORT_BEGIN) % VIDEO_PORT_MIRROR))) {
+					result = NES_ERR;
+					goto exit;
+				}
+				break;
+			case PROCESSOR_WORK_RAM_BEGIN ... PROCESSOR_WORK_RAM_END:
+				g_test.data = rand();
+
+				if(ASSERT((nes_bus_read(BUS_PROCESSOR, address) == g_test.data)
+						&& (g_test.address == address - PROCESSOR_WORK_RAM_BEGIN)
 						&& (g_test.mapper_type == RAM_PROGRAM))) {
 					result = NES_ERR;
 					goto exit;
 				}
 				break;
 			case PROCESSOR_ROM_0_BEGIN ... PROCESSOR_ROM_1_END:
-				g_test.mapper_data = rand();
+				g_test.data = rand();
 
-				if(ASSERT((nes_bus_read(BUS_PROCESSOR, address) == g_test.mapper_data)
-						&& (g_test.mapper_address == address - PROCESSOR_ROM_0_BEGIN)
+				if(ASSERT((nes_bus_read(BUS_PROCESSOR, address) == g_test.data)
+						&& (g_test.address == address - PROCESSOR_ROM_0_BEGIN)
 						&& (g_test.mapper_type == ROM_PROGRAM))) {
 					result = NES_ERR;
 					goto exit;
@@ -245,10 +285,10 @@ nes_test_bus_read(void)
 
 		switch(address) {
 			case VIDEO_ROM_BEGIN ... VIDEO_ROM_END:
-				g_test.mapper_data = rand();
+				g_test.data = rand();
 
-				if(ASSERT((nes_bus_read(BUS_VIDEO, address) == g_test.mapper_data)
-						&& (g_test.mapper_address == address - VIDEO_ROM_BEGIN)
+				if(ASSERT((nes_bus_read(BUS_VIDEO, address) == g_test.data)
+						&& (g_test.address == address - VIDEO_ROM_BEGIN)
 						&& (g_test.mapper_type == ROM_CHARACTER))) {
 					result = NES_ERR;
 					goto exit;
@@ -330,7 +370,7 @@ nes_test_bus_write(void)
 				break;
 			default:
 
-				if(ASSERT(nes_bus_read(BUS_OBJECT, address) == 0)) {
+				if(ASSERT(nes_bus_read(BUS_OBJECT, address) == data)) {
 					result = NES_ERR;
 					goto exit;
 				}
@@ -353,21 +393,37 @@ nes_test_bus_write(void)
 					goto exit;
 				}
 				break;
-			case PROCESSOR_WORK_RAM_BEGIN ... PROCESSOR_WORK_RAM_END:
-				g_test.mapper_data = rand();
+			case VIDEO_PORT_BEGIN ... VIDEO_PORT_END:
+				nes_bus_write(BUS_PROCESSOR, address, data = rand());
 
-				if(ASSERT((nes_bus_read(BUS_PROCESSOR, address) == g_test.mapper_data)
-						&& (g_test.mapper_address == address - PROCESSOR_WORK_RAM_BEGIN)
+				if(ASSERT(nes_bus_read(BUS_PROCESSOR, address) == data)) {
+					result = NES_ERR;
+					goto exit;
+				}
+				break;
+			case PROCESSOR_OAM:
+				nes_bus_write(BUS_PROCESSOR, address, data = rand());
+
+				if(ASSERT(g_test.address == data)) {
+					result = NES_ERR;
+					goto exit;
+				}
+				break;
+			case PROCESSOR_WORK_RAM_BEGIN ... PROCESSOR_WORK_RAM_END:
+				g_test.data = rand();
+
+				if(ASSERT((nes_bus_read(BUS_PROCESSOR, address) == g_test.data)
+						&& (g_test.address == address - PROCESSOR_WORK_RAM_BEGIN)
 						&& (g_test.mapper_type == RAM_PROGRAM))) {
 					result = NES_ERR;
 					goto exit;
 				}
 				break;
 			case PROCESSOR_ROM_0_BEGIN ... PROCESSOR_ROM_1_END:
-				g_test.mapper_data = rand();
+				g_test.data = rand();
 
-				if(ASSERT((nes_bus_read(BUS_PROCESSOR, address) == g_test.mapper_data)
-						&& (g_test.mapper_address == address - PROCESSOR_ROM_0_BEGIN)
+				if(ASSERT((nes_bus_read(BUS_PROCESSOR, address) == g_test.data)
+						&& (g_test.address == address - PROCESSOR_ROM_0_BEGIN)
 						&& (g_test.mapper_type == ROM_PROGRAM))) {
 					result = NES_ERR;
 					goto exit;
@@ -375,7 +431,7 @@ nes_test_bus_write(void)
 				break;
 			default:
 
-				if(ASSERT(nes_bus_read(BUS_PROCESSOR, address) == 0)) {
+				if(ASSERT(nes_bus_read(BUS_PROCESSOR, address) == data)) {
 					result = NES_ERR;
 					goto exit;
 				}
@@ -391,10 +447,10 @@ nes_test_bus_write(void)
 
 		switch(address) {
 			case VIDEO_ROM_BEGIN ... VIDEO_ROM_END:
-				g_test.mapper_data = rand();
+				g_test.data = rand();
 
-				if(ASSERT((nes_bus_read(BUS_VIDEO, address) == g_test.mapper_data)
-						&& (g_test.mapper_address == address - VIDEO_ROM_BEGIN)
+				if(ASSERT((nes_bus_read(BUS_VIDEO, address) == g_test.data)
+						&& (g_test.address == address - VIDEO_ROM_BEGIN)
 						&& (g_test.mapper_type == ROM_CHARACTER))) {
 					result = NES_ERR;
 					goto exit;
@@ -418,7 +474,7 @@ nes_test_bus_write(void)
 				break;
 			default:
 
-				if(ASSERT(nes_bus_read(BUS_VIDEO, address) == 0)) {
+				if(ASSERT(nes_bus_read(BUS_VIDEO, address) == data)) {
 					result = NES_ERR;
 					goto exit;
 				}

@@ -339,6 +339,11 @@ nes_launcher_debug_processor(
                         }
 
                         switch(request.address) {
+                                case NES_PROCESSOR_PENDING:
+                                        fprintf(stdout, "%02X  [%c%c%c]\n", response.data & UINT8_MAX,
+                                                (response.data & PENDING_TRANSFER) ? 'T' : '-', (response.data & PENDING_NON_MASKABLE) ? 'N' : '-',
+                                                (response.data & PENDING_MASKABLE) ? 'M' : '-');
+                                        break;
                                 case NES_PROCESSOR_PROGRAM_COUNTER:
                                 case NES_PROCESSOR_STACK_POINTER:
                                         fprintf(stdout, "%04X\n", response.data & UINT16_MAX);
@@ -364,6 +369,11 @@ nes_launcher_debug_processor(
                                 }
 
                                 switch(request.address) {
+                                case NES_PROCESSOR_PENDING:
+                                        fprintf(stdout, "%s>\t%02X  [%c%c%c]\n", REGISTER[request.address], response.data & UINT8_MAX,
+                                                (response.data & PENDING_TRANSFER) ? 'T' : '-', (response.data & PENDING_NON_MASKABLE) ? 'N' : '-',
+                                                (response.data & PENDING_MASKABLE) ? 'M' : '-');
+                                        break;
                                         case NES_PROCESSOR_PROGRAM_COUNTER:
                                         case NES_PROCESSOR_STACK_POINTER:
                                                 fprintf(stdout, "%s>\t%04X\n", REGISTER[request.address], response.data & UINT16_MAX);

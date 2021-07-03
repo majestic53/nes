@@ -58,6 +58,12 @@ enum {
 };
 
 enum {
+        PENDING_TRANSFER = (1 << 0),
+        PENDING_NON_MASKABLE = (1 << 1),
+        PENDING_MASKABLE = (1 << 2),
+};
+
+enum {
         PROCESSOR_SHOW = 0,
         PROCESSOR_READ,
         PROCESSOR_WRITE,
@@ -205,6 +211,7 @@ static const char *REGISTER[] = {
         "pc", /* Processor program counter register */
         "sp", /* Processor stack pointer register */
         "s", /* Processor status register */
+        "p", /* Processor pending register */
         "a", /* Processor accumulator register */
         "x", /* Processor index-x register */
         "y", /* Processor index-y register */

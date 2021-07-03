@@ -75,6 +75,7 @@ enum {
         NES_PROCESSOR_PROGRAM_COUNTER = 0, /* Processor program counter register */
         NES_PROCESSOR_STACK_POINTER, /* Processor stack pointer register */
         NES_PROCESSOR_STATUS, /* Processor status register */
+        NES_PROCESSOR_PENDING, /* Processor pending register */
         NES_PROCESSOR_ACCUMULATOR, /* Processor accumulator register */
         NES_PROCESSOR_INDEX_X, /* Processor index-x register */
         NES_PROCESSOR_INDEX_Y, /* Processor index-y register */

@@ -36,7 +36,7 @@ nes_video_trace(
 
         if(level <= LEVEL) {
 
-                // TODO
+                /* TODO */
         }
 }
 
