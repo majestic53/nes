@@ -36,6 +36,8 @@
 #define __out
 #endif /* __out */
 
+#define BLOCK_WIDTH 16
+
 #define BYTES_PER_KBYTE 1024
 
 #define CYCLES_PER_FRAME 29781

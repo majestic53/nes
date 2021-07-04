@@ -40,6 +40,24 @@ nes_service_clear(void)
 		}
 	}
 
+#ifndef NDEBUG
+#define PALETTE_OFFSET 8
+
+	for(size_t index = 0; index < PALETTE_MAX; ++index) {
+		const nes_color_t *color = &PALETTE[index];
+		size_t base_x = index % BLOCK_WIDTH, base_y = index / BLOCK_WIDTH;
+
+		for(size_t offset_y = 0; offset_y < PALETTE_OFFSET; ++offset_y) {
+
+			for(size_t offset_x = 0; offset_x < PALETTE_OFFSET; ++offset_x) {
+				g_sdl.pixel[(PALETTE_OFFSET * base_y) + offset_y][(PALETTE_OFFSET * base_x) + offset_x].raw
+					= (!offset_x || !offset_y || (offset_x == (PALETTE_OFFSET - 1)) || (offset_y == (PALETTE_OFFSET - 1)))
+						? FOREGROUND.raw : color->raw;
+			}
+		}
+	}
+#endif /* NDEBUG */
+
 	return nes_service_show();
 }
 

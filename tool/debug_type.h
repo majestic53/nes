@@ -30,8 +30,6 @@
 
 #define ARGUMENT_MAX 10
 
-#define BLOCK_WIDTH 16
-
 #define CHARACTER_FILL '.'
 
 #define PROMPT_ERROR "????"
