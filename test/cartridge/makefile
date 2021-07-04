@@ -20,6 +20,7 @@
 BIN=test-cartridge
 
 DIR_BUILD=../../build/
+DIR_BUILD_TEST=../../build/test/
 DIR_ROOT=./
 
 FLAGS=-std=c11 -Wall -Werror
@@ -36,13 +37,13 @@ link:
 	@echo '--- BUILDING CARTRIDGE TEST ---------------------------------------------------'
 	$(CC) $(FLAGS) $(BUILD_FLAGS) $(DIR_BUILD)test_cartridge.o \
 		$(DIR_BUILD)common_buffer.o $(DIR_BUILD)common_cartridge.o $(DIR_BUILD)common_error.o $(DIR_BUILD)common_trace.o \
-		-o $(DIR_BUILD)$(BIN)
+		-o $(DIR_BUILD_TEST)$(BIN)
 	@echo '--- DONE ----------------------------------------------------------------------'
 	@echo ''
 
 run:
 	@echo '--- RUNNING CARTRIDGE TEST ----------------------------------------------------'
-	@cd $(DIR_BUILD) && if ./$(BIN); \
+	@cd $(DIR_BUILD_TEST) && if ./$(BIN); \
 	then \
 		echo '--- PASSED --------------------------------------------------------------------'; \
 	else \

@@ -7708,10 +7708,56 @@ nes_test_processor_transfer(void)
 	int result = NES_OK;
 
 	for(size_t trial = 0; trial < TRIALS; ++trial) {
+		uint8_t offset = 1;
+		uint16_t index = 0;
+		nes_processor_register_t address = { .low = (rand() % 0x30) + 0x20 };
 
-		/* TODO: TEST TRANSFER */
+		nes_test_initialize();
+
+		for(index = 0; index <= UINT8_MAX; ++index) {
+			nes_processor_write(&g_test.processor, address.word + index, rand());
+		}
+
+		nes_processor_reset(&g_test.processor);
+
+		while(g_test.processor.cycles > 0) {
+			nes_processor_step(&g_test.processor);
+		}
+
+		nes_processor_transfer(&g_test.processor, address.low);
+		address.word *= PAGE_WIDTH;
+
+		if(ASSERT(g_test.processor.pending.transfer
+				&& (g_test.processor.transfer.source.word == address.word)
+				&& (g_test.processor.transfer.offset.low == 0))) {
+			result = NES_ERR;
+			goto exit;
+		}
+
+		index = 0;
+
+		while(g_test.processor.pending.transfer) {
+			nes_processor_step(&g_test.processor);
+
+			if(g_test.processor.cycles == (TRANSFER_CYCLES - 1)) {
+				uint8_t in = nes_processor_read(&g_test.processor, VIDEO_PORT_BEGIN + VIDEO_PORT_OAM_DATA),
+					out = nes_processor_read(&g_test.processor, address.word + index);
+
+				if(ASSERT((g_test.processor.pending.transfer == (offset != 0))
+						&& (g_test.processor.transfer.source.word == ((offset != 0) ? address.word : 0x0000))
+						&& (g_test.processor.transfer.offset.low == offset)
+						&& (in == out))) {
+					result = NES_ERR;
+					goto exit;
+				}
+
+				++offset;
+				++index;
+			}
+		}
 	}
 
+exit:
 	TRACE_RESULT(result);
 
 	return result;

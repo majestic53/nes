@@ -24,12 +24,56 @@
 
 #include "../bus.h"
 
+typedef union {
+
+        struct {
+                uint8_t namespace : 2;
+                uint8_t increment : 1;
+                uint8_t sprite_table : 1;
+                uint8_t background_table : 1;
+                uint8_t sprite_size : 1;
+                uint8_t select : 1;
+                uint8_t interrupt : 1;
+        };
+
+        uint8_t raw;
+} nes_video_control_t;
+
+typedef union {
+
+        struct {
+                uint8_t grayscale : 1;
+                uint8_t background_show_top : 1;
+                uint8_t sprite_show_top : 1;
+                uint8_t background_show : 1;
+                uint8_t sprite_show : 1;
+                uint8_t red_emphasis : 1;
+                uint8_t green_emphasis : 1;
+                uint8_t blue_emphasis : 1;
+        };
+
+        uint8_t raw;
+} nes_video_mask_t;
+
+typedef union {
+
+        struct {
+                uint8_t unused : 5;
+                uint8_t sprite_overflow : 1;
+                uint8_t sprite_0_hit : 1;
+                uint8_t vblank : 1;
+        };
+
+        uint8_t raw;
+} nes_video_status_t;
+
 typedef struct {
+        nes_video_control_t control;
         uint8_t cycles;
         uint16_t cycles_frame;
-
-        /* TODO */
-
+        nes_video_mask_t mask;
+        uint8_t oam_address;
+        nes_video_status_t status;
 } nes_video_t;
 
 #ifdef __cplusplus

@@ -129,7 +129,7 @@ exit:
 }
 
 uint8_t
-nes_cartridge_read_ram(
+nes_cartridge_ram_read(
 	__in const nes_cartridge_t *cartridge,
 	__in int type,
 	__in size_t address
@@ -138,8 +138,19 @@ nes_cartridge_read_ram(
 	return cartridge->ram[type].ptr[address];
 }
 
+void
+nes_cartridge_ram_write(
+	__inout nes_cartridge_t *cartridge,
+	__in int type,
+	__in size_t address,
+	__in uint8_t data
+	)
+{
+	cartridge->ram[type].ptr[address] = data;
+}
+
 uint8_t
-nes_cartridge_read_rom(
+nes_cartridge_rom_read(
 	__in const nes_cartridge_t *cartridge,
 	__in int type,
 	__in size_t address
@@ -162,17 +173,6 @@ nes_cartridge_unload(
 	memset(cartridge, 0, sizeof(*cartridge));
 
 	TRACE(LEVEL_VERBOSE, "%s", "Cartridge unloaded");
-}
-
-void
-nes_cartridge_write_ram(
-	__inout nes_cartridge_t *cartridge,
-	__in int type,
-	__in size_t address,
-	__in uint8_t data
-	)
-{
-	cartridge->ram[type].ptr[address] = data;
 }
 
 #ifdef __cplusplus

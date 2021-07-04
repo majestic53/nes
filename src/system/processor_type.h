@@ -30,8 +30,6 @@
 #define NON_MASKABLE_ADDRESS 0xfffa
 #define NON_MASKABLE_CYCLES 7
 
-#define PAGE_WIDTH 0x0100
-
 #define RESET_ADDRESS 0xfffc
 #define RESET_CYCLES 7
 

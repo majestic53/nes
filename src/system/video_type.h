@@ -30,7 +30,25 @@
 extern "C" {
 #endif /* __cplusplus */
 
-/* TODO */
+uint8_t nes_video_oam_read(
+        __inout nes_video_t *video
+        );
+
+void nes_video_oam_write(
+        __inout nes_video_t *video,
+        __in uint8_t data
+        );
+
+uint8_t nes_video_read(
+        __inout nes_video_t *video,
+        __in uint16_t address
+        );
+
+void nes_video_write(
+        __inout nes_video_t *video,
+        __in uint16_t address,
+        __in uint8_t data
+        );
 
 #ifdef __cplusplus
 }

@@ -77,7 +77,7 @@ nes_bus_read(
 	__in uint16_t address
 	)
 {
-	uint8_t result = g_bus.data;
+	uint8_t result = 0;
 
 	switch(bus) {
 		case BUS_OBJECT:
@@ -101,11 +101,11 @@ nes_bus_read(
 					result = nes_video_port_read(&g_bus.video, (address - VIDEO_PORT_BEGIN) % VIDEO_PORT_MIRROR);
 					break;
 				case PROCESSOR_WORK_RAM_BEGIN ... PROCESSOR_WORK_RAM_END: /* 0x6000 - 0x7fff */
-					result = nes_mapper_read_ram(&g_bus.mapper, RAM_PROGRAM, address - PROCESSOR_WORK_RAM_BEGIN);
+					result = nes_mapper_ram_read(&g_bus.mapper, RAM_PROGRAM, address - PROCESSOR_WORK_RAM_BEGIN);
 					break;
 				case PROCESSOR_ROM_0_BEGIN ... PROCESSOR_ROM_0_END: /* 0x8000 - 0xbfff */
 				case PROCESSOR_ROM_1_BEGIN ... PROCESSOR_ROM_1_END: /* 0xc000 - 0xffff */
-					result = nes_mapper_read_rom(&g_bus.mapper, ROM_PROGRAM, address - PROCESSOR_ROM_0_BEGIN);
+					result = nes_mapper_rom_read(&g_bus.mapper, ROM_PROGRAM, address - PROCESSOR_ROM_0_BEGIN);
 					break;
 				default:
 					TRACE(LEVEL_WARNING, "Invalid processor read: [%04X]", address);
@@ -116,7 +116,7 @@ nes_bus_read(
 
 			switch(address) {
 				case VIDEO_ROM_BEGIN ... VIDEO_ROM_END: /* 0x0000 - 0x1fff */
-					result = nes_mapper_read_rom(&g_bus.mapper, ROM_CHARACTER, address - VIDEO_ROM_BEGIN);
+					result = nes_mapper_rom_read(&g_bus.mapper, ROM_CHARACTER, address - VIDEO_ROM_BEGIN);
 					break;
 				case VIDEO_RAM_BEGIN ... VIDEO_RAM_END: /* 0x2000 - 0x3eff */
 					result = g_bus.ram_video.ptr[(address - VIDEO_RAM_BEGIN) % VIDEO_RAM_MIRROR];
@@ -157,7 +157,6 @@ nes_bus_write(
 	__in uint8_t data
 	)
 {
-	g_bus.data = data;
 
 	switch(bus) {
 		case BUS_OBJECT:
@@ -180,15 +179,15 @@ nes_bus_write(
 				case VIDEO_PORT_BEGIN ... VIDEO_PORT_END: /* 0x2000 - 0x3fff */
 					nes_video_port_write(&g_bus.video, (address - VIDEO_PORT_BEGIN) % VIDEO_PORT_MIRROR, data);
 					break;
-				case PROCESSOR_OAM: /* 0x4014 */
+				case PROCESSOR_TRANSFER: /* 0x4014 */
 					nes_processor_transfer(&g_bus.processor, data);
 					break;
 				case PROCESSOR_WORK_RAM_BEGIN ... PROCESSOR_WORK_RAM_END: /* 0x6000 - 0x7fff */
-					nes_mapper_write_ram(&g_bus.mapper, RAM_PROGRAM, address - PROCESSOR_WORK_RAM_BEGIN, data);
+					nes_mapper_ram_write(&g_bus.mapper, RAM_PROGRAM, address - PROCESSOR_WORK_RAM_BEGIN, data);
 					break;
 				case PROCESSOR_ROM_0_BEGIN ... PROCESSOR_ROM_0_END: /* 0x8000 - 0xbfff */
 				case PROCESSOR_ROM_1_BEGIN ... PROCESSOR_ROM_1_END: /* 0xc000 - 0xffff */
-					nes_mapper_write_rom(&g_bus.mapper, ROM_PROGRAM, address - PROCESSOR_ROM_0_BEGIN, data);
+					nes_mapper_rom_write(&g_bus.mapper, ROM_PROGRAM, address - PROCESSOR_ROM_0_BEGIN, data);
 					break;
 				default:
 					TRACE(LEVEL_WARNING, "Invalid processor write: [%04X]<-%02X", address, data);
@@ -199,7 +198,7 @@ nes_bus_write(
 
 			switch(address) {
 				case VIDEO_ROM_BEGIN ... VIDEO_ROM_END: /* 0x0000 - 0x1fff */
-					nes_mapper_write_rom(&g_bus.mapper, ROM_CHARACTER, address - VIDEO_ROM_BEGIN, data);
+					nes_mapper_rom_write(&g_bus.mapper, ROM_CHARACTER, address - VIDEO_ROM_BEGIN, data);
 					break;
 				case VIDEO_RAM_BEGIN ... VIDEO_RAM_END: /* 0x2000 - 0x3eff */
 					g_bus.ram_video.ptr[(address - VIDEO_RAM_BEGIN) % VIDEO_RAM_MIRROR] = data;

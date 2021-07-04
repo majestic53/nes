@@ -20,6 +20,7 @@
 BIN=test-processor
 
 DIR_BUILD=../../build/
+DIR_BUILD_TEST=../../build/test/
 DIR_ROOT=./
 
 FLAGS=-std=c11 -Wall -Werror
@@ -37,13 +38,13 @@ link:
 	$(CC) $(FLAGS) $(BUILD_FLAGS) $(DIR_BUILD)test_processor.o \
 		$(DIR_BUILD)common_buffer.o $(DIR_BUILD)common_error.o $(DIR_BUILD)common_trace.o \
 			$(DIR_BUILD)system_processor.o $(DIR_BUILD)system_processor_trace.o \
-		-o $(DIR_BUILD)$(BIN)
+		-o $(DIR_BUILD_TEST)$(BIN)
 	@echo '--- DONE ----------------------------------------------------------------------'
 	@echo ''
 
 run:
 	@echo '--- RUNNING PROCESSOR TEST ----------------------------------------------------'
-	@cd $(DIR_BUILD) && if ./$(BIN); \
+	@cd $(DIR_BUILD_TEST) && if ./$(BIN); \
 	then \
 		echo '--- PASSED --------------------------------------------------------------------'; \
 	else \

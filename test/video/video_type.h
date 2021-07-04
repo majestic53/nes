@@ -26,9 +26,9 @@
 #include "../common.h"
 
 typedef struct {
-
-        /* TODO */
-
+        nes_buffer_t memory;
+        nes_buffer_t object;
+        nes_video_t video;
 } nes_test_video_t;
 
 #ifdef __cplusplus

@@ -55,23 +55,45 @@ exit:
 }
 
 uint8_t
-nes_mapper_read_ram(
+nes_mapper_ram_read(
 	__in const nes_mapper_t *mapper,
 	__in int type,
 	__in uint16_t address
 	)
 {
-	return mapper->read_ram(mapper, type, address);
+	return mapper->ram_read(mapper, type, address);
+}
+
+void
+nes_mapper_ram_write(
+	__inout nes_mapper_t *mapper,
+	__in int type,
+	__in uint16_t address,
+	__in uint8_t data
+	)
+{
+	mapper->ram_write(mapper, type, address, data);
 }
 
 uint8_t
-nes_mapper_read_rom(
+nes_mapper_rom_read(
 	__in const nes_mapper_t *mapper,
 	__in int type,
 	__in uint16_t address
 	)
 {
-	return mapper->read_rom(mapper, type, address);
+	return mapper->rom_read(mapper, type, address);
+}
+
+void
+nes_mapper_rom_write(
+	__inout nes_mapper_t *mapper,
+	__in int type,
+	__in uint16_t address,
+	__in uint8_t data
+	)
+{
+	mapper->rom_write(mapper, type, address, data);
 }
 
 void
@@ -85,28 +107,6 @@ nes_mapper_unload(
 	memset(mapper, 0, sizeof(*mapper));
 
 	TRACE(LEVEL_VERBOSE, "%s", "Mapper unloaded");
-}
-
-void
-nes_mapper_write_ram(
-	__inout nes_mapper_t *mapper,
-	__in int type,
-	__in uint16_t address,
-	__in uint8_t data
-	)
-{
-	mapper->write_ram(mapper, type, address, data);
-}
-
-void
-nes_mapper_write_rom(
-	__inout nes_mapper_t *mapper,
-	__in int type,
-	__in uint16_t address,
-	__in uint8_t data
-	)
-{
-	mapper->write_rom(mapper, type, address, data);
 }
 
 #ifdef __cplusplus

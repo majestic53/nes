@@ -27,16 +27,54 @@ static nes_test_video_t g_test = {};
 extern "C" {
 #endif /* __cplusplus */
 
-/* TODO */
+uint8_t
+nes_bus_read(
+	__in int bus,
+	__in uint16_t address
+	)
+{
+	uint8_t result = 0;
+
+	switch(bus) {
+		case BUS_OBJECT:
+			result = g_test.object.ptr[address];
+			break;
+		case BUS_VIDEO:
+			result = g_test.memory.ptr[address];
+			break;
+		default:
+			break;
+	}
+
+	return result;
+}
+
+void
+nes_bus_write(
+	__in int bus,
+	__in uint16_t address,
+	__in uint8_t data
+	)
+{
+
+	switch(bus) {
+		case BUS_OBJECT:
+			g_test.object.ptr[address] = data;
+			break;
+		case BUS_VIDEO:
+			g_test.memory.ptr[address] = data;
+			break;
+		default:
+			break;
+	}
+}
 
 void
 nes_test_initialize(void)
 {
-
-	/* TODO */
+	memset(g_test.memory.ptr, 0x00, g_test.memory.length);
+	memset(g_test.object.ptr, 0x00, g_test.object.length);
 	memset(&g_test, 0, sizeof(g_test));
-	/* --- */
-
 }
 
 int
@@ -56,12 +94,24 @@ main(
 	srand(seed);
 	TRACE_SEED(seed);
 
+	if((result = nes_buffer_allocate(&g_test.memory, 0x4000, 0x00)) != NES_OK) {
+		goto exit;
+	}
+
+	if((result = nes_buffer_allocate(&g_test.object, 0x0100, 0x00)) != NES_OK) {
+		goto exit;
+	}
+
 	for(size_t test = 0; test < TEST_COUNT(TEST); ++test) {
 
 		if(TEST[test]() != NES_OK) {
 			result = NES_ERR;
 		}
 	}
+
+exit:
+	nes_buffer_free(&g_test.object);
+	nes_buffer_free(&g_test.memory);
 
 	return result;
 }

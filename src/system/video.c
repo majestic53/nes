@@ -26,6 +26,23 @@ extern "C" {
 #endif /* __cplusplus */
 
 uint8_t
+nes_video_oam_read(
+        __inout nes_video_t *video
+        )
+{
+        return nes_bus_read(BUS_OBJECT, video->oam_address);
+}
+
+void
+nes_video_oam_write(
+        __inout nes_video_t *video,
+        __in uint8_t data
+        )
+{
+        nes_bus_write(BUS_OBJECT, video->oam_address++, data);
+}
+
+uint8_t
 nes_video_port_read(
         __inout nes_video_t *video,
         __in uint16_t address
@@ -34,40 +51,12 @@ nes_video_port_read(
         uint8_t result = 0;
 
         switch(address) {
-                case VIDEO_PORT_CONTROL: /* 0x2000 */
-
-                        /* TODO */
-
-                        break;
-                case VIDEO_PORT_MASK: /* 0x2001 */
-
-                        /* TODO */
-
-                        break;
                 case VIDEO_PORT_STATUS: /* 0x2002 */
-
-                        /* TODO */
-
-                        break;
-                case VIDEO_PORT_OAM_ADDRESS: /* 0x2003 */
-
-                        /* TODO */
-
+                        result = video->status.raw;
+                        video->status.vblank = false;
                         break;
                 case VIDEO_PORT_OAM_DATA: /* 0x2004 */
-
-                        /* TODO */
-
-                        break;
-                case VIDEO_PORT_SCROLL: /* 0x2005 */
-
-                        /* TODO */
-
-                        break;
-                case VIDEO_PORT_ADDRESS: /* 0x2006 */
-
-                        /* TODO */
-
+                        result = nes_video_oam_read(video);
                         break;
                 case VIDEO_PORT_DATA: /* 0x2007 */
 
@@ -93,29 +82,16 @@ nes_video_port_write(
 
         switch(address) {
                case VIDEO_PORT_CONTROL: /* 0x2000 */
-
-                        /* TODO */
-
+                        video->control.raw = data;
                         break;
                 case VIDEO_PORT_MASK: /* 0x2001 */
-
-                        /* TODO */
-
-                        break;
-                case VIDEO_PORT_STATUS: /* 0x2002 */
-
-                        /* TODO */
-
+                        video->mask.raw = data;
                         break;
                 case VIDEO_PORT_OAM_ADDRESS: /* 0x2003 */
-
-                        /* TODO */
-
+                        video->oam_address = data;
                         break;
                 case VIDEO_PORT_OAM_DATA: /* 0x2004 */
-
-                        /* TODO */
-
+                        nes_video_oam_write(video, data);
                         break;
                 case VIDEO_PORT_SCROLL: /* 0x2005 */
 
@@ -136,6 +112,15 @@ nes_video_port_write(
                         TRACE(LEVEL_WARNING, "Invalid video port write: [%04X]<-%02X", address, data);
                         break;
         }
+}
+
+uint8_t
+nes_video_read(
+        __inout nes_video_t *video,
+        __in uint16_t address
+        )
+{
+        return nes_bus_read(BUS_VIDEO, address);
 }
 
 void
@@ -175,6 +160,16 @@ nes_video_step(
         /* --- */
 
         return result;
+}
+
+void
+nes_video_write(
+        __inout nes_video_t *video,
+        __in uint16_t address,
+        __in uint8_t data
+        )
+{
+        nes_bus_write(BUS_VIDEO, address, data);
 }
 
 #ifdef __cplusplus

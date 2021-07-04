@@ -39,10 +39,10 @@ nes_mapper_nrom_load(
 	mapper->rom_character = 0;
 	mapper->rom_program[ROM_BANK_0] = 0;
 	mapper->rom_program[ROM_BANK_1] = (mapper->cartridge.rom_count[ROM_PROGRAM] > 1) ? 1 : 0;
-	mapper->read_ram = nes_mapper_nrom_read_ram;
-	mapper->read_rom = nes_mapper_nrom_read_rom;
-	mapper->write_ram = nes_mapper_nrom_write_ram;
-	mapper->write_rom = nes_mapper_nrom_write_rom;
+	mapper->ram_read = nes_mapper_nrom_ram_read;
+	mapper->ram_write = nes_mapper_nrom_ram_write;
+	mapper->rom_read = nes_mapper_nrom_rom_read;
+	mapper->rom_write = nes_mapper_nrom_rom_write;
 
 	TRACE(LEVEL_VERBOSE, "%s", "NROM mapper loaded");
 
@@ -50,7 +50,7 @@ nes_mapper_nrom_load(
 }
 
 uint8_t
-nes_mapper_nrom_read_ram(
+nes_mapper_nrom_ram_read(
 	__in const nes_mapper_t *mapper,
 	__in int type,
 	__in uint16_t address
@@ -60,11 +60,11 @@ nes_mapper_nrom_read_ram(
 
 	switch(type) {
 		case RAM_CHARACTER:
-			result = nes_cartridge_read_ram(&mapper->cartridge, type, (mapper->ram_character * NROM_RAM_CHARACTER_BANK_WIDTH)
+			result = nes_cartridge_ram_read(&mapper->cartridge, type, (mapper->ram_character * NROM_RAM_CHARACTER_BANK_WIDTH)
 					+ (address % NROM_RAM_CHARACTER_BANK_WIDTH));
 			break;
 		case RAM_PROGRAM:
-			result = nes_cartridge_read_ram(&mapper->cartridge, type, (mapper->ram_program * NROM_RAM_PROGRAM_BANK_WIDTH)
+			result = nes_cartridge_ram_read(&mapper->cartridge, type, (mapper->ram_program * NROM_RAM_PROGRAM_BANK_WIDTH)
 					+ (address % NROM_RAM_PROGRAM_BANK_WIDTH));
 			break;
 		default:
@@ -75,8 +75,32 @@ nes_mapper_nrom_read_ram(
 	return result;
 }
 
+void
+nes_mapper_nrom_ram_write(
+	__inout nes_mapper_t *mapper,
+	__in int type,
+	__in uint16_t address,
+	__in uint8_t data
+	)
+{
+
+	switch(type) {
+		case RAM_CHARACTER:
+			nes_cartridge_ram_write(&mapper->cartridge, type, (mapper->ram_character * NROM_RAM_CHARACTER_BANK_WIDTH)
+				+ (address % NROM_RAM_CHARACTER_BANK_WIDTH), data);
+			break;
+		case RAM_PROGRAM:
+			nes_cartridge_ram_write(&mapper->cartridge, type, (mapper->ram_program * NROM_RAM_PROGRAM_BANK_WIDTH)
+				+ (address % NROM_RAM_PROGRAM_BANK_WIDTH), data);
+			break;
+		default:
+			TRACE(LEVEL_WARNING, "Invalid RAM type: %i", type);
+			break;
+	}
+}
+
 uint8_t
-nes_mapper_nrom_read_rom(
+nes_mapper_nrom_rom_read(
 	__in const nes_mapper_t *mapper,
 	__in int type,
 	__in uint16_t address
@@ -86,11 +110,11 @@ nes_mapper_nrom_read_rom(
 
 	switch(type) {
 		case ROM_CHARACTER:
-			result = nes_cartridge_read_rom(&mapper->cartridge, type, (mapper->rom_character * NROM_ROM_CHARACTER_BANK_WIDTH)
+			result = nes_cartridge_rom_read(&mapper->cartridge, type, (mapper->rom_character * NROM_ROM_CHARACTER_BANK_WIDTH)
 					+ (address % NROM_ROM_CHARACTER_BANK_WIDTH));
 			break;
 		case ROM_PROGRAM:
-			result = nes_cartridge_read_rom(&mapper->cartridge, type,
+			result = nes_cartridge_rom_read(&mapper->cartridge, type,
 					(mapper->rom_program[(address >= NROM_ROM_PROGRAM_BANK_WIDTH) ? ROM_BANK_1 : ROM_BANK_0] * NROM_ROM_PROGRAM_BANK_WIDTH)
 						+ (address % NROM_ROM_PROGRAM_BANK_WIDTH));
 			break;
@@ -103,31 +127,7 @@ nes_mapper_nrom_read_rom(
 }
 
 void
-nes_mapper_nrom_write_ram(
-	__inout nes_mapper_t *mapper,
-	__in int type,
-	__in uint16_t address,
-	__in uint8_t data
-	)
-{
-
-	switch(type) {
-		case RAM_CHARACTER:
-			nes_cartridge_write_ram(&mapper->cartridge, type, (mapper->ram_character * NROM_RAM_CHARACTER_BANK_WIDTH)
-				+ (address % NROM_RAM_CHARACTER_BANK_WIDTH), data);
-			break;
-		case RAM_PROGRAM:
-			nes_cartridge_write_ram(&mapper->cartridge, type, (mapper->ram_program * NROM_RAM_PROGRAM_BANK_WIDTH)
-				+ (address % NROM_RAM_PROGRAM_BANK_WIDTH), data);
-			break;
-		default:
-			TRACE(LEVEL_WARNING, "Invalid RAM type: %i", type);
-			break;
-	}
-}
-
-void
-nes_mapper_nrom_write_rom(
+nes_mapper_nrom_rom_write(
 	__inout nes_mapper_t *mapper,
 	__in int type,
 	__in uint16_t address,

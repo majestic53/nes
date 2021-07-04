@@ -24,6 +24,7 @@ DIR_BIN=./bin/
 DIR_BIN_INCLUDE=./bin/include/
 DIR_BIN_LIB=./bin/lib/
 DIR_BUILD=./build/
+DIR_BUILD_TEST=./build/test/
 DIR_ROOT=./
 DIR_SRC=./src/
 DIR_TEST_ACTION=./test/action/
@@ -59,7 +60,7 @@ clean:
 setup:
 	mkdir -p $(DIR_BIN_INCLUDE)
 	mkdir -p $(DIR_BIN_LIB)
-	mkdir -p $(DIR_BUILD)
+	mkdir -p $(DIR_BUILD_TEST)
 
 library_debug:
 	cd $(DIR_SRC) && make $(BUILD_DEBUG)$(LEVEL) build -j$(SLOTS)

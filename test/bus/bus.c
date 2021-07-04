@@ -37,7 +37,7 @@ nes_mapper_load(
 }
 
 uint8_t
-nes_mapper_read_ram(
+nes_mapper_ram_read(
 	__in const nes_mapper_t *mapper,
 	__in int type,
 	__in uint16_t address
@@ -49,8 +49,21 @@ nes_mapper_read_ram(
 	return g_test.data;
 }
 
+void
+nes_mapper_ram_write(
+	__inout nes_mapper_t *mapper,
+	__in int type,
+	__in uint16_t address,
+	__in uint8_t data
+	)
+{
+	g_test.address = address;
+	g_test.data = data;
+	g_test.mapper_type = type;
+}
+
 uint8_t
-nes_mapper_read_rom(
+nes_mapper_rom_read(
 	__in const nes_mapper_t *mapper,
 	__in int type,
 	__in uint16_t address
@@ -60,6 +73,19 @@ nes_mapper_read_rom(
 	g_test.mapper_type = type;
 
 	return g_test.data;
+}
+
+void
+nes_mapper_rom_write(
+	__inout nes_mapper_t *mapper,
+	__in int type,
+	__in uint16_t address,
+	__in uint8_t data
+	)
+{
+	g_test.address = address;
+	g_test.data = data;
+	g_test.mapper_type = type;
 }
 
 void
@@ -68,32 +94,6 @@ nes_mapper_unload(
 	)
 {
 	g_test.mapper_unload = true;
-}
-
-void
-nes_mapper_write_ram(
-	__inout nes_mapper_t *mapper,
-	__in int type,
-	__in uint16_t address,
-	__in uint8_t data
-	)
-{
-	g_test.address = address;
-	g_test.data = data;
-	g_test.mapper_type = type;
-}
-
-void
-nes_mapper_write_rom(
-	__inout nes_mapper_t *mapper,
-	__in int type,
-	__in uint16_t address,
-	__in uint8_t data
-	)
-{
-	g_test.address = address;
-	g_test.data = data;
-	g_test.mapper_type = type;
 }
 
 void
@@ -370,7 +370,7 @@ nes_test_bus_write(void)
 				break;
 			default:
 
-				if(ASSERT(nes_bus_read(BUS_OBJECT, address) == data)) {
+				if(ASSERT(nes_bus_read(BUS_OBJECT, address) == 0x00)) {
 					result = NES_ERR;
 					goto exit;
 				}
@@ -401,7 +401,7 @@ nes_test_bus_write(void)
 					goto exit;
 				}
 				break;
-			case PROCESSOR_OAM:
+			case PROCESSOR_TRANSFER:
 				nes_bus_write(BUS_PROCESSOR, address, data = rand());
 
 				if(ASSERT(g_test.address == data)) {
@@ -431,7 +431,7 @@ nes_test_bus_write(void)
 				break;
 			default:
 
-				if(ASSERT(nes_bus_read(BUS_PROCESSOR, address) == data)) {
+				if(ASSERT(nes_bus_read(BUS_PROCESSOR, address) == 0x00)) {
 					result = NES_ERR;
 					goto exit;
 				}
@@ -474,7 +474,7 @@ nes_test_bus_write(void)
 				break;
 			default:
 
-				if(ASSERT(nes_bus_read(BUS_VIDEO, address) == data)) {
+				if(ASSERT(nes_bus_read(BUS_VIDEO, address) == 0x00)) {
 					result = NES_ERR;
 					goto exit;
 				}

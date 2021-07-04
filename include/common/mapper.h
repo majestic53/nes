@@ -37,26 +37,26 @@ typedef struct nes_mapper_s {
 	size_t rom_character;
 	size_t rom_program[ROM_BANK_MAX];
 
-	uint8_t (*read_ram)(
+	uint8_t (*ram_read)(
 			__in const struct nes_mapper_s *mapper,
 			__in int type,
 			__in uint16_t address
 			);
 
-	uint8_t (*read_rom)(
-			__in const struct nes_mapper_s *mapper,
-			__in int type,
-			__in uint16_t address
-			);
-
-	void (*write_ram)(
+	void (*ram_write)(
 			__inout struct nes_mapper_s *mapper,
 			__in int type,
 			__in uint16_t address,
 			__in uint8_t data
 			);
 
-	void (*write_rom)(
+	uint8_t (*rom_read)(
+			__in const struct nes_mapper_s *mapper,
+			__in int type,
+			__in uint16_t address
+			);
+
+	void (*rom_write)(
 			__inout struct nes_mapper_s *mapper,
 			__in int type,
 			__in uint16_t address,
@@ -73,34 +73,34 @@ int nes_mapper_load(
 	__inout nes_mapper_t *mapper
 	);
 
-uint8_t nes_mapper_read_ram(
+uint8_t nes_mapper_ram_read(
 	__in const nes_mapper_t *mapper,
 	__in int type,
 	__in uint16_t address
 	);
 
-uint8_t nes_mapper_read_rom(
+void nes_mapper_ram_write(
+	__inout nes_mapper_t *mapper,
+	__in int type,
+	__in uint16_t address,
+	__in uint8_t data
+	);
+
+uint8_t nes_mapper_rom_read(
 	__in const nes_mapper_t *mapper,
 	__in int type,
 	__in uint16_t address
+	);
+
+void nes_mapper_rom_write(
+	__inout nes_mapper_t *mapper,
+	__in int type,
+	__in uint16_t address,
+	__in uint8_t data
 	);
 
 void nes_mapper_unload(
 	__inout nes_mapper_t *mapper
-	);
-
-void nes_mapper_write_ram(
-	__inout nes_mapper_t *mapper,
-	__in int type,
-	__in uint16_t address,
-	__in uint8_t data
-	);
-
-void nes_mapper_write_rom(
-	__inout nes_mapper_t *mapper,
-	__in int type,
-	__in uint16_t address,
-	__in uint8_t data
 	);
 
 #ifdef __cplusplus

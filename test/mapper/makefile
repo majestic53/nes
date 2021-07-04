@@ -20,6 +20,7 @@
 BIN_NROM=test-mapper-nrom
 
 DIR_BUILD=../../build/
+DIR_BUILD_TEST=../../build/test/
 DIR_ROOT=./
 
 FLAGS=-std=c11 -Wall -Werror
@@ -37,13 +38,13 @@ link:
 	$(CC) $(FLAGS) $(BUILD_FLAGS) $(DIR_BUILD)test_mapper_nrom.o \
 		$(DIR_BUILD)common_buffer.o $(DIR_BUILD)common_cartridge.o $(DIR_BUILD)common_error.o $(DIR_BUILD)common_mapper.o $(DIR_BUILD)common_trace.o \
 			$(DIR_BUILD)mapper_nrom.o \
-		-o $(DIR_BUILD)$(BIN_NROM)
+		-o $(DIR_BUILD_TEST)$(BIN_NROM)
 	@echo '--- DONE ----------------------------------------------------------------------'
 	@echo ''
 
 run:
 	@echo '--- RUNNING NROM MAPPER TEST --------------------------------------------------'
-	@cd $(DIR_BUILD) && if ./$(BIN_NROM); \
+	@cd $(DIR_BUILD_TEST) && if ./$(BIN_NROM); \
 	then \
 		echo '--- PASSED --------------------------------------------------------------------'; \
 	else \

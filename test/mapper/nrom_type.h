@@ -38,13 +38,13 @@ extern "C" {
 
 int nes_test_mapper_nrom_load(void);
 
-int nes_test_mapper_nrom_read_ram(void);
+int nes_test_mapper_nrom_ram_read(void);
 
-int nes_test_mapper_nrom_read_rom(void);
+int nes_test_mapper_nrom_ram_write(void);
 
-int nes_test_mapper_nrom_write_ram(void);
+int nes_test_mapper_nrom_rom_read(void);
 
-int nes_test_mapper_nrom_write_rom(void);
+int nes_test_mapper_nrom_rom_write(void);
 
 void nes_test_initialize(void);
 
@@ -52,10 +52,10 @@ void nes_test_uninitialize(void);
 
 static const nes_test TEST[] = {
 	nes_test_mapper_nrom_load,
-	nes_test_mapper_nrom_read_ram,
-	nes_test_mapper_nrom_read_rom,
-	nes_test_mapper_nrom_write_ram,
-        nes_test_mapper_nrom_write_rom,
+	nes_test_mapper_nrom_ram_read,
+	nes_test_mapper_nrom_ram_write,
+        nes_test_mapper_nrom_rom_read,
+        nes_test_mapper_nrom_rom_write,
 	};
 
 #ifdef __cplusplus

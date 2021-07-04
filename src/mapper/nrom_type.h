@@ -37,26 +37,26 @@ int nes_mapper_nrom_load(
 	__inout nes_mapper_t *mapper
 	);
 
-uint8_t nes_mapper_nrom_read_ram(
+uint8_t nes_mapper_nrom_ram_read(
 	__in const nes_mapper_t *mapper,
 	__in int type,
 	__in uint16_t address
 	);
 
-uint8_t nes_mapper_nrom_read_rom(
-	__in const nes_mapper_t *mapper,
-	__in int type,
-	__in uint16_t address
-	);
-
-void nes_mapper_nrom_write_ram(
+void nes_mapper_nrom_ram_write(
 	__inout nes_mapper_t *mapper,
 	__in int type,
 	__in uint16_t address,
 	__in uint8_t data
 	);
 
-void nes_mapper_nrom_write_rom(
+uint8_t nes_mapper_nrom_rom_read(
+	__in const nes_mapper_t *mapper,
+	__in int type,
+	__in uint16_t address
+	);
+
+void nes_mapper_nrom_rom_write(
 	__inout nes_mapper_t *mapper,
 	__in int type,
 	__in uint16_t address,

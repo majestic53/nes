@@ -941,13 +941,13 @@ nes_processor_transfer_byte(
         uint16_t address = processor->transfer.source.word + processor->transfer.offset.low;
 
         nes_processor_write(processor, VIDEO_PORT_BEGIN + VIDEO_PORT_OAM_DATA, nes_processor_read(processor, address));
+        TRACE(LEVEL_VERBOSE, "Processor transfer byte: %04X (%u/%u)", address, processor->transfer.offset.low + 1, PAGE_WIDTH);
 
         if(processor->transfer.offset.low == UINT8_MAX) {
                 processor->pending.transfer = false;
                 memset(&processor->transfer, 0, sizeof(processor->transfer));
                 TRACE(LEVEL_VERBOSE, "%s", "Processor transfer complete");
         } else {
-                TRACE(LEVEL_VERBOSE, "Processor transfer byte: %04X (%u/%u)", address, processor->transfer.offset.low + 1, PAGE_WIDTH);
                 ++processor->transfer.offset.low;
         }
 
