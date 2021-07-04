@@ -7740,7 +7740,7 @@ nes_test_processor_transfer(void)
 			nes_processor_step(&g_test.processor);
 
 			if(g_test.processor.cycles == (TRANSFER_CYCLES - 1)) {
-				uint8_t in = nes_processor_read(&g_test.processor, VIDEO_PORT_BEGIN + VIDEO_PORT_OAM_DATA),
+				uint8_t in = nes_processor_read(&g_test.processor, VIDEO_PORT_BEGIN + VIDEO_PORT_OBJECT_DATA),
 					out = nes_processor_read(&g_test.processor, address.word + index);
 
 				if(ASSERT((g_test.processor.pending.transfer == (offset != 0))

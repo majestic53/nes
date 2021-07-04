@@ -30,11 +30,11 @@
 extern "C" {
 #endif /* __cplusplus */
 
-uint8_t nes_video_oam_read(
+uint8_t nes_video_object_read(
         __inout nes_video_t *video
         );
 
-void nes_video_oam_write(
+void nes_video_object_write(
         __inout nes_video_t *video,
         __in uint8_t data
         );

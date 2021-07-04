@@ -26,20 +26,20 @@ extern "C" {
 #endif /* __cplusplus */
 
 uint8_t
-nes_video_oam_read(
+nes_video_object_read(
         __inout nes_video_t *video
         )
 {
-        return nes_bus_read(BUS_OBJECT, video->oam_address);
+        return nes_bus_read(BUS_OBJECT, video->object_address);
 }
 
 void
-nes_video_oam_write(
+nes_video_object_write(
         __inout nes_video_t *video,
         __in uint8_t data
         )
 {
-        nes_bus_write(BUS_OBJECT, video->oam_address++, data);
+        nes_bus_write(BUS_OBJECT, video->object_address++, data);
 }
 
 uint8_t
@@ -55,8 +55,8 @@ nes_video_port_read(
                         result = video->status.raw;
                         video->status.vblank = false;
                         break;
-                case VIDEO_PORT_OAM_DATA: /* 0x2004 */
-                        result = nes_video_oam_read(video);
+                case VIDEO_PORT_OBJECT_DATA: /* 0x2004 */
+                        result = nes_video_object_read(video);
                         break;
                 case VIDEO_PORT_DATA: /* 0x2007 */
 
@@ -87,11 +87,11 @@ nes_video_port_write(
                 case VIDEO_PORT_MASK: /* 0x2001 */
                         video->mask.raw = data;
                         break;
-                case VIDEO_PORT_OAM_ADDRESS: /* 0x2003 */
-                        video->oam_address = data;
+                case VIDEO_PORT_OBJECT_ADDRESS: /* 0x2003 */
+                        video->object_address = data;
                         break;
-                case VIDEO_PORT_OAM_DATA: /* 0x2004 */
-                        nes_video_oam_write(video, data);
+                case VIDEO_PORT_OBJECT_DATA: /* 0x2004 */
+                        nes_video_object_write(video, data);
                         break;
                 case VIDEO_PORT_SCROLL: /* 0x2005 */
 

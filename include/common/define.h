@@ -99,8 +99,8 @@ enum {
         VIDEO_PORT_CONTROL = 0, /* 0x2000 */
         VIDEO_PORT_MASK, /* 0x2001 */
         VIDEO_PORT_STATUS, /* 0x2002 */
-        VIDEO_PORT_OAM_ADDRESS, /* 0x2003 */
-        VIDEO_PORT_OAM_DATA, /* 0x2004 */
+        VIDEO_PORT_OBJECT_ADDRESS, /* 0x2003 */
+        VIDEO_PORT_OBJECT_DATA, /* 0x2004 */
         VIDEO_PORT_SCROLL, /* 0x2005 */
         VIDEO_PORT_ADDRESS, /* 0x2006 */
         VIDEO_PORT_DATA, /* 0x2007 */
