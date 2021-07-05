@@ -56,12 +56,6 @@ enum {
 };
 
 enum {
-        PENDING_TRANSFER = (1 << 0),
-        PENDING_NON_MASKABLE = (1 << 1),
-        PENDING_MASKABLE = (1 << 2),
-};
-
-enum {
         PROCESSOR_SHOW = 0,
         PROCESSOR_READ,
         PROCESSOR_WRITE,
@@ -70,16 +64,6 @@ enum {
 enum {
         READ_BYTE = 1,
         READ_MULTIBYTE,
-};
-
-enum {
-        STATUS_CARRY = (1 << 0),
-        STATUS_ZERO = (1 << 1),
-        STATUS_INTERRUPT_DISABLE = (1 << 2),
-        STATUS_DECIMAL = (1 << 3),
-        STATUS_BREAKPOINT = (1 << 4),
-        STATUS_OVERFLOW = (1 << 6),
-        STATUS_NEGATIVE = (1 << 7),
 };
 
 enum {

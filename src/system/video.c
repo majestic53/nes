@@ -30,7 +30,7 @@ nes_video_object_read(
         __inout nes_video_t *video
         )
 {
-        return nes_bus_read(BUS_OBJECT, video->object_address);
+        return nes_bus_read(BUS_OBJECT, video->object_address.low);
 }
 
 void
@@ -39,7 +39,7 @@ nes_video_object_write(
         __in uint8_t data
         )
 {
-        nes_bus_write(BUS_OBJECT, video->object_address++, data);
+        nes_bus_write(BUS_OBJECT, video->object_address.low++, data);
 }
 
 uint8_t
@@ -88,7 +88,7 @@ nes_video_port_write(
                         video->mask.raw = data;
                         break;
                 case VIDEO_PORT_OBJECT_ADDRESS: /* 0x2003 */
-                        video->object_address = data;
+                        video->object_address.low = data;
                         break;
                 case VIDEO_PORT_OBJECT_DATA: /* 0x2004 */
                         nes_video_object_write(video, data);

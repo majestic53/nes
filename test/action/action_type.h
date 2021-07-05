@@ -26,9 +26,9 @@
 #include "../common.h"
 
 typedef struct {
-        uint16_t address;
+        nes_register_t address;
         nes_bus_t bus;
-        uint16_t data;
+        nes_register_t data;
         nes_action_t request;
         nes_action_t response;
 } nes_test_action_t;

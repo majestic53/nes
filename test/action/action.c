@@ -43,8 +43,8 @@ nes_bus_read(
 
 	switch(bus) {
 		case BUS_PROCESSOR:
-			g_test.address = address;
-			result = g_test.data;
+			g_test.address.word = address;
+			result = g_test.data.low;
 			break;
 		default:
 			break;
@@ -63,8 +63,8 @@ nes_bus_write(
 
 	switch(bus) {
 		case BUS_PROCESSOR:
-			g_test.address = address;
-			g_test.data = data;
+			g_test.address.word = address;
+			g_test.data.low = data;
 			break;
 		default:
 			break;
@@ -105,9 +105,9 @@ nes_test_action_bus_read(void)
 	int result = NES_OK;
 
 	nes_test_initialize();
-	g_test.data = rand();
+	g_test.data.low = rand();
 	g_test.request.type = NES_ACTION_BUS_READ;
-	g_test.request.address = rand();
+	g_test.request.address.word = rand();
 	nes_bus()->loaded = false;
 
 	if(ASSERT(nes_action(&g_test.request, &g_test.response) != NES_OK)) {
@@ -119,9 +119,9 @@ nes_test_action_bus_read(void)
 
 	if(ASSERT((nes_action(&g_test.request, &g_test.response) == NES_OK)
 			&& (g_test.response.type == NES_ACTION_BUS_READ)
-			&& (g_test.response.address == g_test.request.address)
-			&& (g_test.response.data == (g_test.data & UINT8_MAX))
-			&& (g_test.address == g_test.request.address))) {
+			&& (g_test.response.address.word == g_test.request.address.word)
+			&& (g_test.response.data.low == g_test.data.low)
+			&& (g_test.address.word == g_test.request.address.word))) {
 		result = NES_ERR;
 		goto exit;
 	}
@@ -139,8 +139,8 @@ nes_test_action_bus_write(void)
 
 	nes_test_initialize();
 	g_test.request.type = NES_ACTION_BUS_WRITE;
-	g_test.request.address = rand();
-	g_test.request.data = rand();
+	g_test.request.address.word = rand();
+	g_test.request.data.low = rand();
 	nes_bus()->loaded = false;
 
 	if(ASSERT(nes_action(&g_test.request, &g_test.response) != NES_OK)) {
@@ -151,8 +151,8 @@ nes_test_action_bus_write(void)
 	nes_bus()->loaded = true;
 
 	if(ASSERT((nes_action(&g_test.request, NULL) == NES_OK)
-			&& (g_test.address == g_test.request.address)
-			&& (g_test.data == (g_test.request.data & UINT8_MAX)))) {
+			&& (g_test.address.word == g_test.request.address.word)
+			&& (g_test.data.low == g_test.request.data.low))) {
 		result = NES_ERR;
 		goto exit;
 	}
@@ -169,7 +169,6 @@ nes_test_action_cartridge_header(void)
 	int result = NES_OK;
 
 	nes_test_initialize();
-	g_test.data = rand();
 	g_test.request.type = NES_ACTION_CARTRIDGE_HEADER;
 	nes_bus()->loaded = false;
 
@@ -202,7 +201,7 @@ nes_test_action_processor_read(void)
 	nes_test_initialize();
 	g_test.bus.processor.program_counter.word = rand();
 	g_test.request.type = NES_ACTION_PROCESSOR_READ;
-	g_test.request.address = NES_PROCESSOR_PROGRAM_COUNTER;
+	g_test.request.address.word = NES_PROCESSOR_PROGRAM_COUNTER;
 	nes_bus()->loaded = false;
 
 	if(ASSERT(nes_action(&g_test.request, &g_test.response) != NES_OK)) {
@@ -214,8 +213,8 @@ nes_test_action_processor_read(void)
 
 	if(ASSERT((nes_action(&g_test.request, &g_test.response) == NES_OK)
 			&& (g_test.response.type == NES_ACTION_PROCESSOR_READ)
-			&& (g_test.response.address == NES_PROCESSOR_PROGRAM_COUNTER)
-			&& (g_test.response.data == g_test.bus.processor.program_counter.word))) {
+			&& (g_test.response.address.word == NES_PROCESSOR_PROGRAM_COUNTER)
+			&& (g_test.response.data.word == g_test.bus.processor.program_counter.word))) {
 		result = NES_ERR;
 		goto exit;
 	}
@@ -223,7 +222,7 @@ nes_test_action_processor_read(void)
 	nes_test_initialize();
 	g_test.bus.processor.stack_pointer.low = rand();
 	g_test.request.type = NES_ACTION_PROCESSOR_READ;
-	g_test.request.address = NES_PROCESSOR_STACK_POINTER;
+	g_test.request.address.word = NES_PROCESSOR_STACK_POINTER;
 	nes_bus()->loaded = false;
 
 	if(ASSERT(nes_action(&g_test.request, &g_test.response) != NES_OK)) {
@@ -235,8 +234,8 @@ nes_test_action_processor_read(void)
 
 	if(ASSERT((nes_action(&g_test.request, &g_test.response) == NES_OK)
 			&& (g_test.response.type == NES_ACTION_PROCESSOR_READ)
-			&& (g_test.response.address == NES_PROCESSOR_STACK_POINTER)
-			&& (g_test.response.data == (STACK_ADDRESS | g_test.bus.processor.stack_pointer.low)))) {
+			&& (g_test.response.address.word == NES_PROCESSOR_STACK_POINTER)
+			&& (g_test.response.data.word == (STACK_ADDRESS | g_test.bus.processor.stack_pointer.low)))) {
 		result = NES_ERR;
 		goto exit;
 	}
@@ -244,7 +243,7 @@ nes_test_action_processor_read(void)
 	nes_test_initialize();
 	g_test.bus.processor.status.low = rand();
 	g_test.request.type = NES_ACTION_PROCESSOR_READ;
-	g_test.request.address = NES_PROCESSOR_STATUS;
+	g_test.request.address.word = NES_PROCESSOR_STATUS;
 	nes_bus()->loaded = false;
 
 	if(ASSERT(nes_action(&g_test.request, &g_test.response) != NES_OK)) {
@@ -256,8 +255,8 @@ nes_test_action_processor_read(void)
 
 	if(ASSERT((nes_action(&g_test.request, &g_test.response) == NES_OK)
 			&& (g_test.response.type == NES_ACTION_PROCESSOR_READ)
-			&& (g_test.response.address == NES_PROCESSOR_STATUS)
-			&& (g_test.response.data == g_test.bus.processor.status.low))) {
+			&& (g_test.response.address.word == NES_PROCESSOR_STATUS)
+			&& (g_test.response.data.low == g_test.bus.processor.status.low))) {
 		result = NES_ERR;
 		goto exit;
 	}
@@ -265,7 +264,7 @@ nes_test_action_processor_read(void)
 	nes_test_initialize();
 	g_test.bus.processor.status.low = rand();
 	g_test.request.type = NES_ACTION_PROCESSOR_READ;
-	g_test.request.address = NES_PROCESSOR_PENDING;
+	g_test.request.address.word = NES_PROCESSOR_PENDING;
 	nes_bus()->loaded = false;
 
 	if(ASSERT(nes_action(&g_test.request, &g_test.response) != NES_OK)) {
@@ -277,8 +276,8 @@ nes_test_action_processor_read(void)
 
 	if(ASSERT((nes_action(&g_test.request, &g_test.response) == NES_OK)
 			&& (g_test.response.type == NES_ACTION_PROCESSOR_READ)
-			&& (g_test.response.address == NES_PROCESSOR_PENDING)
-			&& (g_test.response.data == g_test.bus.processor.pending.low))) {
+			&& (g_test.response.address.word == NES_PROCESSOR_PENDING)
+			&& (g_test.response.data.low == g_test.bus.processor.pending.low))) {
 		result = NES_ERR;
 		goto exit;
 	}
@@ -286,7 +285,7 @@ nes_test_action_processor_read(void)
 	nes_test_initialize();
 	g_test.bus.processor.accumulator.low = rand();
 	g_test.request.type = NES_ACTION_PROCESSOR_READ;
-	g_test.request.address = NES_PROCESSOR_ACCUMULATOR;
+	g_test.request.address.word = NES_PROCESSOR_ACCUMULATOR;
 	nes_bus()->loaded = false;
 
 	if(ASSERT(nes_action(&g_test.request, &g_test.response) != NES_OK)) {
@@ -298,8 +297,8 @@ nes_test_action_processor_read(void)
 
 	if(ASSERT((nes_action(&g_test.request, &g_test.response) == NES_OK)
 			&& (g_test.response.type == NES_ACTION_PROCESSOR_READ)
-			&& (g_test.response.address == NES_PROCESSOR_ACCUMULATOR)
-			&& (g_test.response.data == g_test.bus.processor.accumulator.low))) {
+			&& (g_test.response.address.word == NES_PROCESSOR_ACCUMULATOR)
+			&& (g_test.response.data.low == g_test.bus.processor.accumulator.low))) {
 		result = NES_ERR;
 		goto exit;
 	}
@@ -307,7 +306,7 @@ nes_test_action_processor_read(void)
 	nes_test_initialize();
 	g_test.bus.processor.index_x.low = rand();
 	g_test.request.type = NES_ACTION_PROCESSOR_READ;
-	g_test.request.address = NES_PROCESSOR_INDEX_X;
+	g_test.request.address.word = NES_PROCESSOR_INDEX_X;
 	nes_bus()->loaded = false;
 
 	if(ASSERT(nes_action(&g_test.request, &g_test.response) != NES_OK)) {
@@ -319,8 +318,8 @@ nes_test_action_processor_read(void)
 
 	if(ASSERT((nes_action(&g_test.request, &g_test.response) == NES_OK)
 			&& (g_test.response.type == NES_ACTION_PROCESSOR_READ)
-			&& (g_test.response.address == NES_PROCESSOR_INDEX_X)
-			&& (g_test.response.data == g_test.bus.processor.index_x.low))) {
+			&& (g_test.response.address.word == NES_PROCESSOR_INDEX_X)
+			&& (g_test.response.data.low == g_test.bus.processor.index_x.low))) {
 		result = NES_ERR;
 		goto exit;
 	}
@@ -328,7 +327,7 @@ nes_test_action_processor_read(void)
 	nes_test_initialize();
 	g_test.bus.processor.index_y.low = rand();
 	g_test.request.type = NES_ACTION_PROCESSOR_READ;
-	g_test.request.address = NES_PROCESSOR_INDEX_Y;
+	g_test.request.address.word = NES_PROCESSOR_INDEX_Y;
 	nes_bus()->loaded = false;
 
 	if(ASSERT(nes_action(&g_test.request, &g_test.response) != NES_OK)) {
@@ -340,8 +339,8 @@ nes_test_action_processor_read(void)
 
 	if(ASSERT((nes_action(&g_test.request, &g_test.response) == NES_OK)
 			&& (g_test.response.type == NES_ACTION_PROCESSOR_READ)
-			&& (g_test.response.address == NES_PROCESSOR_INDEX_Y)
-			&& (g_test.response.data == g_test.bus.processor.index_y.low))) {
+			&& (g_test.response.address.word == NES_PROCESSOR_INDEX_Y)
+			&& (g_test.response.data.low == g_test.bus.processor.index_y.low))) {
 		result = NES_ERR;
 		goto exit;
 	}
@@ -359,8 +358,8 @@ nes_test_action_processor_write(void)
 
 	nes_test_initialize();
 	g_test.request.type = NES_ACTION_PROCESSOR_WRITE;
-	g_test.request.address = NES_PROCESSOR_PROGRAM_COUNTER;
-	g_test.request.data = rand();
+	g_test.request.address.word = NES_PROCESSOR_PROGRAM_COUNTER;
+	g_test.request.data.word = rand();
 	nes_bus()->loaded = false;
 
 	if(ASSERT(nes_action(&g_test.request, &g_test.response) != NES_OK)) {
@@ -371,15 +370,15 @@ nes_test_action_processor_write(void)
 	nes_bus()->loaded = true;
 
 	if(ASSERT((nes_action(&g_test.request, NULL) == NES_OK)
-			&& (g_test.bus.processor.program_counter.word == g_test.request.data))) {
+			&& (g_test.bus.processor.program_counter.word == g_test.request.data.word))) {
 		result = NES_ERR;
 		goto exit;
 	}
 
 	nes_test_initialize();
 	g_test.request.type = NES_ACTION_PROCESSOR_WRITE;
-	g_test.request.address = NES_PROCESSOR_STACK_POINTER;
-	g_test.request.data = rand();
+	g_test.request.address.word = NES_PROCESSOR_STACK_POINTER;
+	g_test.request.data.low = rand();
 	nes_bus()->loaded = false;
 
 	if(ASSERT(nes_action(&g_test.request, &g_test.response) != NES_OK)) {
@@ -390,15 +389,15 @@ nes_test_action_processor_write(void)
 	nes_bus()->loaded = true;
 
 	if(ASSERT((nes_action(&g_test.request, NULL) == NES_OK)
-			&& (g_test.bus.processor.stack_pointer.low == (g_test.request.data & UINT8_MAX)))) {
+			&& (g_test.bus.processor.stack_pointer.low == g_test.request.data.low))) {
 		result = NES_ERR;
 		goto exit;
 	}
 
 	nes_test_initialize();
 	g_test.request.type = NES_ACTION_PROCESSOR_WRITE;
-	g_test.request.address = NES_PROCESSOR_STATUS;
-	g_test.request.data = rand();
+	g_test.request.address.word = NES_PROCESSOR_STATUS;
+	g_test.request.data.low = rand();
 	nes_bus()->loaded = false;
 
 	if(ASSERT(nes_action(&g_test.request, &g_test.response) != NES_OK)) {
@@ -409,15 +408,15 @@ nes_test_action_processor_write(void)
 	nes_bus()->loaded = true;
 
 	if(ASSERT((nes_action(&g_test.request, NULL) == NES_OK)
-			&& (g_test.bus.processor.status.low == (g_test.request.data & UINT8_MAX)))) {
+			&& (g_test.bus.processor.status.low == g_test.request.data.low))) {
 		result = NES_ERR;
 		goto exit;
 	}
 
 	nes_test_initialize();
 	g_test.request.type = NES_ACTION_PROCESSOR_WRITE;
-	g_test.request.address = NES_PROCESSOR_PENDING;
-	g_test.request.data = rand();
+	g_test.request.address.word = NES_PROCESSOR_PENDING;
+	g_test.request.data.low = rand();
 	nes_bus()->loaded = false;
 
 	if(ASSERT(nes_action(&g_test.request, &g_test.response) != NES_OK)) {
@@ -428,15 +427,15 @@ nes_test_action_processor_write(void)
 	nes_bus()->loaded = true;
 
 	if(ASSERT((nes_action(&g_test.request, NULL) == NES_OK)
-			&& (g_test.bus.processor.pending.low == (g_test.request.data & UINT8_MAX)))) {
+			&& (g_test.bus.processor.pending.low == g_test.request.data.low))) {
 		result = NES_ERR;
 		goto exit;
 	}
 
 	nes_test_initialize();
 	g_test.request.type = NES_ACTION_PROCESSOR_WRITE;
-	g_test.request.address = NES_PROCESSOR_ACCUMULATOR;
-	g_test.request.data = rand();
+	g_test.request.address.word = NES_PROCESSOR_ACCUMULATOR;
+	g_test.request.data.low = rand();
 	nes_bus()->loaded = false;
 
 	if(ASSERT(nes_action(&g_test.request, &g_test.response) != NES_OK)) {
@@ -447,15 +446,15 @@ nes_test_action_processor_write(void)
 	nes_bus()->loaded = true;
 
 	if(ASSERT((nes_action(&g_test.request, NULL) == NES_OK)
-			&& (g_test.bus.processor.accumulator.low == (g_test.request.data & UINT8_MAX)))) {
+			&& (g_test.bus.processor.accumulator.low == g_test.request.data.low))) {
 		result = NES_ERR;
 		goto exit;
 	}
 
 	nes_test_initialize();
 	g_test.request.type = NES_ACTION_PROCESSOR_WRITE;
-	g_test.request.address = NES_PROCESSOR_INDEX_X;
-	g_test.request.data = rand();
+	g_test.request.address.word = NES_PROCESSOR_INDEX_X;
+	g_test.request.data.low = rand();
 	nes_bus()->loaded = false;
 
 	if(ASSERT(nes_action(&g_test.request, &g_test.response) != NES_OK)) {
@@ -466,15 +465,15 @@ nes_test_action_processor_write(void)
 	nes_bus()->loaded = true;
 
 	if(ASSERT((nes_action(&g_test.request, NULL) == NES_OK)
-			&& (g_test.bus.processor.index_x.low == (g_test.request.data & UINT8_MAX)))) {
+			&& (g_test.bus.processor.index_x.low == g_test.request.data.low))) {
 		result = NES_ERR;
 		goto exit;
 	}
 
 	nes_test_initialize();
 	g_test.request.type = NES_ACTION_PROCESSOR_WRITE;
-	g_test.request.address = NES_PROCESSOR_INDEX_Y;
-	g_test.request.data = rand();
+	g_test.request.address.word = NES_PROCESSOR_INDEX_Y;
+	g_test.request.data.low = rand();
 	nes_bus()->loaded = false;
 
 	if(ASSERT(nes_action(&g_test.request, &g_test.response) != NES_OK)) {
@@ -485,7 +484,7 @@ nes_test_action_processor_write(void)
 	nes_bus()->loaded = true;
 
 	if(ASSERT((nes_action(&g_test.request, NULL) == NES_OK)
-			&& (g_test.bus.processor.index_y.low == (g_test.request.data & UINT8_MAX)))) {
+			&& (g_test.bus.processor.index_y.low == g_test.request.data.low))) {
 		result = NES_ERR;
 		goto exit;
 	}

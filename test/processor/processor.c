@@ -69,7 +69,7 @@ nes_test_processor_execute_arithmetic(void)
 	int result = NES_OK;
 
 	for(size_t trial = 0; trial < TRIALS; ++trial) {
-		nes_processor_register_t accumulator = { .low = rand() }, address = { .word = (rand() % 0x2000) + 512 },
+		nes_register_t accumulator = { .low = rand() }, address = { .word = (rand() % 0x2000) + 512 },
 			address_absolute = { .word = (rand() % 0x2000) + 0x4000 + 512 },
 			address_indirect = { .word = (rand() % 0x2000) + 0x2000 + 512 }, address_offset = {}, data = {}, index = {}, status = {};
 
@@ -1284,7 +1284,7 @@ nes_test_processor_execute_bit(void)
 	int result = NES_OK;
 
 	for(size_t trial = 0; trial < TRIALS; ++trial) {
-		nes_processor_register_t accumulator = { .low = rand() }, address = { .word = (rand() % 0x2000) + 512 },
+		nes_register_t accumulator = { .low = rand() }, address = { .word = (rand() % 0x2000) + 512 },
 			address_indirect = { .word = (rand() % 0x2000) + 0x2000 + 512 }, data = {}, status = {};
 
 		if(ASSERT((INSTRUCTION_FORMAT[0x2c].opcode == OPCODE_BIT)
@@ -1376,7 +1376,7 @@ nes_test_processor_execute_bitwise(void)
 	int result = NES_OK;
 
 	for(size_t trial = 0; trial < TRIALS; ++trial) {
-		nes_processor_register_t accumulator = {}, address = { .word = (rand() % 0x2000) + 512 }, address_absolute = { .word = (rand() % 0x2000) + 0x4000 + 512 },
+		nes_register_t accumulator = {}, address = { .word = (rand() % 0x2000) + 512 }, address_absolute = { .word = (rand() % 0x2000) + 0x4000 + 512 },
 			address_indirect = { .word = (rand() % 0x2000) + 0x2000 + 512 }, address_offset = {}, data = {}, index = {}, status = {};
 
 		if(ASSERT((INSTRUCTION_FORMAT[0x2d].opcode == OPCODE_AND)
@@ -2352,7 +2352,7 @@ nes_test_processor_execute_branch(void)
 	int result = NES_OK;
 
 	for(size_t trial = 0; trial < TRIALS; ++trial) {
-		nes_processor_register_t address = { .word = (rand() % 0x2000) + 512 }, address_base = {}, address_relative = {},
+		nes_register_t address = { .word = (rand() % 0x2000) + 512 }, address_base = {}, address_relative = {},
 			data = { .low = rand() }, status = {};
 
 		if(ASSERT((INSTRUCTION_FORMAT[0x90].opcode == OPCODE_BCC)
@@ -2888,7 +2888,7 @@ nes_test_processor_execute_breakpoint(void)
 	int result = NES_OK;
 
 	for(size_t trial = 0; trial < TRIALS; ++trial) {
-		nes_processor_register_t address = { .word = (rand() % 0x8000) + 512 };
+		nes_register_t address = { .word = (rand() % 0x8000) + 512 };
 
 		if(ASSERT((INSTRUCTION_FORMAT[0x00].opcode == OPCODE_BRK)
 				&& (INSTRUCTION_FORMAT[0x00].mode == MODE_IMPLIED)
@@ -2958,7 +2958,7 @@ nes_test_processor_execute_clear(void)
 	int result = NES_OK;
 
 	for(size_t trial = 0; trial < TRIALS; ++trial) {
-		nes_processor_register_t address = { .word = (rand() % 0x8000) + 512 };
+		nes_register_t address = { .word = (rand() % 0x8000) + 512 };
 
 		if(ASSERT((INSTRUCTION_FORMAT[0x18].opcode == OPCODE_CLC)
 				&& (INSTRUCTION_FORMAT[0x18].mode == MODE_IMPLIED)
@@ -3185,7 +3185,7 @@ nes_test_processor_execute_compare(void)
 	int result = NES_OK;
 
 	for(size_t trial = 0; trial < TRIALS; ++trial) {
-		nes_processor_register_t accumulator = {}, address = { .word = (rand() % 0x2000) + 512 }, address_absolute = { .word = (rand() % 0x2000) + 0x4000 + 512 },
+		nes_register_t accumulator = {}, address = { .word = (rand() % 0x2000) + 512 }, address_absolute = { .word = (rand() % 0x2000) + 0x4000 + 512 },
 			address_indirect = { .word = (rand() % 0x2000) + 0x2000 + 512 }, address_offset = {}, data = {}, index = {}, status = {};
 
 		if(ASSERT((INSTRUCTION_FORMAT[0xcd].opcode == OPCODE_CMP)
@@ -3761,7 +3761,7 @@ nes_test_processor_execute_decrement(void)
 	int result = NES_OK;
 
 	for(size_t trial = 0; trial < TRIALS; ++trial) {
-		nes_processor_register_t address = { .word = (rand() % 0x2000) + 512 }, address_indirect = { .word = (rand() % 0x2000) + 0x2000 + 512 },
+		nes_register_t address = { .word = (rand() % 0x2000) + 512 }, address_indirect = { .word = (rand() % 0x2000) + 0x2000 + 512 },
 			data = {}, index = { .low = rand() }, status = {};
 
 		if(ASSERT((INSTRUCTION_FORMAT[0xce].opcode == OPCODE_DEC)
@@ -3999,7 +3999,7 @@ nes_test_processor_execute_illegal(void)
 	for(size_t trial = 0; trial < TRIALS; ++trial) {
 
 		for(uint16_t opcode = 0; opcode < sizeof(ILLEGAL_OPCODE); ++opcode) {
-			nes_processor_register_t address = { .word = (rand() % 0x8000) + 512 };
+			nes_register_t address = { .word = (rand() % 0x8000) + 512 };
 			const nes_processor_instruction_t *instruction = &INSTRUCTION_FORMAT[ILLEGAL_OPCODE[opcode]];
 
 			if(ASSERT((instruction->opcode == OPCODE_XXX)
@@ -4045,7 +4045,7 @@ nes_test_processor_execute_increment(void)
 	int result = NES_OK;
 
 	for(size_t trial = 0; trial < TRIALS; ++trial) {
-		nes_processor_register_t address = { .word = (rand() % 0x2000) + 512 }, address_indirect = { .word = (rand() % 0x2000) + 0x2000 + 512 },
+		nes_register_t address = { .word = (rand() % 0x2000) + 512 }, address_indirect = { .word = (rand() % 0x2000) + 0x2000 + 512 },
 			data = {}, index = { .low = rand() }, status = {};
 
 		if(ASSERT((INSTRUCTION_FORMAT[0xee].opcode == OPCODE_INC)
@@ -4281,7 +4281,7 @@ nes_test_processor_execute_jump(void)
 	int result = NES_OK;
 
 	for(size_t trial = 0; trial < TRIALS; ++trial) {
-		nes_processor_register_t address = { .word = (rand() % 0x2000) + 512 }, address_indirect = { .word = (rand() % 0x2000) + 0x2000 + 512 },
+		nes_register_t address = { .word = (rand() % 0x2000) + 512 }, address_indirect = { .word = (rand() % 0x2000) + 0x2000 + 512 },
 			address_target = { .word = (rand() % 0x2000) + 0x4000 + 512 };
 
 		if(ASSERT((INSTRUCTION_FORMAT[0x4c].opcode == OPCODE_JMP)
@@ -4417,7 +4417,7 @@ nes_test_processor_execute_load(void)
 	int result = NES_OK;
 
 	for(size_t trial = 0; trial < TRIALS; ++trial) {
-		nes_processor_register_t address = { .word = (rand() % 0x2000) + 512 }, address_absolute = { .word = (rand() % 0x2000) + 0x4000 + 512 },
+		nes_register_t address = { .word = (rand() % 0x2000) + 512 }, address_absolute = { .word = (rand() % 0x2000) + 0x4000 + 512 },
 			address_indirect = { .word = (rand() % 0x2000) + 0x2000 + 512 }, address_offset = {}, data = {}, index = {}, status = {};
 
 		if(ASSERT((INSTRUCTION_FORMAT[0xad].opcode == OPCODE_LDA)
@@ -5088,7 +5088,7 @@ nes_test_processor_execute_no_operation(void)
 	int result = NES_OK;
 
 	for(size_t trial = 0; trial < TRIALS; ++trial) {
-		nes_processor_register_t address = { .word = (rand() % 0x8000) + 512 };
+		nes_register_t address = { .word = (rand() % 0x8000) + 512 };
 
 		if(ASSERT((INSTRUCTION_FORMAT[0xea].opcode == OPCODE_NOP)
 				&& (INSTRUCTION_FORMAT[0xea].mode == MODE_IMPLIED)
@@ -5132,7 +5132,7 @@ nes_test_processor_execute_pull(void)
 	int result = NES_OK;
 
 	for(size_t trial = 0; trial < TRIALS; ++trial) {
-		nes_processor_register_t address = { .word = (rand() % 0x8000) + 512 }, data = { .low = rand() }, status = {};
+		nes_register_t address = { .word = (rand() % 0x8000) + 512 }, data = { .low = rand() }, status = {};
 
 		if(ASSERT((INSTRUCTION_FORMAT[0x68].opcode == OPCODE_PLA)
 				&& (INSTRUCTION_FORMAT[0x68].mode == MODE_IMPLIED)
@@ -5212,7 +5212,7 @@ nes_test_processor_execute_push(void)
 	int result = NES_OK;
 
 	for(size_t trial = 0; trial < TRIALS; ++trial) {
-		nes_processor_register_t address = { .word = (rand() % 0x8000) + 512 }, data = { .low = rand() }, status = {};
+		nes_register_t address = { .word = (rand() % 0x8000) + 512 }, data = { .low = rand() }, status = {};
 
 		if(ASSERT((INSTRUCTION_FORMAT[0x48].opcode == OPCODE_PHA)
 				&& (INSTRUCTION_FORMAT[0x48].mode == MODE_IMPLIED)
@@ -5290,7 +5290,7 @@ nes_test_processor_execute_return(void)
 	int result = NES_OK;
 
 	for(size_t trial = 0; trial < TRIALS; ++trial) {
-		nes_processor_register_t address = { .word = (rand() % 0x8000) + 512 }, status = { .low = rand() };
+		nes_register_t address = { .word = (rand() % 0x8000) + 512 }, status = { .low = rand() };
 
 		if(ASSERT((INSTRUCTION_FORMAT[0x40].opcode == OPCODE_RTI)
 				&& (INSTRUCTION_FORMAT[0x40].mode == MODE_IMPLIED)
@@ -5369,7 +5369,7 @@ nes_test_processor_execute_rotate(void)
 
 	for(size_t trial = 0; trial < TRIALS; ++trial) {
 		bool carry;
-		nes_processor_register_t address = { .word = (rand() % 0x2000) + 512 }, address_indirect = { .word = (rand() % 0x2000) + 0x2000 + 512 },
+		nes_register_t address = { .word = (rand() % 0x2000) + 512 }, address_indirect = { .word = (rand() % 0x2000) + 0x2000 + 512 },
 			data = {}, index = {}, status = {};
 
 		if(ASSERT((INSTRUCTION_FORMAT[0x2e].opcode == OPCODE_ROL)
@@ -5799,7 +5799,7 @@ nes_test_processor_execute_set(void)
 	int result = NES_OK;
 
 	for(size_t trial = 0; trial < TRIALS; ++trial) {
-		nes_processor_register_t address = { .word = (rand() % 0x8000) + 512 };
+		nes_register_t address = { .word = (rand() % 0x8000) + 512 };
 
 		if(ASSERT((INSTRUCTION_FORMAT[0x38].opcode == OPCODE_SEC)
 				&& (INSTRUCTION_FORMAT[0x38].mode == MODE_IMPLIED)
@@ -5973,7 +5973,7 @@ nes_test_processor_execute_shift(void)
 	int result = NES_OK;
 
 	for(size_t trial = 0; trial < TRIALS; ++trial) {
-		nes_processor_register_t address = { .word = (rand() % 0x2000) + 512 }, address_indirect = { .word = (rand() % 0x2000) + 0x2000 + 512 },
+		nes_register_t address = { .word = (rand() % 0x2000) + 512 }, address_indirect = { .word = (rand() % 0x2000) + 0x2000 + 512 },
 			data = {}, index = {}, status = {};
 
 		if(ASSERT((INSTRUCTION_FORMAT[0x0e].opcode == OPCODE_ASL)
@@ -6373,7 +6373,7 @@ nes_test_processor_execute_store(void)
 	int result = NES_OK;
 
 	for(size_t trial = 0; trial < TRIALS; ++trial) {
-		nes_processor_register_t address = { .word = (rand() % 0x2000) + 512 }, address_absolute = { .word = (rand() % 0x2000) + 0x4000 + 512 },
+		nes_register_t address = { .word = (rand() % 0x2000) + 512 }, address_absolute = { .word = (rand() % 0x2000) + 0x4000 + 512 },
 			address_indirect = { .word = (rand() % 0x2000) + 0x2000 + 512 }, data = {}, index = {}, status = {};
 
 		if(ASSERT((INSTRUCTION_FORMAT[0x8d].opcode == OPCODE_STA)
@@ -6851,7 +6851,7 @@ nes_test_processor_execute_transfer(void)
 	int result = NES_OK;
 
 	for(size_t trial = 0; trial < TRIALS; ++trial) {
-		nes_processor_register_t address = { .word = (rand() % 0x8000) + 512 }, data = { .low = rand() }, status = {};
+		nes_register_t address = { .word = (rand() % 0x8000) + 512 }, data = { .low = rand() }, status = {};
 
 		if(ASSERT((INSTRUCTION_FORMAT[0xaa].opcode == OPCODE_TAX)
 				&& (INSTRUCTION_FORMAT[0xaa].mode == MODE_IMPLIED)
@@ -7061,7 +7061,7 @@ nes_test_processor_fetch_absolute(void)
 	int result = NES_OK;
 
 	for(size_t trial = 0; trial < TRIALS; ++trial) {
-		nes_processor_register_t address = { .word = 0x2000 }, address_indirect = { .word = 0x4000 }, data = { .low = rand() };
+		nes_register_t address = { .word = 0x2000 }, address_indirect = { .word = 0x4000 }, data = { .low = rand() };
 
 		nes_test_initialize();
 		nes_processor_write_word(&g_test.processor, RESET_ADDRESS, address.word);
@@ -7091,7 +7091,7 @@ nes_test_processor_fetch_absolute_x(void)
 	int result = NES_OK;
 
 	for(size_t trial = 0; trial < TRIALS; ++trial) {
-		nes_processor_register_t address = { .word = 0x2000 }, address_indirect = { .word = 0x4000 }, data = { .low = rand() },
+		nes_register_t address = { .word = 0x2000 }, address_indirect = { .word = 0x4000 }, data = { .low = rand() },
 			index = { .low = 0x20 };
 
 		nes_test_initialize();
@@ -7142,7 +7142,7 @@ nes_test_processor_fetch_absolute_y(void)
 	int result = NES_OK;
 
 	for(size_t trial = 0; trial < TRIALS; ++trial) {
-		nes_processor_register_t address = { .word = 0x2000 }, address_indirect = { .word = 0x4000 }, data = { .low = rand() },
+		nes_register_t address = { .word = 0x2000 }, address_indirect = { .word = 0x4000 }, data = { .low = rand() },
 			index = { .low = 0x20 };
 
 		nes_test_initialize();
@@ -7193,7 +7193,7 @@ nes_test_processor_fetch_immediate(void)
 	int result = NES_OK;
 
 	for(size_t trial = 0; trial < TRIALS; ++trial) {
-		nes_processor_register_t address = { .word = 0x2000 }, data = { .low = rand() };
+		nes_register_t address = { .word = 0x2000 }, data = { .low = rand() };
 
 		nes_test_initialize();
 		nes_processor_write_word(&g_test.processor, RESET_ADDRESS, address.word);
@@ -7222,7 +7222,7 @@ nes_test_processor_fetch_implied(void)
 	int result = NES_OK;
 
 	for(size_t trial = 0; trial < TRIALS; ++trial) {
-		nes_processor_register_t address = { .word = 0x2000 }, data = { .low = rand() };
+		nes_register_t address = { .word = 0x2000 }, data = { .low = rand() };
 
 		nes_test_initialize();
 		nes_processor_write_word(&g_test.processor, RESET_ADDRESS, address.word);
@@ -7251,7 +7251,7 @@ nes_test_processor_fetch_indirect(void)
 	int result = NES_OK;
 
 	for(size_t trial = 0; trial < TRIALS; ++trial) {
-		nes_processor_register_t address = { .word = 0x2000 }, address_indirect = { .word = 0x4000 }, data = { .word = rand() };
+		nes_register_t address = { .word = 0x2000 }, address_indirect = { .word = 0x4000 }, data = { .word = rand() };
 
 		nes_test_initialize();
 		nes_processor_write_word(&g_test.processor, RESET_ADDRESS, address.word);
@@ -7299,7 +7299,7 @@ nes_test_processor_fetch_indirect_x(void)
 	int result = NES_OK;
 
 	for(size_t trial = 0; trial < TRIALS; ++trial) {
-		nes_processor_register_t address = { .word = 0x2000 }, address_indirect = { .low = rand() }, data = { .low = rand() },
+		nes_register_t address = { .word = 0x2000 }, address_indirect = { .low = rand() }, data = { .low = rand() },
 			index = { .low = rand() };
 
 		nes_test_initialize();
@@ -7334,7 +7334,7 @@ nes_test_processor_fetch_indirect_y(void)
 	int result = NES_OK;
 
 	for(size_t trial = 0; trial < TRIALS; ++trial) {
-		nes_processor_register_t address = { .word = 0x2000 }, address_indirect = { .low = rand() }, data = { .low = rand() },
+		nes_register_t address = { .word = 0x2000 }, address_indirect = { .low = rand() }, data = { .low = rand() },
 			index = { .low = 0x20 };
 
 		nes_test_initialize();
@@ -7390,7 +7390,7 @@ nes_test_processor_fetch_relative(void)
 	int result = NES_OK;
 
 	for(size_t trial = 0; trial < TRIALS; ++trial) {
-		nes_processor_register_t address = { .word = 0x2000 }, data = { .low = 0x10 };
+		nes_register_t address = { .word = 0x2000 }, data = { .low = 0x10 };
 
 		nes_test_initialize();
 		nes_processor_write_word(&g_test.processor, RESET_ADDRESS, address.word);
@@ -7434,7 +7434,7 @@ nes_test_processor_fetch_zeropage(void)
 	int result = NES_OK;
 
 	for(size_t trial = 0; trial < TRIALS; ++trial) {
-		nes_processor_register_t address = { .word = 0x2000 }, address_indirect = { .low = rand() }, data = { .low = rand() };
+		nes_register_t address = { .word = 0x2000 }, address_indirect = { .low = rand() }, data = { .low = rand() };
 
 		nes_test_initialize();
 		nes_processor_write_word(&g_test.processor, RESET_ADDRESS, address.word);
@@ -7464,7 +7464,7 @@ nes_test_processor_fetch_zeropage_x(void)
 	int result = NES_OK;
 
 	for(size_t trial = 0; trial < TRIALS; ++trial) {
-		nes_processor_register_t address = { .word = 0x2000 }, address_indirect = { .low = rand() }, data = { .low = rand() },
+		nes_register_t address = { .word = 0x2000 }, address_indirect = { .low = rand() }, data = { .low = rand() },
 			index = { .low = rand() };
 
 		nes_test_initialize();
@@ -7496,7 +7496,7 @@ nes_test_processor_fetch_zeropage_y(void)
 	int result = NES_OK;
 
 	for(size_t trial = 0; trial < TRIALS; ++trial) {
-		nes_processor_register_t address = { .word = 0x2000 }, address_indirect = { .low = rand() }, data = { .low = rand() },
+		nes_register_t address = { .word = 0x2000 }, address_indirect = { .low = rand() }, data = { .low = rand() },
 			index = { .low = rand() };
 
 		nes_test_initialize();
@@ -7528,7 +7528,7 @@ nes_test_processor_interrupt_maskable(void)
 	int result = NES_OK;
 
 	for(size_t trial = 0; trial < TRIALS; ++trial) {
-		nes_processor_register_t address = { .word = (rand() % 0x8000) + 512 };
+		nes_register_t address = { .word = (rand() % 0x8000) + 512 };
 
 		nes_test_initialize();
 		nes_processor_write_word(&g_test.processor, MASKABLE_ADDRESS, address.word + 256);
@@ -7601,7 +7601,7 @@ nes_test_processor_interrupt_non_maskable(void)
 	int result = NES_OK;
 
 	for(size_t trial = 0; trial < TRIALS; ++trial) {
-		nes_processor_register_t address = { .word = (rand() % 0x8000) + 512 };
+		nes_register_t address = { .word = (rand() % 0x8000) + 512 };
 
 		nes_test_initialize();
 		nes_processor_write_word(&g_test.processor, NON_MASKABLE_ADDRESS, address.word + 256);
@@ -7678,7 +7678,7 @@ nes_test_processor_reset(void)
 	int result = NES_OK;
 
 	for(size_t trial = 0; trial < TRIALS; ++trial) {
-		nes_processor_register_t address = { .word = (rand() % 0x8000) + 512 };
+		nes_register_t address = { .word = (rand() % 0x8000) + 512 };
 
 		nes_test_initialize();
 		nes_processor_write_word(&g_test.processor, RESET_ADDRESS, address.word);
@@ -7710,7 +7710,7 @@ nes_test_processor_transfer(void)
 	for(size_t trial = 0; trial < TRIALS; ++trial) {
 		uint8_t offset = 1;
 		uint16_t index = 0;
-		nes_processor_register_t address = { .low = (rand() % 0x30) + 0x20 };
+		nes_register_t address = { .low = (rand() % 0x30) + 0x20 };
 
 		nes_test_initialize();
 

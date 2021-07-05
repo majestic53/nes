@@ -30,29 +30,29 @@ nes_launcher_debug_derive_address(
         __in const char *argument
         )
 {
-        uint16_t result = 0;
+        nes_register_t result = {};
         nes_action_t request = { .type = NES_ACTION_PROCESSOR_READ }, response = {};
 
-        for(request.address = 0; request.address < NES_PROCESSOR_MAX; ++request.address) {
+        for(request.address.word = 0; request.address.word < NES_PROCESSOR_MAX; ++request.address.word) {
 
-                if(!strcmp(REGISTER[request.address], argument)) {
+                if(!strcmp(REGISTER[request.address.word], argument)) {
                         break;
                 }
         }
 
-        if(request.address < NES_PROCESSOR_MAX) {
+        if(request.address.word < NES_PROCESSOR_MAX) {
 
-                if((result = nes_action(&request, &response)) != NES_OK) {
+                if((result.word = nes_action(&request, &response)) != NES_OK) {
                         goto exit;
                 }
 
-                result = response.data;
+                result.word = response.data.word;
         } else {
-                result = strtol(argument, NULL, 16);
+                result.word = strtol(argument, NULL, 16);
         }
 
 exit:
-        return result;
+        return result.word;
 }
 
 void
@@ -89,10 +89,10 @@ nes_launcher_debug(
                 char *input, prompt[PROMPT_MAX] = {};
 
                 request.type = NES_ACTION_PROCESSOR_READ;
-                request.address = NES_PROCESSOR_PROGRAM_COUNTER;
+                request.address.word = NES_PROCESSOR_PROGRAM_COUNTER;
 
                 if(nes_action(&request, &response) == NES_OK) {
-                        snprintf(prompt, PROMPT_MAX, "%s%s%04X%s%s", PROMPT_PREFIX, LEVEL_COLOR(LEVEL_INFORMATION), response.data, LEVEL_COLOR(LEVEL_MAX),
+                        snprintf(prompt, PROMPT_MAX, "%s%s%04X%s%s", PROMPT_PREFIX, LEVEL_COLOR(LEVEL_INFORMATION), response.data.word, LEVEL_COLOR(LEVEL_MAX),
                                         PROMPT_POSTFIX);
                 } else {
                         snprintf(prompt, PROMPT_MAX, "%s%s%s%s%s", PROMPT_PREFIX, LEVEL_COLOR(LEVEL_INFORMATION), PROMPT_ERROR, LEVEL_COLOR(LEVEL_MAX),
@@ -179,59 +179,59 @@ nes_launcher_debug_disassemble(
         )
 {
         int result = NES_OK;
-        uint16_t address = 0, offset = 1;
+        nes_register_t address = {}, offset = { .word = 1 };
         nes_action_t request = { .type = NES_ACTION_BUS_READ }, response = {};
 
         switch(count) {
                 case DISASSEMBLE_MULTIPLE:
-                        address = nes_launcher_debug_derive_address(argument[0]);
-                        offset = strtol(argument[1], NULL, 10);
+                        address.word = nes_launcher_debug_derive_address(argument[0]);
+                        offset.word = strtol(argument[1], NULL, 10);
                         break;
                 case DISASSEMBLE_SINGLE:
-                        address = nes_launcher_debug_derive_address(argument[0]);
+                        address.word = nes_launcher_debug_derive_address(argument[0]);
                         break;
                 default:
                         result = NES_ERR;
                         goto exit;
         }
 
-        for(uint16_t index = 0; index < offset; ++index) {
-                uint16_t operand = 0;
-                request.address = address++;
+        for(uint16_t index = 0; index < offset.word; ++index) {
+                nes_register_t operand = {};
+                request.address.word = address.word++;
                 const nes_processor_instruction_t *instruction;
 
                 if((result = nes_action(&request, &response)) != NES_OK) {
                         goto exit;
                 }
 
-                if(offset > 1) {
-                        fprintf(stdout, "%04X>\t ", response.address);
+                if(offset.word > 1) {
+                        fprintf(stdout, "%04X>\t ", response.address.word);
                 }
 
-                fprintf(stdout, "%02X", response.data);
-                instruction = &INSTRUCTION_FORMAT[response.data];
+                fprintf(stdout, "%02X", response.data.low);
+                instruction = &INSTRUCTION_FORMAT[response.data.low];
 
                 switch(instruction->mode) {
                         case MODE_ABSOLUTE:
                         case MODE_ABSOLUTE_X:
                         case MODE_ABSOLUTE_Y:
                         case MODE_INDIRECT:
-                                request.address = address++;
+                                request.address.word = address.word++;
 
                                 if((result = nes_action(&request, &response)) != NES_OK) {
                                         goto exit;
                                 }
 
-                                fprintf(stdout, " %02X", response.data);
-                                operand |= (response.data & UINT8_MAX);
-                                request.address = address++;
+                                fprintf(stdout, " %02X", response.data.low);
+                                operand.low = response.data.low;
+                                request.address.word = address.word++;
 
                                 if((result = nes_action(&request, &response)) != NES_OK) {
                                         goto exit;
                                 }
 
-                                fprintf(stdout, " %02X  ", response.data);
-                                operand |= ((response.data & UINT8_MAX) << CHAR_BIT);
+                                fprintf(stdout, " %02X  ", response.data.low);
+                                operand.high = response.data.low;
                                 break;
                         case MODE_IMMEDIATE:
                         case MODE_INDIRECT_X:
@@ -240,14 +240,14 @@ nes_launcher_debug_disassemble(
                         case MODE_ZEROPAGE:
                         case MODE_ZEROPAGE_X:
                         case MODE_ZEROPAGE_Y:
-                                request.address = address++;
+                                request.address.word = address.word++;
 
                                 if((result = nes_action(&request, &response)) != NES_OK) {
                                         goto exit;
                                 }
 
-                                fprintf(stdout, " %02X     ", response.data);
-                                operand |= (response.data & UINT8_MAX);
+                                fprintf(stdout, " %02X     ", response.data.low);
+                                operand.low = response.data.low;
                                 break;
                         default:
                                 fprintf(stdout, "        ");
@@ -261,7 +261,7 @@ nes_launcher_debug_disassemble(
                         case MODE_ABSOLUTE_X:
                         case MODE_ABSOLUTE_Y:
                         case MODE_INDIRECT:
-                                fprintf(stdout, MODE_FORMAT[instruction->mode], operand);
+                                fprintf(stdout, MODE_FORMAT[instruction->mode], operand.word);
                                 break;
                         case MODE_IMMEDIATE:
                         case MODE_INDIRECT_X:
@@ -269,11 +269,11 @@ nes_launcher_debug_disassemble(
                         case MODE_ZEROPAGE:
                         case MODE_ZEROPAGE_X:
                         case MODE_ZEROPAGE_Y:
-                                fprintf(stdout, MODE_FORMAT[instruction->mode], operand & UINT8_MAX);
+                                fprintf(stdout, MODE_FORMAT[instruction->mode], operand.low);
                                 break;
                         case MODE_RELATIVE:
-                                fprintf(stdout, MODE_FORMAT[instruction->mode], operand & UINT8_MAX, (int8_t)(operand & UINT8_MAX),
-                                        address + (int8_t)(operand & UINT8_MAX));
+                                fprintf(stdout, MODE_FORMAT[instruction->mode], operand.low, (int8_t)operand.low,
+                                        address.word + (int8_t)operand.low);
                                 break;
                         case MODE_IMPLIED:
                         default:
@@ -322,14 +322,14 @@ nes_launcher_debug_processor(
         switch(count) {
                 case PROCESSOR_READ:
 
-                        for(request.address = 0; request.address < NES_PROCESSOR_MAX; ++request.address) {
+                        for(request.address.word = 0; request.address.word < NES_PROCESSOR_MAX; ++request.address.word) {
 
-                                if(!strcmp(REGISTER[request.address], argument[0])) {
+                                if(!strcmp(REGISTER[request.address.word], argument[0])) {
                                         break;
                                 }
                         }
 
-                        if(request.address == NES_PROCESSOR_MAX) {
+                        if(request.address.word == NES_PROCESSOR_MAX) {
                                 result = NES_ERR;
                                 goto exit;
                         }
@@ -338,71 +338,69 @@ nes_launcher_debug_processor(
                                 goto exit;
                         }
 
-                        switch(request.address) {
+                        switch(request.address.word) {
                                 case NES_PROCESSOR_PENDING:
-                                        fprintf(stdout, "%02X  [%c%c%c]\n", response.data & UINT8_MAX,
-                                                (response.data & PENDING_TRANSFER) ? 'T' : '-', (response.data & PENDING_NON_MASKABLE) ? 'N' : '-',
-                                                (response.data & PENDING_MASKABLE) ? 'M' : '-');
+                                        fprintf(stdout, "%02X  [%c%c%c]\n", response.data.low, response.data.transfer ? 'T' : '-',
+                                                response.data.non_maskable ? 'N' : '-', response.data.maskable ? 'M' : '-');
                                         break;
                                 case NES_PROCESSOR_PROGRAM_COUNTER:
                                 case NES_PROCESSOR_STACK_POINTER:
-                                        fprintf(stdout, "%04X\n", response.data & UINT16_MAX);
+                                        fprintf(stdout, "%04X\n", response.data.word);
                                         break;
                                 case NES_PROCESSOR_STATUS:
-                                        fprintf(stdout, "%02X  [%c%c%c%c%c%c%c]\n", response.data & UINT8_MAX,
-                                                (response.data & STATUS_NEGATIVE) ? 'N' : '-', (response.data & STATUS_OVERFLOW) ? 'O' : '-',
-                                                (response.data & STATUS_BREAKPOINT) ? 'B' : '-', (response.data & STATUS_DECIMAL) ? 'D' : '-',
-                                                (response.data & STATUS_INTERRUPT_DISABLE) ? 'I' : '-', (response.data & STATUS_ZERO) ? 'Z' : '-',
-                                                (response.data & STATUS_CARRY) ? 'C' : '-');
+                                        fprintf(stdout, "%02X  [%c%c%c%c%c%c%c]\n", response.data.low, response.data.negative ? 'N' : '-',
+                                                response.data.overflow ? 'O' : '-', response.data.breakpoint ? 'B' : '-',
+                                                response.data.decimal ? 'D' : '-', response.data.interrupt_disabled ? 'I' : '-',
+                                                response.data.zero ? 'Z' : '-', response.data.carry ? 'C' : '-');
                                         break;
                                 default:
-                                        fprintf(stdout, "%02X\n", response.data & UINT8_MAX);
+                                        fprintf(stdout, "%02X\n", response.data.low);
                                         break;
                         }
                         break;
                 case PROCESSOR_SHOW:
 
-                        for(request.address = 0; request.address < NES_PROCESSOR_MAX; ++request.address) {
+                        for(request.address.word = 0; request.address.word < NES_PROCESSOR_MAX; ++request.address.word) {
 
                                 if((result = nes_action(&request, &response)) != NES_OK) {
                                         goto exit;
                                 }
 
-                                switch(request.address) {
+                                switch(request.address.word) {
                                 case NES_PROCESSOR_PENDING:
-                                        fprintf(stdout, "%s>\t%02X  [%c%c%c]\n", REGISTER[request.address], response.data & UINT8_MAX,
-                                                (response.data & PENDING_TRANSFER) ? 'T' : '-', (response.data & PENDING_NON_MASKABLE) ? 'N' : '-',
-                                                (response.data & PENDING_MASKABLE) ? 'M' : '-');
+                                        fprintf(stdout, "%s>\t%02X  [%c%c%c]\n", REGISTER[request.address.word], response.data.low,
+                                                response.data.transfer ? 'T' : '-', response.data.non_maskable ? 'N' : '-',
+                                                response.data.maskable ? 'M' : '-');
                                         break;
                                         case NES_PROCESSOR_PROGRAM_COUNTER:
                                         case NES_PROCESSOR_STACK_POINTER:
-                                                fprintf(stdout, "%s>\t%04X\n", REGISTER[request.address], response.data & UINT16_MAX);
+                                                fprintf(stdout, "%s>\t%04X\n", REGISTER[request.address.word], response.data.word);
                                                 break;
                                         case NES_PROCESSOR_STATUS:
-                                                fprintf(stdout, "%s>\t%02X  [%c%c%c%c%c%c%c]\n", REGISTER[request.address], response.data & UINT8_MAX,
-                                                        (response.data & STATUS_NEGATIVE) ? 'N' : '-', (response.data & STATUS_OVERFLOW) ? 'O' : '-',
-                                                        (response.data & STATUS_BREAKPOINT) ? 'B' : '-', (response.data & STATUS_DECIMAL) ? 'D' : '-',
-                                                        (response.data & STATUS_INTERRUPT_DISABLE) ? 'I' : '-', (response.data & STATUS_ZERO) ? 'Z' : '-',
-                                                        (response.data & STATUS_CARRY) ? 'C' : '-');
+                                                fprintf(stdout, "%s>\t%02X  [%c%c%c%c%c%c%c]\n", REGISTER[request.address.word], response.data.low,
+                                                response.data.negative ? 'N' : '-', response.data.overflow ? 'O' : '-',
+                                                response.data.breakpoint ? 'B' : '-', response.data.decimal ? 'D' : '-',
+                                                response.data.interrupt_disabled ? 'I' : '-', response.data.zero ? 'Z' : '-',
+                                                response.data.carry ? 'C' : '-');
                                                 break;
                                         default:
-                                                fprintf(stdout, "%s>\t%02X\n", REGISTER[request.address], response.data & UINT8_MAX);
+                                                fprintf(stdout, "%s>\t%02X\n", REGISTER[request.address.word], response.data.low);
                                                 break;
                                 }
                         }
                         break;
                 case PROCESSOR_WRITE:
                         request.type = NES_ACTION_PROCESSOR_WRITE;
-                        request.data = strtol(argument[1], NULL, 16);
+                        request.data.word = strtol(argument[1], NULL, 16);
 
-                        for(request.address = 0; request.address < NES_PROCESSOR_MAX; ++request.address) {
+                        for(request.address.word = 0; request.address.word < NES_PROCESSOR_MAX; ++request.address.word) {
 
-                                if(!strcmp(REGISTER[request.address], argument[0])) {
+                                if(!strcmp(REGISTER[request.address.word], argument[0])) {
                                         break;
                                 }
                         }
 
-                        if(request.address == NES_PROCESSOR_MAX) {
+                        if(request.address.word == NES_PROCESSOR_MAX) {
                                 result = NES_ERR;
                                 goto exit;
                         }
@@ -428,26 +426,26 @@ nes_launcher_debug_read(
         )
 {
         int result = NES_OK;
-        uint16_t base, offset;
         char str[BLOCK_WIDTH + 1] = {};
+        nes_register_t address = {}, base = {}, offset = {};
         nes_action_t request = { .type = NES_ACTION_BUS_READ }, response = {};
 
         switch(count) {
                 case READ_BYTE:
-                        request.address = nes_launcher_debug_derive_address(argument[0]);
+                        request.address.word = nes_launcher_debug_derive_address(argument[0]);
 
                         if((result = nes_action(&request, &response)) != NES_OK) {
                                 goto exit;
                         }
 
-                        fprintf(stdout, "%02X\n", response.data);
+                        fprintf(stdout, "%02X\n", response.data.low);
                         break;
                 case READ_MULTIBYTE:
-                        base = nes_launcher_debug_derive_address(argument[0]);
-                        offset = strtol(argument[1], NULL, 16);
+                        base.word = nes_launcher_debug_derive_address(argument[0]);
+                        offset.word = strtol(argument[1], NULL, 16);
 
-                        for(uint32_t address = base, count = 0; address < base + offset; ++address, ++count) {
-                                request.address = address & UINT16_MAX;
+                        for(address.dword = base.word, count = 0; address.dword < base.word + offset.word; ++address.dword, ++count) {
+                                request.address.word = address.word;
 
                                 if(count == BLOCK_WIDTH) {
                                         count = 0;
@@ -461,20 +459,20 @@ nes_launcher_debug_read(
                                 }
 
                                 if(!count) {
-                                        fprintf(stdout, "%04X>\t", request.address);
+                                        fprintf(stdout, "%04X>\t", request.address.word);
                                 }
 
                                 if((result = nes_action(&request, &response)) != NES_OK) {
                                         goto exit;
                                 }
 
-                                if(isprint((char)response.data) && !isspace((char)response.data)) {
-                                        str[count] = (char)response.data;
+                                if(isprint((char)response.data.low) && !isspace((char)response.data.low)) {
+                                        str[count] = (char)response.data.low;
                                 } else {
                                         str[count] = CHARACTER_FILL;
                                 }
 
-                                fprintf(stdout, " %02X", response.data);
+                                fprintf(stdout, " %02X", response.data.low);
                         }
 
                         if(strlen(str)) {
@@ -573,8 +571,8 @@ nes_launcher_debug_write(
 
         switch(count) {
                 case WRITE_BYTE:
-                        request.address = nes_launcher_debug_derive_address(argument[0]);
-                        request.data = strtol(argument[1], NULL, 16);
+                        request.address.word = nes_launcher_debug_derive_address(argument[0]);
+                        request.data.low = strtol(argument[1], NULL, 16);
                         result = nes_action(&request, NULL);
                         break;
                 default:

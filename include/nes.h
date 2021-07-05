@@ -83,19 +83,6 @@ enum {
 };
 
 /**
- * NES action struct
- */
-typedef struct {
-        int type; /* Action type */
-        uint16_t address; /* Action address */
-
-        union {
-                uint16_t data; /* Action data */
-                const void *ptr; /* Action pointer */
-        };
-} nes_action_t;
-
-/**
  * NES buffer struct
  */
 typedef struct {
@@ -116,30 +103,65 @@ typedef struct {
  */
 typedef struct {
 #if NES_INES_VERSION >= NES_INES_VERSION_1
-        uint8_t magic[4];
-        uint8_t rom_program_count;
-        uint8_t rom_character_count;
+        uint8_t magic[4]; /* Magic string */
+        uint8_t rom_program_count; /* Number of ROM-PRG banks */
+        uint8_t rom_character_count; /* Number of ROM-CHR banks */
 
         struct {
-                uint8_t mirroring : 1;
-                uint8_t battery : 1;
-                uint8_t trainer : 1;
-                uint8_t four_screen : 1;
-                uint8_t mapper_low : 4;
+                uint8_t mirroring : 1; /* Mirroring mode */
+                uint8_t battery : 1; /* Battery present */
+                uint8_t trainer : 1; /* Trainer present */
+                uint8_t four_screen : 1; /* Four-screen mode */
+                uint8_t mapper_low : 4; /* Mapper low-nibble */
         } flag_6;
 
         struct {
-                uint8_t unused : 2;
-                uint8_t version : 2;
-                uint8_t mapper_high : 4;
+                uint8_t unused : 2; /* Unused fields */
+                uint8_t version : 2; /* iNES version */
+                uint8_t mapper_high : 4; /* Mapper high-nibble */
         } flag_7;
 
-        uint8_t ram_program_count;
+        uint8_t ram_program_count; /* Number of RAM-PRG banks */
 #endif /* NES_INES_VERSION >= NES_INES_VERSION_1 */
 #if NES_INES_VERSION == NES_INES_VERSION_1
-        uint8_t unused[7];
+        uint8_t unused[7]; /* Unused bytes */
 #endif /* NES_INES_VERSION == NES_INES_VERSION_1 */
 } nes_header_t;
+
+/**
+ * NES register struct
+ */
+typedef union {
+
+        struct {
+
+                union {
+
+                        struct {
+                                uint8_t transfer : 1; /* Pending transfer (DMA) */
+                                uint8_t non_maskable : 1; /* Pending non-maskable interrupt (NMI) */
+                                uint8_t maskable : 1; /* Pending maskable interrupt (IRQ) */
+                        };
+
+                        struct {
+                                uint8_t carry : 1; /* Carry flag (C) */
+                                uint8_t zero : 1; /* Zero flag (Z) */
+                                uint8_t interrupt_disabled : 1; /* Interrupt disabled flag (I) */
+                                uint8_t decimal : 1; /* Decimal flag (D) */
+                                uint8_t breakpoint : 2; /* Breakpoint flags (B) */
+                                uint8_t overflow : 1; /* Overflow flag (O) */
+                                uint8_t negative : 1; /* Negative flag (N) */
+                        };
+
+                        uint8_t low; /* Low byte */
+                };
+
+                uint8_t high; /* High byte */
+        };
+
+        uint16_t word; /* Word */
+        uint32_t dword; /* Double-word */
+} nes_register_t;
 
 /**
  * NES ROM struct
@@ -150,15 +172,6 @@ typedef struct {
 } nes_rom_t;
 
 /**
- * NES version struct
- */
-typedef struct {
-	int major; /* Major number */
-	int minor; /* Minor number */
-	int patch; /* Patch number */
-} nes_version_t;
-
-/**
  * NES configuration struct
  */
 typedef struct {
@@ -167,6 +180,28 @@ typedef struct {
         nes_rom_t rom; /* ROM configuration */
 #endif /* NES_API_VERSION >= NES_API_VERSION_1 */
 } nes_t;
+
+/**
+ * NES action struct
+ */
+typedef struct {
+        int type; /* Action type */
+        nes_register_t address; /* Action address */
+
+        union {
+                nes_register_t data; /* Action data */
+                const void *ptr; /* Action pointer */
+        };
+} nes_action_t;
+
+/**
+ * NES version struct
+ */
+typedef struct {
+        int major; /* Major number */
+        int minor; /* Minor number */
+        int patch; /* Patch number */
+} nes_version_t;
 
 #ifdef __cplusplus
 extern "C" {

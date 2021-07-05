@@ -47,7 +47,7 @@ nes_processor_execute_arithmetic(
         )
 {
         uint8_t result = 0;
-        nes_processor_register_t value = {};
+        nes_register_t value = {};
 
         switch(instruction->opcode) {
                 case OPCODE_ADC:
@@ -182,7 +182,7 @@ nes_processor_execute_breakpoint(
         __in const nes_processor_instruction_t *instruction
         )
 {
-        nes_processor_register_t status = { .low = processor->status.low };
+        nes_register_t status = { .low = processor->status.low };
 
         TRACE(LEVEL_VERBOSE, "Processor breakpoint [%04X]", processor->fetched.address.word);
         nes_processor_push_word(processor, processor->program_counter.word);
@@ -230,7 +230,7 @@ nes_processor_execute_compare(
         )
 {
         uint8_t result = 0;
-        nes_processor_register_t value = {};
+        nes_register_t value = {};
 
         switch(instruction->opcode) {
                 case OPCODE_CMP:
@@ -409,7 +409,7 @@ nes_processor_execute_pull(
         __in const nes_processor_instruction_t *instruction
         )
 {
-        nes_processor_register_t status = {};
+        nes_register_t status = {};
 
         switch(instruction->opcode) {
                 case OPCODE_PLA:
@@ -437,7 +437,7 @@ nes_processor_execute_push(
         __in const nes_processor_instruction_t *instruction
         )
 {
-        nes_processor_register_t status = {};
+        nes_register_t status = {};
 
         switch(instruction->opcode) {
                 case OPCODE_PHA:
@@ -463,7 +463,7 @@ nes_processor_execute_return(
         __in const nes_processor_instruction_t *instruction
         )
 {
-        nes_processor_register_t status = {};
+        nes_register_t status = {};
 
         switch(instruction->opcode) {
                 case OPCODE_RTI:
@@ -492,7 +492,7 @@ nes_processor_execute_rotate(
 {
         uint8_t result = 0;
         bool carry = processor->status.carry;
-        nes_processor_register_t value = { .low = processor->fetched.operand.data.low };
+        nes_register_t value = { .low = processor->fetched.operand.data.low };
 
         switch(instruction->opcode) {
                 case OPCODE_ROL:
@@ -556,7 +556,7 @@ nes_processor_execute_shift(
         )
 {
         uint8_t result = 0;
-        nes_processor_register_t value = { .low = processor->fetched.operand.data.low };
+        nes_register_t value = { .low = processor->fetched.operand.data.low };
 
         switch(instruction->opcode) {
                 case OPCODE_ASL:
@@ -795,7 +795,7 @@ nes_processor_interrupt_maskable(
         __inout nes_processor_t *processor
         )
 {
-        nes_processor_register_t status = { .low = processor->status.low };
+        nes_register_t status = { .low = processor->status.low };
 
         TRACE(LEVEL_VERBOSE, "%s", "Processor maskable interrupt");
         nes_processor_push_word(processor, processor->program_counter.word);
@@ -812,7 +812,7 @@ nes_processor_interrupt_non_maskable(
         __inout nes_processor_t *processor
         )
 {
-        nes_processor_register_t status = { .low = processor->status.low };
+        nes_register_t status = { .low = processor->status.low };
 
         TRACE(LEVEL_VERBOSE, "%s", "Processor non-maskable interrupt");
         nes_processor_push_word(processor, processor->program_counter.word);

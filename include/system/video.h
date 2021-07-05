@@ -72,7 +72,7 @@ typedef struct {
         uint8_t cycles;
         uint16_t cycles_frame;
         nes_video_mask_t mask;
-        uint8_t object_address;
+        nes_register_t object_address;
         nes_video_status_t status;
 } nes_video_t;
 

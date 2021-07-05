@@ -27,8 +27,8 @@
 
 typedef struct {
         nes_t configuration;
-        uint16_t address;
-        uint8_t data;
+        nes_register_t address;
+        nes_register_t data;
         int mapper_status;
         int mapper_type;
         bool mapper_unload;

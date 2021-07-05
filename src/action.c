@@ -70,9 +70,9 @@ nes_action_bus_read(
         }
 
         response->type = request->type;
-        response->address = request->address;
-        response->data = nes_bus_read(BUS_PROCESSOR, response->address);
-        TRACE(LEVEL_VERBOSE, "Bus read [%04X]->%02X", response->address, response->data & UINT8_MAX);
+        response->address.word = request->address.word;
+        response->data.low = nes_bus_read(BUS_PROCESSOR, response->address.word);
+        TRACE(LEVEL_VERBOSE, "Bus read [%04X]->%02X", response->address.word, response->data.low);
 
 exit:
         return result;
@@ -87,8 +87,8 @@ nes_action_bus_write(
 {
         int result = NES_OK;
 
-        nes_bus_write(BUS_PROCESSOR, request->address, request->data);
-        TRACE(LEVEL_VERBOSE, "Bus write [%04X]<-%02X", request->address, request->data & UINT8_MAX);
+        nes_bus_write(BUS_PROCESSOR, request->address.word, request->data.low);
+        TRACE(LEVEL_VERBOSE, "Bus write [%04X]<-%02X", request->address.word, nes_bus_read(BUS_PROCESSOR, request->address.word));
 
         return result;
 }
@@ -130,39 +130,39 @@ nes_action_processor_read(
         }
 
         response->type = request->type;
-        response->address = request->address;
+        response->address.word = request->address.word;
 
-        switch(response->address) {
+        switch(response->address.word) {
                 case NES_PROCESSOR_PROGRAM_COUNTER:
-                        response->data = bus->processor.program_counter.word;
-                        TRACE(LEVEL_VERBOSE, "Processor read [PC]->%04X", response->data);
+                        response->data.word = bus->processor.program_counter.word;
+                        TRACE(LEVEL_VERBOSE, "Processor read [PC]->%04X", response->data.word);
                         break;
                 case NES_PROCESSOR_STACK_POINTER:
-                        response->data = STACK_ADDRESS | bus->processor.stack_pointer.low;
-                        TRACE(LEVEL_VERBOSE, "Processor read [SP]->%02X", response->data & UINT8_MAX);
+                        response->data.word = STACK_ADDRESS | bus->processor.stack_pointer.low;
+                        TRACE(LEVEL_VERBOSE, "Processor read [SP]->%04X", response->data.word);
                         break;
                 case NES_PROCESSOR_STATUS:
-                        response->data = bus->processor.status.low;
-                        TRACE(LEVEL_VERBOSE, "Processor read [S]->%02X", response->data & UINT8_MAX);
+                        response->data.low = bus->processor.status.low;
+                        TRACE(LEVEL_VERBOSE, "Processor read [S]->%02X", response->data.low);
                         break;
                 case NES_PROCESSOR_PENDING:
-                        response->data = bus->processor.pending.low;
-                        TRACE(LEVEL_VERBOSE, "Processor read [P]->%02X", response->data & UINT8_MAX);
+                        response->data.low = bus->processor.pending.low;
+                        TRACE(LEVEL_VERBOSE, "Processor read [P]->%02X", response->data.low);
                         break;
                 case NES_PROCESSOR_ACCUMULATOR:
-                        response->data = bus->processor.accumulator.low;
-                        TRACE(LEVEL_VERBOSE, "Processor read [A]->%02X", response->data & UINT8_MAX);
+                        response->data.low = bus->processor.accumulator.low;
+                        TRACE(LEVEL_VERBOSE, "Processor read [A]->%02X", response->data.low);
                         break;
                 case NES_PROCESSOR_INDEX_X:
-                        response->data = bus->processor.index_x.low;
-                        TRACE(LEVEL_VERBOSE, "Processor read [X]->%02X", response->data & UINT8_MAX);
+                        response->data.low = bus->processor.index_x.low;
+                        TRACE(LEVEL_VERBOSE, "Processor read [X]->%02X", response->data.low);
                         break;
                 case NES_PROCESSOR_INDEX_Y:
-                        response->data = bus->processor.index_y.low;
-                        TRACE(LEVEL_VERBOSE, "Processor read [Y]->%02X", response->data & UINT8_MAX);
+                        response->data.low = bus->processor.index_y.low;
+                        TRACE(LEVEL_VERBOSE, "Processor read [Y]->%02X", response->data.low);
                         break;
                 default:
-                        result = ERROR(NES_ERR, "invalid address -- %i", response->address);
+                        result = ERROR(NES_ERR, "invalid read address -- %i", response->address.word);
                         goto exit;
         }
 
@@ -179,37 +179,37 @@ nes_action_processor_write(
 {
         int result = NES_OK;
 
-        switch(request->address) {
+        switch(request->address.word) {
                 case NES_PROCESSOR_PROGRAM_COUNTER:
-                        bus->processor.program_counter.word = request->data;
-                        TRACE(LEVEL_VERBOSE, "Processor write [PC]<-%04X", request->data);
+                        bus->processor.program_counter.word = request->data.word;
+                        TRACE(LEVEL_VERBOSE, "Processor write [PC]<-%04X", bus->processor.program_counter.word);
                         break;
                 case NES_PROCESSOR_STACK_POINTER:
-                        bus->processor.stack_pointer.low = request->data;
-                        TRACE(LEVEL_VERBOSE, "Processor write [SP]<-%02X", request->data & UINT8_MAX);
+                        bus->processor.stack_pointer.low = request->data.low;
+                        TRACE(LEVEL_VERBOSE, "Processor write [SP]<-%04X", STACK_ADDRESS | bus->processor.stack_pointer.low);
                         break;
                 case NES_PROCESSOR_STATUS:
-                        bus->processor.status.low = request->data;
-                        TRACE(LEVEL_VERBOSE, "Processor write [S]<-%02X", request->data & UINT8_MAX);
+                        bus->processor.status.low = request->data.low;
+                        TRACE(LEVEL_VERBOSE, "Processor write [S]<-%02X", bus->processor.status.low);
                         break;
                 case NES_PROCESSOR_PENDING:
-                        bus->processor.pending.low = request->data;
-                        TRACE(LEVEL_VERBOSE, "Processor write [P]<-%02X", request->data & UINT8_MAX);
+                        bus->processor.pending.low = request->data.low;
+                        TRACE(LEVEL_VERBOSE, "Processor write [P]<-%02X", bus->processor.pending.low);
                         break;
                 case NES_PROCESSOR_ACCUMULATOR:
-                        bus->processor.accumulator.low = request->data;
-                        TRACE(LEVEL_VERBOSE, "Processor write [A]<-%02X", request->data & UINT8_MAX);
+                        bus->processor.accumulator.low = request->data.low;
+                        TRACE(LEVEL_VERBOSE, "Processor write [A]<-%02X", bus->processor.accumulator.low);
                         break;
                 case NES_PROCESSOR_INDEX_X:
-                        bus->processor.index_x.low = request->data;
-                        TRACE(LEVEL_VERBOSE, "Processor write [X]<-%02X", request->data & UINT8_MAX);
+                        bus->processor.index_x.low = request->data.low;
+                        TRACE(LEVEL_VERBOSE, "Processor write [X]<-%02X", bus->processor.index_x.low);
                         break;
                 case NES_PROCESSOR_INDEX_Y:
-                        bus->processor.index_y.low = request->data;
-                        TRACE(LEVEL_VERBOSE, "Processor write [Y]<-%02X", request->data & UINT8_MAX);
+                        bus->processor.index_y.low = request->data.low;
+                        TRACE(LEVEL_VERBOSE, "Processor write [Y]<-%02X", bus->processor.index_y.low);
                         break;
                 default:
-                        result = ERROR(NES_ERR, "invalid address -- %i", request->address);
+                        result = ERROR(NES_ERR, "invalid write address -- %i", request->address.word);
                         goto exit;
         }
 
