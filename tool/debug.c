@@ -35,7 +35,7 @@ nes_launcher_debug_derive_address(
 
         for(request.address.word = 0; request.address.word < NES_PROCESSOR_MAX; ++request.address.word) {
 
-                if(!strcmp(REGISTER[request.address.word], argument)) {
+                if(!strcmp(PROCESSOR_REGISTER[request.address.word], argument)) {
                         break;
                 }
         }
@@ -55,20 +55,10 @@ exit:
         return result.word;
 }
 
-void
-nes_launcher_debug(
-        __in const nes_launcher_t *launcher
-        )
+static void
+nes_launcher_debug_cartridge_information(void)
 {
-        bool complete = false;
-        nes_action_t request = {}, response = {};
-
-        using_history();
-        fprintf(stdout, "%s %i.%i.%i\n%s\n\n", NES, launcher->version->major, launcher->version->minor, launcher->version->patch, NOTICE);
-        fprintf(stdout, "Path: %s\nSize: %.02f KB (%zu bytes)\n", launcher->configuration.rom.path, launcher->configuration.rom.data.length / (float)BYTES_PER_KBYTE,
-                launcher->configuration.rom.data.length);
-
-        request.type = NES_ACTION_CARTRIDGE_HEADER;
+        nes_action_t request = { .type = NES_ACTION_CARTRIDGE_HEADER }, response = {};
 
         if(nes_action(&request, &response) == NES_OK) {
                 const nes_header_t *header = (const nes_header_t *)response.ptr;
@@ -76,7 +66,7 @@ nes_launcher_debug(
                 uint32_t ram_prg = header->ram_program_count ? header->ram_program_count : 1, rom_chr = header->rom_character_count,
                         rom_prg = header->rom_program_count;
 
-                fprintf(stdout, "\nMapper: %02X (%s)\n", mapper, MAPPER_NAME[mapper]);
+                fprintf(stdout, "Mapper: %02X (%s)\n", mapper, MAPPER_NAME[mapper]);
                 fprintf(stdout, "ROM-PRG: %u %.02f KB (%u bytes)\n", rom_prg, (rom_prg * ROM_PROGRAM_BANK_WIDTH) / (float)BYTES_PER_KBYTE,
                         rom_prg * ROM_PROGRAM_BANK_WIDTH);
                 fprintf(stdout, "ROM-CHR: %u %.02f KB (%u bytes)\n", rom_chr, (rom_chr * ROM_CHARACTER_BANK_WIDTH) / (float)BYTES_PER_KBYTE,
@@ -84,9 +74,24 @@ nes_launcher_debug(
                 fprintf(stdout, "RAM-PRG: %u %.02f KB (%u bytes)\n", ram_prg, (ram_prg * RAM_PROGRAM_BANK_WIDTH) / (float)BYTES_PER_KBYTE,
                         ram_prg * RAM_PROGRAM_BANK_WIDTH);
         }
+}
+
+void
+nes_launcher_debug(
+        __in const nes_launcher_t *launcher
+        )
+{
+        bool complete = false;
+
+        using_history();
+        fprintf(stdout, "%s %i.%i.%i\n%s\n\n", NES, launcher->version->major, launcher->version->minor, launcher->version->patch, NOTICE);
+        fprintf(stdout, "Path: %s\nSize: %.02f KB (%zu bytes)\n\n", launcher->configuration.rom.path, launcher->configuration.rom.data.length / (float)BYTES_PER_KBYTE,
+                launcher->configuration.rom.data.length);
+        nes_launcher_debug_cartridge_information();
 
         while(!complete) {
                 char *input, prompt[PROMPT_MAX] = {};
+                nes_action_t request = {}, response = {};
 
                 request.type = NES_ACTION_PROCESSOR_READ;
                 request.address.word = NES_PROCESSOR_PROGRAM_COUNTER;
@@ -310,6 +315,78 @@ exit:
 }
 
 int
+nes_launcher_debug_mapper(
+        __in const nes_launcher_t *launcher,
+        __in const char *argument[],
+        __in uint32_t count
+        )
+{
+        int result = NES_OK;
+        nes_action_t request = { .type = NES_ACTION_MAPPER_READ }, response = {};
+
+        switch(count) {
+                case MAPPER_READ:
+
+                        for(request.address.word = 0; request.address.word < NES_MAPPER_MAX; ++request.address.word) {
+
+                                if(!strcmp(MAPPER_REGISTER[request.address.word], argument[0])) {
+                                        break;
+                                }
+                        }
+
+                        if(request.address.word == NES_MAPPER_MAX) {
+                                result = NES_ERR;
+                                goto exit;
+                        }
+
+                        if((result = nes_action(&request, &response)) != NES_OK) {
+                                goto exit;
+                        }
+
+                        fprintf(stdout, "%u  (%08X)\n", response.data.dword, response.data.dword);
+                        break;
+                case MAPPER_SHOW:
+                        nes_launcher_debug_cartridge_information();
+
+                        for(request.address.word = 0; request.address.word < NES_MAPPER_MAX; ++request.address.word) {
+
+                                if((result = nes_action(&request, &response)) != NES_OK) {
+                                        goto exit;
+                                }
+
+                                fprintf(stdout, "%s>\t%u  (%08X)\n", MAPPER_REGISTER[request.address.word], response.data.dword, response.data.dword);
+                        }
+                        break;
+                case MAPPER_WRITE:
+                        request.type = NES_ACTION_MAPPER_WRITE;
+                        request.data.dword = strtol(argument[1], NULL, 10);
+
+                        for(request.address.word = 0; request.address.word < NES_MAPPER_MAX; ++request.address.word) {
+
+                                if(!strcmp(MAPPER_REGISTER[request.address.word], argument[0])) {
+                                        break;
+                                }
+                        }
+
+                        if(request.address.word == NES_MAPPER_MAX) {
+                                result = NES_ERR;
+                                goto exit;
+                        }
+
+                        if((result = nes_action(&request, &response)) != NES_OK) {
+                                goto exit;
+                        }
+                        break;
+                default:
+                        result = NES_ERR;
+                        goto exit;
+        }
+
+exit:
+        return result;
+}
+
+int
 nes_launcher_debug_processor(
         __in const nes_launcher_t *launcher,
         __in const char *argument[],
@@ -324,7 +401,7 @@ nes_launcher_debug_processor(
 
                         for(request.address.word = 0; request.address.word < NES_PROCESSOR_MAX; ++request.address.word) {
 
-                                if(!strcmp(REGISTER[request.address.word], argument[0])) {
+                                if(!strcmp(PROCESSOR_REGISTER[request.address.word], argument[0])) {
                                         break;
                                 }
                         }
@@ -368,23 +445,23 @@ nes_launcher_debug_processor(
 
                                 switch(request.address.word) {
                                 case NES_PROCESSOR_PENDING:
-                                        fprintf(stdout, "%s>\t%02X  [%c%c%c]\n", REGISTER[request.address.word], response.data.low,
+                                        fprintf(stdout, "%s>\t%02X  [%c%c%c]\n", PROCESSOR_REGISTER[request.address.word], response.data.low,
                                                 response.data.transfer ? 'T' : '-', response.data.non_maskable ? 'N' : '-',
                                                 response.data.maskable ? 'M' : '-');
                                         break;
                                         case NES_PROCESSOR_PROGRAM_COUNTER:
                                         case NES_PROCESSOR_STACK_POINTER:
-                                                fprintf(stdout, "%s>\t%04X\n", REGISTER[request.address.word], response.data.word);
+                                                fprintf(stdout, "%s>\t%04X\n", PROCESSOR_REGISTER[request.address.word], response.data.word);
                                                 break;
                                         case NES_PROCESSOR_STATUS:
-                                                fprintf(stdout, "%s>\t%02X  [%c%c%c%c%c%c%c]\n", REGISTER[request.address.word], response.data.low,
+                                                fprintf(stdout, "%s>\t%02X  [%c%c%c%c%c%c%c]\n", PROCESSOR_REGISTER[request.address.word], response.data.low,
                                                 response.data.negative ? 'N' : '-', response.data.overflow ? 'O' : '-',
                                                 response.data.breakpoint ? 'B' : '-', response.data.decimal ? 'D' : '-',
                                                 response.data.interrupt_disabled ? 'I' : '-', response.data.zero ? 'Z' : '-',
                                                 response.data.carry ? 'C' : '-');
                                                 break;
                                         default:
-                                                fprintf(stdout, "%s>\t%02X\n", REGISTER[request.address.word], response.data.low);
+                                                fprintf(stdout, "%s>\t%02X\n", PROCESSOR_REGISTER[request.address.word], response.data.low);
                                                 break;
                                 }
                         }
@@ -395,7 +472,7 @@ nes_launcher_debug_processor(
 
                         for(request.address.word = 0; request.address.word < NES_PROCESSOR_MAX; ++request.address.word) {
 
-                                if(!strcmp(REGISTER[request.address.word], argument[0])) {
+                                if(!strcmp(PROCESSOR_REGISTER[request.address.word], argument[0])) {
                                         break;
                                 }
                         }

@@ -62,6 +62,7 @@ The following commands are available in debug mode:
 q	Exit debug mode
 d	Disassemble instructions
 h	Show help information
+m	Read/write/Show mapper
 p	Read/Write/Show processor
 r	Read data from address
 c	Run processor
@@ -78,6 +79,7 @@ w	Write data to address
 |DATA    |Data to read/write                       |```[0-9a-fA-F]{1-2}```                                         |
 |COUNT   |Bytes to read/Instructions to disassemble|```[0-9]{1-6}```                                               |
 |REGISTER|Processor register to read from/write to |```pc```, ```sp```, ```s```, ```p```, ```a```, ```x```, ```y```|
+|        |Mapper register to read from/write to    |```prom0```, ```prom1```, ```pram```, ```crom```, ```cram```   |
 
 #### Examples
 
@@ -115,6 +117,18 @@ To write data to memory at some address/register, run the following command:
 
 ```
 [0000] $ w <ADDRESS>|<REGISTER> <DATA>
+```
+
+To show mapper information, run the following command:
+
+```
+[0000] $ m
+```
+
+To read/write mapper data at some register, run the following command:
+
+```
+[0000] $ m <REGISTER> [<DATA>]
 ```
 
 To show processor information, run the following command:

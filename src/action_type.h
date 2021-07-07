@@ -52,6 +52,18 @@ int nes_action_cartridge_header(
         __inout nes_action_t *response
         );
 
+int nes_action_mapper_read(
+        __in nes_bus_t *bus,
+        __in const nes_action_t *request,
+        __inout nes_action_t *response
+        );
+
+int nes_action_mapper_write(
+        __in nes_bus_t *bus,
+        __in const nes_action_t *request,
+        __inout nes_action_t *response
+        );
+
 int nes_action_processor_read(
         __in nes_bus_t *bus,
         __in const nes_action_t *request,
@@ -83,6 +95,8 @@ static const nes_action_hdlr ACTION_HDLR[] = {
         nes_action_bus_write, /* NES_ACTION_BUS_WRITE */
         nes_action_processor_read, /* NES_ACTION_PROCESSOR_READ */
         nes_action_processor_write, /* NES_ACTION_PROCESSOR_WRITE */
+        nes_action_mapper_read, /* NES_ACTION_MAPPER_READ */
+        nes_action_mapper_write, /* NES_ACTION_MAPPER_WRITE */
         nes_action_cartridge_header, /* NES_ACTION_CARTRIDGE_HEADER */
         };
 

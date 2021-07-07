@@ -194,6 +194,228 @@ exit:
 }
 
 int
+nes_test_action_mapper_read(void)
+{
+	int result = NES_OK;
+
+	nes_test_initialize();
+	g_test.bus.mapper.rom_program[ROM_BANK_0] = rand();
+	g_test.request.type = NES_ACTION_MAPPER_READ;
+	g_test.request.address.word = NES_MAPPER_PROGRAM_ROM_0;
+	nes_bus()->loaded = false;
+
+	if(ASSERT(nes_action(&g_test.request, &g_test.response) != NES_OK)) {
+		result = NES_ERR;
+		goto exit;
+	}
+
+	nes_bus()->loaded = true;
+
+	if(ASSERT((nes_action(&g_test.request, &g_test.response) == NES_OK)
+			&& (g_test.response.type == NES_ACTION_MAPPER_READ)
+			&& (g_test.response.address.word == NES_MAPPER_PROGRAM_ROM_0)
+			&& (g_test.response.data.dword == g_test.bus.mapper.rom_program[ROM_BANK_0]))) {
+		result = NES_ERR;
+		goto exit;
+	}
+
+	nes_test_initialize();
+	g_test.bus.mapper.rom_program[ROM_BANK_1] = rand();
+	g_test.request.type = NES_ACTION_MAPPER_READ;
+	g_test.request.address.word = NES_MAPPER_PROGRAM_ROM_1;
+	nes_bus()->loaded = false;
+
+	if(ASSERT(nes_action(&g_test.request, &g_test.response) != NES_OK)) {
+		result = NES_ERR;
+		goto exit;
+	}
+
+	nes_bus()->loaded = true;
+
+	if(ASSERT((nes_action(&g_test.request, &g_test.response) == NES_OK)
+			&& (g_test.response.type == NES_ACTION_MAPPER_READ)
+			&& (g_test.response.address.word == NES_MAPPER_PROGRAM_ROM_1)
+			&& (g_test.response.data.dword == g_test.bus.mapper.rom_program[ROM_BANK_1]))) {
+		result = NES_ERR;
+		goto exit;
+	}
+
+	nes_test_initialize();
+	g_test.bus.mapper.ram_program = rand();
+	g_test.request.type = NES_ACTION_MAPPER_READ;
+	g_test.request.address.word = NES_MAPPER_PROGRAM_RAM;
+	nes_bus()->loaded = false;
+
+	if(ASSERT(nes_action(&g_test.request, &g_test.response) != NES_OK)) {
+		result = NES_ERR;
+		goto exit;
+	}
+
+	nes_bus()->loaded = true;
+
+	if(ASSERT((nes_action(&g_test.request, &g_test.response) == NES_OK)
+			&& (g_test.response.type == NES_ACTION_MAPPER_READ)
+			&& (g_test.response.address.word == NES_MAPPER_PROGRAM_RAM)
+			&& (g_test.response.data.dword == g_test.bus.mapper.ram_program))) {
+		result = NES_ERR;
+		goto exit;
+	}
+
+	nes_test_initialize();
+	g_test.bus.mapper.rom_character = rand();
+	g_test.request.type = NES_ACTION_MAPPER_READ;
+	g_test.request.address.word = NES_MAPPER_CHARACTER_ROM;
+	nes_bus()->loaded = false;
+
+	if(ASSERT(nes_action(&g_test.request, &g_test.response) != NES_OK)) {
+		result = NES_ERR;
+		goto exit;
+	}
+
+	nes_bus()->loaded = true;
+
+	if(ASSERT((nes_action(&g_test.request, &g_test.response) == NES_OK)
+			&& (g_test.response.type == NES_ACTION_MAPPER_READ)
+			&& (g_test.response.address.word == NES_MAPPER_CHARACTER_ROM)
+			&& (g_test.response.data.dword == g_test.bus.mapper.rom_character))) {
+		result = NES_ERR;
+		goto exit;
+	}
+
+	nes_test_initialize();
+	g_test.bus.mapper.ram_character = rand();
+	g_test.request.type = NES_ACTION_MAPPER_READ;
+	g_test.request.address.word = NES_MAPPER_CHARACTER_RAM;
+	nes_bus()->loaded = false;
+
+	if(ASSERT(nes_action(&g_test.request, &g_test.response) != NES_OK)) {
+		result = NES_ERR;
+		goto exit;
+	}
+
+	nes_bus()->loaded = true;
+
+	if(ASSERT((nes_action(&g_test.request, &g_test.response) == NES_OK)
+			&& (g_test.response.type == NES_ACTION_MAPPER_READ)
+			&& (g_test.response.address.word == NES_MAPPER_CHARACTER_RAM)
+			&& (g_test.response.data.dword == g_test.bus.mapper.ram_character))) {
+		result = NES_ERR;
+		goto exit;
+	}
+
+exit:
+	TRACE_RESULT(result);
+
+	return result;
+}
+
+int
+nes_test_action_mapper_write(void)
+{
+	int result = NES_OK;
+
+	nes_test_initialize();
+	g_test.request.type = NES_ACTION_MAPPER_WRITE;
+	g_test.request.address.word = NES_MAPPER_PROGRAM_ROM_0;
+	g_test.request.data.dword = rand();
+	nes_bus()->loaded = false;
+
+	if(ASSERT(nes_action(&g_test.request, &g_test.response) != NES_OK)) {
+		result = NES_ERR;
+		goto exit;
+	}
+
+	nes_bus()->loaded = true;
+
+	if(ASSERT((nes_action(&g_test.request, NULL) == NES_OK)
+			&& (g_test.bus.mapper.rom_program[ROM_BANK_0] == g_test.request.data.dword))) {
+		result = NES_ERR;
+		goto exit;
+	}
+
+	nes_test_initialize();
+	g_test.request.type = NES_ACTION_MAPPER_WRITE;
+	g_test.request.address.word = NES_MAPPER_PROGRAM_ROM_1;
+	g_test.request.data.dword = rand();
+	nes_bus()->loaded = false;
+
+	if(ASSERT(nes_action(&g_test.request, &g_test.response) != NES_OK)) {
+		result = NES_ERR;
+		goto exit;
+	}
+
+	nes_bus()->loaded = true;
+
+	if(ASSERT((nes_action(&g_test.request, NULL) == NES_OK)
+			&& (g_test.bus.mapper.rom_program[ROM_BANK_1] == g_test.request.data.dword))) {
+		result = NES_ERR;
+		goto exit;
+	}
+
+	nes_test_initialize();
+	g_test.request.type = NES_ACTION_MAPPER_WRITE;
+	g_test.request.address.word = NES_MAPPER_PROGRAM_RAM;
+	g_test.request.data.dword = rand();
+	nes_bus()->loaded = false;
+
+	if(ASSERT(nes_action(&g_test.request, &g_test.response) != NES_OK)) {
+		result = NES_ERR;
+		goto exit;
+	}
+
+	nes_bus()->loaded = true;
+
+	if(ASSERT((nes_action(&g_test.request, NULL) == NES_OK)
+			&& (g_test.bus.mapper.ram_program == g_test.request.data.dword))) {
+		result = NES_ERR;
+		goto exit;
+	}
+
+	nes_test_initialize();
+	g_test.request.type = NES_ACTION_MAPPER_WRITE;
+	g_test.request.address.word = NES_MAPPER_CHARACTER_ROM;
+	g_test.request.data.dword = rand();
+	nes_bus()->loaded = false;
+
+	if(ASSERT(nes_action(&g_test.request, &g_test.response) != NES_OK)) {
+		result = NES_ERR;
+		goto exit;
+	}
+
+	nes_bus()->loaded = true;
+
+	if(ASSERT((nes_action(&g_test.request, NULL) == NES_OK)
+			&& (g_test.bus.mapper.rom_character == g_test.request.data.dword))) {
+		result = NES_ERR;
+		goto exit;
+	}
+
+	nes_test_initialize();
+	g_test.request.type = NES_ACTION_MAPPER_WRITE;
+	g_test.request.address.word = NES_MAPPER_CHARACTER_RAM;
+	g_test.request.data.dword = rand();
+	nes_bus()->loaded = false;
+
+	if(ASSERT(nes_action(&g_test.request, &g_test.response) != NES_OK)) {
+		result = NES_ERR;
+		goto exit;
+	}
+
+	nes_bus()->loaded = true;
+
+	if(ASSERT((nes_action(&g_test.request, NULL) == NES_OK)
+			&& (g_test.bus.mapper.ram_character == g_test.request.data.dword))) {
+		result = NES_ERR;
+		goto exit;
+	}
+
+exit:
+	TRACE_RESULT(result);
+
+	return result;
+}
+
+int
 nes_test_action_processor_read(void)
 {
 	int result = NES_OK;

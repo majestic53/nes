@@ -64,21 +64,35 @@ enum {
         NES_ACTION_BUS_WRITE, /* Write byte to bus */
         NES_ACTION_PROCESSOR_READ, /* Read processor register */
         NES_ACTION_PROCESSOR_WRITE, /* Write processor register */
+        NES_ACTION_MAPPER_READ, /* Read mapper register */
+        NES_ACTION_MAPPER_WRITE, /* Write mapper register */
         NES_ACTION_CARTRIDGE_HEADER, /* Read cartridge header */
         NES_ACTION_MAX,
+};
+
+/**
+ * NES mapper enum
+ */
+enum {
+        NES_MAPPER_PROGRAM_ROM_0 = 0, /* Mapper program ROM register (PRG-ROM0) */
+        NES_MAPPER_PROGRAM_ROM_1, /* Mapper program ROM register (PRG-ROM0) */
+        NES_MAPPER_PROGRAM_RAM, /* Mapper program RAM register (PRG-RAM) */
+        NES_MAPPER_CHARACTER_ROM, /* Mapper character ROM register (CHR-ROM) */
+        NES_MAPPER_CHARACTER_RAM, /* Mapper character RAM register (CHR-RAM) */
+        NES_MAPPER_MAX,
 };
 
 /**
  * NES processor enum
  */
 enum {
-        NES_PROCESSOR_PROGRAM_COUNTER = 0, /* Processor program counter register */
-        NES_PROCESSOR_STACK_POINTER, /* Processor stack pointer register */
-        NES_PROCESSOR_STATUS, /* Processor status register */
-        NES_PROCESSOR_PENDING, /* Processor pending register */
-        NES_PROCESSOR_ACCUMULATOR, /* Processor accumulator register */
-        NES_PROCESSOR_INDEX_X, /* Processor index-x register */
-        NES_PROCESSOR_INDEX_Y, /* Processor index-y register */
+        NES_PROCESSOR_PROGRAM_COUNTER = 0, /* Processor program counter register (PC) */
+        NES_PROCESSOR_STACK_POINTER, /* Processor stack pointer register (SP) */
+        NES_PROCESSOR_STATUS, /* Processor status register (S) */
+        NES_PROCESSOR_PENDING, /* Processor pending register (P) */
+        NES_PROCESSOR_ACCUMULATOR, /* Processor accumulator register (A) */
+        NES_PROCESSOR_INDEX_X, /* Processor index-x register (X) */
+        NES_PROCESSOR_INDEX_Y, /* Processor index-y register (Y) */
         NES_PROCESSOR_MAX,
 };
 

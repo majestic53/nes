@@ -116,6 +116,92 @@ exit:
 }
 
 int
+nes_action_mapper_read(
+        __in nes_bus_t *bus,
+        __in const nes_action_t *request,
+        __inout nes_action_t *response
+        )
+{
+        int result = NES_OK;
+
+        if(!response) {
+                result = ERROR(NES_ERR, "invalid response -- %p", response);
+                goto exit;
+        }
+
+        response->type = request->type;
+        response->address.word = request->address.word;
+
+        switch(response->address.word) {
+                case NES_MAPPER_PROGRAM_ROM_0:
+                        response->data.dword = bus->mapper.rom_program[ROM_BANK_0];
+                        TRACE(LEVEL_VERBOSE, "Mapper read [PRG-ROM0]->%u(%08X)", response->data.dword, response->data.dword);
+                        break;
+                case NES_MAPPER_PROGRAM_ROM_1:
+                        response->data.dword = bus->mapper.rom_program[ROM_BANK_1];
+                        TRACE(LEVEL_VERBOSE, "Mapper read [PRG-ROM1]->%u(%08X)", response->data.dword, response->data.dword);
+                        break;
+                case NES_MAPPER_PROGRAM_RAM:
+                        response->data.dword = bus->mapper.ram_program;
+                        TRACE(LEVEL_VERBOSE, "Mapper read [PRG-RAM]->%u(%08X)", response->data.dword, response->data.dword);
+                        break;
+                case NES_MAPPER_CHARACTER_ROM:
+                        response->data.dword = bus->mapper.rom_character;
+                        TRACE(LEVEL_VERBOSE, "Mapper read [CHR-ROM]->%u(%08X)", response->data.dword, response->data.dword);
+                        break;
+                case NES_MAPPER_CHARACTER_RAM:
+                        response->data.dword = bus->mapper.ram_character;
+                        TRACE(LEVEL_VERBOSE, "Mapper read [CHR-RAM]->%u(%08X)", response->data.dword, response->data.dword);
+                        break;
+                default:
+                        result = ERROR(NES_ERR, "invalid mapper register read -- %i", response->address.word);
+                        goto exit;
+        }
+
+exit:
+        return result;
+}
+
+int
+nes_action_mapper_write(
+        __in nes_bus_t *bus,
+        __in const nes_action_t *request,
+        __inout nes_action_t *response
+        )
+{
+        int result = NES_OK;
+
+        switch(request->address.word) {
+                case NES_MAPPER_PROGRAM_ROM_0:
+                        bus->mapper.rom_program[ROM_BANK_0] = request->data.dword;
+                        TRACE(LEVEL_VERBOSE, "Mapper write [PRG-ROM0]<-%u(%08X)", bus->mapper.rom_program[ROM_BANK_0], bus->mapper.rom_program[ROM_BANK_0]);
+                        break;
+                case NES_MAPPER_PROGRAM_ROM_1:
+                        bus->mapper.rom_program[ROM_BANK_1] = request->data.dword;
+                        TRACE(LEVEL_VERBOSE, "Mapper write [PRG-ROM1]<-%u(%08X)", bus->mapper.rom_program[ROM_BANK_1], bus->mapper.rom_program[ROM_BANK_1]);
+                        break;
+                case NES_MAPPER_PROGRAM_RAM:
+                        bus->mapper.ram_program = request->data.dword;
+                        TRACE(LEVEL_VERBOSE, "Mapper write [PRG-RAM]<-%u(%08X)", bus->mapper.ram_program, bus->mapper.ram_program);
+                        break;
+                case NES_MAPPER_CHARACTER_ROM:
+                        bus->mapper.rom_character = request->data.dword;
+                        TRACE(LEVEL_VERBOSE, "Mapper write [CHR-ROM]<-%u(%08X)", bus->mapper.rom_character, bus->mapper.rom_character);
+                        break;
+                case NES_MAPPER_CHARACTER_RAM:
+                        bus->mapper.ram_character = request->data.dword;
+                        TRACE(LEVEL_VERBOSE, "Mapper write [CHR-RAM]<-%u(%08X)", bus->mapper.ram_character, bus->mapper.ram_character);
+                        break;
+                default:
+                        result = ERROR(NES_ERR, "invalid mapper register write -- %i", request->address.word);
+                        goto exit;
+        }
+
+exit:
+        return result;
+}
+
+int
 nes_action_processor_read(
         __in nes_bus_t *bus,
         __in const nes_action_t *request,
@@ -162,7 +248,7 @@ nes_action_processor_read(
                         TRACE(LEVEL_VERBOSE, "Processor read [Y]->%02X", response->data.low);
                         break;
                 default:
-                        result = ERROR(NES_ERR, "invalid read address -- %i", response->address.word);
+                        result = ERROR(NES_ERR, "invalid processor register read -- %i", response->address.word);
                         goto exit;
         }
 
@@ -209,7 +295,7 @@ nes_action_processor_write(
                         TRACE(LEVEL_VERBOSE, "Processor write [Y]<-%02X", bus->processor.index_y.low);
                         break;
                 default:
-                        result = ERROR(NES_ERR, "invalid write address -- %i", request->address.word);
+                        result = ERROR(NES_ERR, "invalid processor register write -- %i", request->address.word);
                         goto exit;
         }
 
@@ -278,6 +364,10 @@ nes_action_step(
 
                 nes_video_step(&bus->video);
                 TRACE_STEP();
+
+                if((result = nes_service_show()) != NES_OK) {
+                        goto exit;
+                }
         } while(bus->processor.cycles);
 
         nes_processor_step(&bus->processor);

@@ -32,10 +32,10 @@ enum {
 
 typedef struct nes_mapper_s {
 	nes_cartridge_t cartridge;
-	size_t ram_character;
-	size_t ram_program;
-	size_t rom_character;
-	size_t rom_program[ROM_BANK_MAX];
+	uint32_t ram_character;
+	uint32_t ram_program;
+	uint32_t rom_character;
+	uint32_t rom_program[ROM_BANK_MAX];
 
 	uint8_t (*ram_read)(
 			__in const struct nes_mapper_s *mapper,

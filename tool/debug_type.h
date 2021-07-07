@@ -41,6 +41,7 @@ enum {
         COMMAND_EXIT = 0,
         COMMAND_DISASSEMBLE,
         COMMAND_HELP,
+        COMMAND_MAPPER,
         COMMAND_PROCESSOR,
         COMMAND_READ,
         COMMAND_RUN,
@@ -53,6 +54,12 @@ enum {
 enum {
         DISASSEMBLE_SINGLE = 1,
         DISASSEMBLE_MULTIPLE,
+};
+
+enum {
+        MAPPER_SHOW = 0,
+        MAPPER_READ,
+        MAPPER_WRITE,
 };
 
 enum {
@@ -74,6 +81,7 @@ static const char COMMAND[] = {
         'q', /* COMMAND_EXIT */
         'd', /* COMMAND_DISASSEMBLE */
         'h', /* COMMAND_HELP */
+        'm', /* COMMAND_MAPPER */
         'p', /* COMMAND_PROCESSOR */
         'r', /* COMMAND_READ */
         'c', /* COMMAND_RUN */
@@ -86,6 +94,7 @@ static const char *COMMAND_DESC[] = {
         "Exit debug mode", /* COMMAND_EXIT */
         "Disassemble instructions", /* COMMAND_DISASSEMBLE */
         "Show help information", /* COMMAND_HELP */
+        "Read/write/Show mapper", /* COMMAND_MAPPER */
         "Read/Write/Show processor", /* COMMAND_PROCESSOR */
         "Read data from address", /* COMMAND_READ */
         "Run processor", /* COMMAND_RUN */
@@ -189,7 +198,15 @@ const char *MAPPER_NAME[] = {
         "NROM", /* MAPPER_NROM */
         };
 
-static const char *REGISTER[] = {
+static const char *MAPPER_REGISTER[] = {
+        "prom0", /* NES_MAPPER_PROGRAM_ROM_0 */
+        "prom1", /* NES_MAPPER_PROGRAM_ROM_1 */
+        "pram", /* NES_MAPPER_PROGRAM_RAM */
+        "crom", /* NES_MAPPER_CHARACTER_ROM */
+        "cram", /* NES_MAPPER_CHARACTER_RAM */
+        };
+
+static const char *PROCESSOR_REGISTER[] = {
         "pc", /* Processor program counter register */
         "sp", /* Processor stack pointer register */
         "s", /* Processor status register */
@@ -220,6 +237,12 @@ int nes_launcher_debug_help(
         __in const char *argument[],
         __in uint32_t count
 	);
+
+int nes_launcher_debug_mapper(
+        __in const nes_launcher_t *launcher,
+        __in const char *argument[],
+        __in uint32_t count
+        );
 
 int nes_launcher_debug_processor(
 	__in const nes_launcher_t *launcher,
@@ -261,6 +284,7 @@ static const nes_launcher_debug_hdlr DEBUG_HDLR[] = {
         NULL, /* COMMAND_EXIT */
         nes_launcher_debug_disassemble, /* COMMAND_DISASSEMBLE */
         nes_launcher_debug_help, /* COMMAND_HELP */
+        nes_launcher_debug_mapper, /* COMMAND_MAPPER */
         nes_launcher_debug_processor, /* COMMAND_PROCESSOR */
         nes_launcher_debug_read, /* COMMAND_READ */
         nes_launcher_debug_run, /* COMMAND_RUN */
