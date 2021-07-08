@@ -359,7 +359,7 @@ nes_launcher_debug_mapper(
                         break;
                 case MAPPER_WRITE:
                         request.type = NES_ACTION_MAPPER_WRITE;
-                        request.data.dword = strtol(argument[1], NULL, 10);
+                        request.data.dword = strtol(argument[1], NULL, 16);
 
                         for(request.address.word = 0; request.address.word < NES_MAPPER_MAX; ++request.address.word) {
 

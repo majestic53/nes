@@ -92,7 +92,7 @@ This project is implemented in C and exposes a simple API, described in ```inclu
 |NES_ACTION_STEP            |Request         |Step emulator           |
 |NES_ACTION_BUS_READ        |Request/Response|Read byte from bus      |
 |NES_ACTION_BUS_WRITE       |Request         |Write byte to bus       |
-|NES_ACTION_PROCESSOR_READ  |Request         |Read processor register |
+|NES_ACTION_PROCESSOR_READ  |Request/Response|Read processor register |
 |NES_ACTION_PROCESSOR_WRITE |Request         |Write processor register|
 |NES_ACTION_MAPPER_READ     |Request/Response|Read mapper register    |
 |NES_ACTION_MAPPER_WRITE    |Request         |Write mapper register   |
