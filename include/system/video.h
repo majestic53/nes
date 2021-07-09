@@ -24,6 +24,11 @@
 
 #include "../bus.h"
 
+enum {
+        VIDEO_INCREMENT_ACROSS = 0,
+        VIDEO_INCREMENT_DOWN,
+};
+
 typedef union {
 
         struct {
@@ -68,11 +73,16 @@ typedef union {
 } nes_video_status_t;
 
 typedef struct {
+        nes_register_t address;
+        bool address_latch;
         nes_video_control_t control;
         uint8_t cycles;
         uint16_t cycles_frame;
+        nes_register_t data;
         nes_video_mask_t mask;
         nes_register_t object_address;
+        nes_register_t scroll_x;
+        nes_register_t scroll_y;
         nes_video_status_t status;
 } nes_video_t;
 

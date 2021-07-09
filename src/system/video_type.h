@@ -26,6 +26,11 @@
 
 #define VIDEO_CYCLES 3
 
+static const uint16_t VIDEO_INCREMENT[] = {
+        1, /* VIDEO_INCREMENT_ACROSS */
+        32, /* VIDEO_INCREMENT_DOWN */
+        };
+
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */

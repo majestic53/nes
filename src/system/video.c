@@ -54,14 +54,25 @@ nes_video_port_read(
                 case VIDEO_PORT_STATUS: /* 0x2002 */
                         result = video->status.raw;
                         video->status.vblank = false;
+                        video->address_latch = false;
                         break;
                 case VIDEO_PORT_OBJECT_DATA: /* 0x2004 */
                         result = nes_video_object_read(video);
                         break;
                 case VIDEO_PORT_DATA: /* 0x2007 */
 
-                        /* TODO */
+                        switch(video->address.word) {
+                                case VIDEO_PALETTE_RAM_BEGIN ... VIDEO_PALETTE_RAM_END: /* 0x3f00 - 0x3fff */
+                                        result = video->data.low = nes_video_read(video, video->address.word);
+                                        break;
+                                default: /* 0x0000 - 0x3eff */
+                                        result = video->data.low;
+                                        video->data.low = nes_video_read(video, video->address.word);
+                                        break;
+                        }
 
+                        video->address.word += VIDEO_INCREMENT[video->control.increment];
+                        video->address.word %= VIDEO_ADDRESS_MIRROR;
                         break;
                 default:
                         TRACE(LEVEL_WARNING, "Invalid video port read: [%04X]", address);
@@ -95,18 +106,29 @@ nes_video_port_write(
                         break;
                 case VIDEO_PORT_SCROLL: /* 0x2005 */
 
-                        /* TODO */
+                        if(!video->address_latch) {
+                                video->scroll_x.low = data;
+                        } else {
+                                video->scroll_y.low = data;
+                        }
 
+                        video->address_latch = !video->address_latch;
                         break;
                 case VIDEO_PORT_ADDRESS: /* 0x2006 */
 
-                        /* TODO */
+                        if(!video->address_latch) {
+                                video->address.high = data;
+                        } else {
+                                video->address.low = data;
+                        }
 
+                        video->address.word %= VIDEO_ADDRESS_MIRROR;
+                        video->address_latch = !video->address_latch;
                         break;
                 case VIDEO_PORT_DATA: /* 0x2007 */
-
-                        /* TODO */
-
+                        nes_video_write(video, video->address.word, data);
+                        video->address.word += VIDEO_INCREMENT[video->control.increment];
+                        video->address.word %= VIDEO_ADDRESS_MIRROR;
                         break;
                 default:
                         TRACE(LEVEL_WARNING, "Invalid video port write: [%04X]<-%02X", address, data);
