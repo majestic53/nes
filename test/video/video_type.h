@@ -35,14 +35,18 @@ typedef struct {
 extern "C" {
 #endif /* __cplusplus */
 
-/* TODO */
+int nes_test_video_port_read(void);
+
+int nes_test_video_port_write(void);
+
+int nes_test_video_reset(void);
 
 void nes_test_initialize(void);
 
 static const nes_test TEST[] = {
-
-        /* TODO */
-
+        nes_test_video_port_read,
+        nes_test_video_port_write,
+        nes_test_video_reset,
 	};
 
 #ifdef __cplusplus

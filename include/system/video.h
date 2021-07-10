@@ -27,6 +27,7 @@
 enum {
         VIDEO_INCREMENT_ACROSS = 0,
         VIDEO_INCREMENT_DOWN,
+        VIDEO_INCREMENT_MAX,
 };
 
 typedef union {

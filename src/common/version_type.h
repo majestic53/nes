@@ -26,6 +26,6 @@
 
 #define VERSION_MAJOR 0
 #define VERSION_MINOR 1
-#define VERSION_PATCH 22
+#define VERSION_PATCH 23
 
 #endif /* NES_VERSION_TYPE_H_ */

@@ -39,7 +39,7 @@ nes_video_object_write(
         __in uint8_t data
         )
 {
-        nes_bus_write(BUS_OBJECT, video->object_address.low++, data);
+        nes_bus_write(BUS_OBJECT, video->object_address.low, data);
 }
 
 uint8_t
@@ -103,6 +103,7 @@ nes_video_port_write(
                         break;
                 case VIDEO_PORT_OBJECT_DATA: /* 0x2004 */
                         nes_video_object_write(video, data);
+                        ++video->object_address.low;
                         break;
                 case VIDEO_PORT_SCROLL: /* 0x2005 */
 
@@ -152,9 +153,6 @@ nes_video_reset(
 {
         TRACE(LEVEL_VERBOSE, "%s", "Video reset");
         memset(video, 0, sizeof(*video));
-
-        /* TODO: RESET VIDEO */
-
         TRACE_VIDEO(LEVEL_VERBOSE, video);
 }
 

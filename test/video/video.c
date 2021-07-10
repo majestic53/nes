@@ -74,7 +74,208 @@ nes_test_initialize(void)
 {
 	memset(g_test.memory.ptr, 0x00, g_test.memory.length);
 	memset(g_test.object.ptr, 0x00, g_test.object.length);
-	memset(&g_test, 0, sizeof(g_test));
+	nes_video_reset(&g_test.video);
+}
+
+int
+nes_test_video_port_read(void)
+{
+	int result = NES_OK;
+	nes_register_t data = {};
+
+	nes_test_initialize();
+	g_test.video.control.raw = rand();
+
+	if(ASSERT(nes_video_port_read(&g_test.video, VIDEO_PORT_CONTROL) == 0)) {
+		result = NES_ERR;
+		goto exit;
+	}
+
+	nes_test_initialize();
+	g_test.video.mask.raw = rand();
+
+	if(ASSERT(nes_video_port_read(&g_test.video, VIDEO_PORT_MASK) == 0)) {
+		result = NES_ERR;
+		goto exit;
+	}
+
+	nes_test_initialize();
+	data.word = rand();
+	g_test.video.status.raw = data.low;
+	g_test.video.address_latch = data.low % 2;
+
+	if(ASSERT((nes_video_port_read(&g_test.video, VIDEO_PORT_STATUS) == data.low)
+			&& !g_test.video.status.vblank
+			&& !g_test.video.address_latch)) {
+		result = NES_ERR;
+		goto exit;
+	}
+
+	nes_test_initialize();
+	g_test.video.object_address.word = rand();
+
+	if(ASSERT(nes_video_port_read(&g_test.video, VIDEO_PORT_OBJECT_ADDRESS) == 0)) {
+		result = NES_ERR;
+		goto exit;
+	}
+
+	nes_test_initialize();
+
+	for(g_test.video.object_address.word = 0; g_test.video.object_address.word <= UINT8_MAX; ++g_test.video.object_address.word) {
+		data.low = rand();
+		g_test.object.ptr[g_test.video.object_address.low] = data.low;
+
+		if(ASSERT(nes_video_port_read(&g_test.video, VIDEO_PORT_OBJECT_DATA) == data.low)) {
+			result = NES_ERR;
+			goto exit;
+		}
+	}
+
+	nes_test_initialize();
+	g_test.video.scroll_x.word = rand();
+	g_test.video.scroll_y.word = rand();
+
+	if(ASSERT(nes_video_port_read(&g_test.video, VIDEO_PORT_SCROLL) == 0)) {
+		result = NES_ERR;
+		goto exit;
+	}
+
+	nes_test_initialize();
+	g_test.video.address.word = rand();
+
+	if(ASSERT(nes_video_port_read(&g_test.video, VIDEO_PORT_ADDRESS) == 0)) {
+		result = NES_ERR;
+		goto exit;
+	}
+
+	nes_test_initialize();
+
+	for(uint8_t increment = 0; increment < VIDEO_INCREMENT_MAX; ++increment) {
+		nes_register_t address = {}, data_prev = {};
+
+		g_test.video.address.word = 0;
+		g_test.video.control.increment = increment;
+
+		for(; address.word < VIDEO_ADDRESS_MIRROR; address.word += VIDEO_INCREMENT[increment]) {
+			data.low = rand();
+			g_test.memory.ptr[g_test.video.address.word] = data.low;
+
+			if(ASSERT(g_test.video.address.word == address.word)) {
+				result = NES_ERR;
+				goto exit;
+			}
+
+			switch(g_test.video.address.word) {
+	                        case VIDEO_PALETTE_RAM_BEGIN ... VIDEO_PALETTE_RAM_END: /* 0x3f00 - 0x3fff */
+
+					if(ASSERT((nes_video_port_read(&g_test.video, VIDEO_PORT_DATA) == data.low)
+							&& (g_test.video.data.low == data.low))) {
+						result = NES_ERR;
+						goto exit;
+					}
+	                                break;
+	                        default: /* 0x0000 - 0x3eff */
+					data_prev.low = g_test.video.data.low;
+
+					if(ASSERT((nes_video_port_read(&g_test.video, VIDEO_PORT_DATA) == data_prev.low)
+							&& (g_test.video.data.low == data.low))) {
+						result = NES_ERR;
+						goto exit;
+					}
+	                                break;
+			}
+		}
+	}
+
+exit:
+	TRACE_RESULT(result);
+
+	return result;
+}
+
+int
+nes_test_video_port_write(void)
+{
+	int result = NES_OK;
+	nes_register_t data = {};
+
+	nes_test_initialize();
+	data.low = rand();
+	nes_video_port_write(&g_test.video, VIDEO_PORT_CONTROL, data.low);
+
+	if(ASSERT(g_test.video.control.raw == data.low)) {
+		result = NES_ERR;
+		goto exit;
+	}
+
+	nes_test_initialize();
+	data.low = rand();
+	nes_video_port_write(&g_test.video, VIDEO_PORT_MASK, data.low);
+
+	if(ASSERT(g_test.video.mask.raw == data.low)) {
+		result = NES_ERR;
+		goto exit;
+	}
+
+	nes_test_initialize();
+
+	/* TODO: VIDEO_PORT_STATUS */
+
+	nes_test_initialize();
+	data.low = rand();
+	nes_video_port_write(&g_test.video, VIDEO_PORT_OBJECT_ADDRESS, data.low);
+
+	if(ASSERT(g_test.video.object_address.low == data.low)) {
+		result = NES_ERR;
+		goto exit;
+	}
+
+	nes_test_initialize();
+
+	/* TODO: VIDEO_PORT_OBJECT_DATA */
+
+	nes_test_initialize();
+
+	/* TODO: VIDEO_PORT_SCROLL */
+
+	nes_test_initialize();
+	/* TODO: VIDEO_PORT_ADDRESS */
+
+	nes_test_initialize();
+
+	/* TODO: VIDEO_PORT_DATA */
+
+exit:
+	TRACE_RESULT(result);
+
+	return result;
+}
+
+int
+nes_test_video_reset(void)
+{
+	int result = NES_OK;
+
+	nes_test_initialize();
+
+	if(ASSERT(!g_test.video.address.word
+			&& !g_test.video.address_latch
+			&& !g_test.video.control.raw
+			&& !g_test.video.cycles
+			&& !g_test.video.data.word
+			&& !g_test.video.mask.raw
+			&& !g_test.video.object_address.word
+			&& !g_test.video.scroll_x.word
+			&& !g_test.video.scroll_y.word
+			&& !g_test.video.status.raw)) {
+		result = NES_ERR;
+		goto exit;
+	}
+
+exit:
+	TRACE_RESULT(result);
+
+	return result;
 }
 
 int
@@ -94,11 +295,11 @@ main(
 	srand(seed);
 	TRACE_SEED(seed);
 
-	if((result = nes_buffer_allocate(&g_test.memory, 0x4000, 0x00)) != NES_OK) {
+	if((result = nes_buffer_allocate(&g_test.memory, VIDEO_ADDRESS_MIRROR, 0x00)) != NES_OK) {
 		goto exit;
 	}
 
-	if((result = nes_buffer_allocate(&g_test.object, 0x0100, 0x00)) != NES_OK) {
+	if((result = nes_buffer_allocate(&g_test.object, UINT8_MAX + 1, 0x00)) != NES_OK) {
 		goto exit;
 	}
 
