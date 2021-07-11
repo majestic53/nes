@@ -30,13 +30,33 @@ enum {
         VIDEO_INCREMENT_MAX,
 };
 
+enum {
+        VIDEO_NAME_TABLE_2000 = 0,
+        VIDEO_NAME_TABLE_2400,
+        VIDEO_NAME_TABLE_2800,
+        VIDEO_NAME_TABLE_2C00,
+        VIDEO_NAME_TABLE_MAX,
+};
+
+enum {
+        VIDEO_PATTERN_TABLE_0000 = 0,
+        VIDEO_PATTERN_TABLE_1000,
+        VIDEO_PATTERN_TABLE_MAX,
+};
+
+enum {
+        VIDEO_SPRITE_SIZE_8_8 = 0,
+        VIDEO_SPRITE_SIZE_8_16,
+        VIDEO_SPRITE_SIZE_MAX,
+};
+
 typedef union {
 
         struct {
-                uint8_t namespace : 2;
+                uint8_t name_table : 2;
                 uint8_t increment : 1;
-                uint8_t sprite_table : 1;
-                uint8_t background_table : 1;
+                uint8_t sprite_pattern_table : 1;
+                uint8_t background_pattern_table : 1;
                 uint8_t sprite_size : 1;
                 uint8_t select : 1;
                 uint8_t interrupt : 1;
@@ -82,6 +102,7 @@ typedef struct {
         nes_register_t data;
         nes_video_mask_t mask;
         nes_register_t object_address;
+        nes_register_t object_data;
         nes_register_t scroll_x;
         nes_register_t scroll_y;
         nes_video_status_t status;

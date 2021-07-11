@@ -57,7 +57,7 @@ nes_video_port_read(
                         video->address_latch = false;
                         break;
                 case VIDEO_PORT_OBJECT_DATA: /* 0x2004 */
-                        result = nes_video_object_read(video);
+                        result = video->object_data.low = nes_video_object_read(video);
                         break;
                 case VIDEO_PORT_DATA: /* 0x2007 */
 
@@ -103,6 +103,7 @@ nes_video_port_write(
                         break;
                 case VIDEO_PORT_OBJECT_DATA: /* 0x2004 */
                         nes_video_object_write(video, data);
+                        video->object_data.low = data;
                         ++video->object_address.low;
                         break;
                 case VIDEO_PORT_SCROLL: /* 0x2005 */
