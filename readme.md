@@ -5,17 +5,24 @@ NES
 
 A lightweight NES emulator, written in C
 
-Features
+Status
 =
 
 This project is a work-in-progress and is missing a lot of functionality. See the table below for the current implementation status:
 
-|Subsystem|Complete          |Description                          |
-|:--------|:-----------------|:------------------------------------|
-|Audio    |                  |Still to be started                  |
-|Input    |                  |Still to be started                  |
-|Processor|:heavy_check_mark:|Support for all official 6502 opcodes|
-|Video    |                  |Work in progress                     |
+|Subsystem|Status|
+|:--------|:-----|
+|Audio    |TODO  |
+|Input    |TODO  |
+|Processor|DONE  |
+|Video    |WIP   |
+
+Features
+=
+
+* Support for all official 6502 opcodes
+* Support for Mapper-00 (NROM) files
+* Built-in debug mode for stepping code
 
 Latest Release
 =
