@@ -717,6 +717,388 @@ exit:
 	return result;
 }
 
+int
+nes_test_action_video_read(void)
+{
+	int result = NES_OK;
+
+	nes_test_initialize();
+	g_test.bus.video.control.raw = rand();
+	g_test.request.type = NES_ACTION_VIDEO_READ;
+	g_test.request.address.word = NES_VIDEO_CONTROL;
+	nes_bus()->loaded = false;
+
+	if(ASSERT(nes_action(&g_test.request, &g_test.response) != NES_OK)) {
+		result = NES_ERR;
+		goto exit;
+	}
+
+	nes_bus()->loaded = true;
+
+	if(ASSERT((nes_action(&g_test.request, &g_test.response) == NES_OK)
+			&& (g_test.response.type == NES_ACTION_VIDEO_READ)
+			&& (g_test.response.address.word == NES_VIDEO_CONTROL)
+			&& (g_test.response.data.low == g_test.bus.video.control.raw))) {
+		result = NES_ERR;
+		goto exit;
+	}
+
+	nes_test_initialize();
+	g_test.bus.video.mask.raw = rand();
+	g_test.request.type = NES_ACTION_VIDEO_READ;
+	g_test.request.address.word = NES_VIDEO_MASK;
+	nes_bus()->loaded = false;
+
+	if(ASSERT(nes_action(&g_test.request, &g_test.response) != NES_OK)) {
+		result = NES_ERR;
+		goto exit;
+	}
+
+	nes_bus()->loaded = true;
+
+	if(ASSERT((nes_action(&g_test.request, &g_test.response) == NES_OK)
+			&& (g_test.response.type == NES_ACTION_VIDEO_READ)
+			&& (g_test.response.address.word == NES_VIDEO_MASK)
+			&& (g_test.response.data.low == g_test.bus.video.mask.raw))) {
+		result = NES_ERR;
+		goto exit;
+	}
+
+	nes_test_initialize();
+	g_test.bus.video.status.raw = rand();
+	g_test.request.type = NES_ACTION_VIDEO_READ;
+	g_test.request.address.word = NES_VIDEO_STATUS;
+	nes_bus()->loaded = false;
+
+	if(ASSERT(nes_action(&g_test.request, &g_test.response) != NES_OK)) {
+		result = NES_ERR;
+		goto exit;
+	}
+
+	nes_bus()->loaded = true;
+
+	if(ASSERT((nes_action(&g_test.request, &g_test.response) == NES_OK)
+			&& (g_test.response.type == NES_ACTION_VIDEO_READ)
+			&& (g_test.response.address.word == NES_VIDEO_STATUS)
+			&& (g_test.response.data.low == g_test.bus.video.status.raw))) {
+		result = NES_ERR;
+		goto exit;
+	}
+
+	nes_test_initialize();
+	g_test.bus.video.object_address.word = rand();
+	g_test.request.type = NES_ACTION_VIDEO_READ;
+	g_test.request.address.word = NES_VIDEO_OBJECT_ADDRESS;
+	nes_bus()->loaded = false;
+
+	if(ASSERT(nes_action(&g_test.request, &g_test.response) != NES_OK)) {
+		result = NES_ERR;
+		goto exit;
+	}
+
+	nes_bus()->loaded = true;
+
+	if(ASSERT((nes_action(&g_test.request, &g_test.response) == NES_OK)
+			&& (g_test.response.type == NES_ACTION_VIDEO_READ)
+			&& (g_test.response.address.word == NES_VIDEO_OBJECT_ADDRESS)
+			&& (g_test.response.data.word == g_test.bus.video.object_address.word))) {
+		result = NES_ERR;
+		goto exit;
+	}
+
+	nes_test_initialize();
+	g_test.bus.video.object_data.low = rand();
+	g_test.request.type = NES_ACTION_VIDEO_READ;
+	g_test.request.address.word = NES_VIDEO_OBJECT_DATA;
+	nes_bus()->loaded = false;
+
+	if(ASSERT(nes_action(&g_test.request, &g_test.response) != NES_OK)) {
+		result = NES_ERR;
+		goto exit;
+	}
+
+	nes_bus()->loaded = true;
+
+	if(ASSERT((nes_action(&g_test.request, &g_test.response) == NES_OK)
+			&& (g_test.response.type == NES_ACTION_VIDEO_READ)
+			&& (g_test.response.address.word == NES_VIDEO_OBJECT_DATA)
+			&& (g_test.response.data.low == g_test.bus.video.object_data.low))) {
+		result = NES_ERR;
+		goto exit;
+	}
+
+	nes_test_initialize();
+	g_test.bus.video.scroll_x.low = rand();
+	g_test.request.type = NES_ACTION_VIDEO_READ;
+	g_test.request.address.word = NES_VIDEO_SCROLL_X;
+	nes_bus()->loaded = false;
+
+	if(ASSERT(nes_action(&g_test.request, &g_test.response) != NES_OK)) {
+		result = NES_ERR;
+		goto exit;
+	}
+
+	nes_bus()->loaded = true;
+
+	if(ASSERT((nes_action(&g_test.request, &g_test.response) == NES_OK)
+			&& (g_test.response.type == NES_ACTION_VIDEO_READ)
+			&& (g_test.response.address.word == NES_VIDEO_SCROLL_X)
+			&& (g_test.response.data.low == g_test.bus.video.scroll_x.low))) {
+		result = NES_ERR;
+		goto exit;
+	}
+
+	nes_test_initialize();
+	g_test.bus.video.scroll_y.low = rand();
+	g_test.request.type = NES_ACTION_VIDEO_READ;
+	g_test.request.address.word = NES_VIDEO_SCROLL_Y;
+	nes_bus()->loaded = false;
+
+	if(ASSERT(nes_action(&g_test.request, &g_test.response) != NES_OK)) {
+		result = NES_ERR;
+		goto exit;
+	}
+
+	nes_bus()->loaded = true;
+
+	if(ASSERT((nes_action(&g_test.request, &g_test.response) == NES_OK)
+			&& (g_test.response.type == NES_ACTION_VIDEO_READ)
+			&& (g_test.response.address.word == NES_VIDEO_SCROLL_Y)
+			&& (g_test.response.data.low == g_test.bus.video.scroll_y.low))) {
+		result = NES_ERR;
+		goto exit;
+	}
+
+	nes_test_initialize();
+	g_test.bus.video.address.word = rand();
+	g_test.request.type = NES_ACTION_VIDEO_READ;
+	g_test.request.address.word = NES_VIDEO_ADDRESS;
+	nes_bus()->loaded = false;
+
+	if(ASSERT(nes_action(&g_test.request, &g_test.response) != NES_OK)) {
+		result = NES_ERR;
+		goto exit;
+	}
+
+	nes_bus()->loaded = true;
+
+	if(ASSERT((nes_action(&g_test.request, &g_test.response) == NES_OK)
+			&& (g_test.response.type == NES_ACTION_VIDEO_READ)
+			&& (g_test.response.address.word == NES_VIDEO_ADDRESS)
+			&& (g_test.response.data.word == g_test.bus.video.address.word))) {
+		result = NES_ERR;
+		goto exit;
+	}
+
+	nes_test_initialize();
+	g_test.bus.video.data.low = rand();
+	g_test.request.type = NES_ACTION_VIDEO_READ;
+	g_test.request.address.word = NES_VIDEO_DATA;
+	nes_bus()->loaded = false;
+
+	if(ASSERT(nes_action(&g_test.request, &g_test.response) != NES_OK)) {
+		result = NES_ERR;
+		goto exit;
+	}
+
+	nes_bus()->loaded = true;
+
+	if(ASSERT((nes_action(&g_test.request, &g_test.response) == NES_OK)
+			&& (g_test.response.type == NES_ACTION_VIDEO_READ)
+			&& (g_test.response.address.word == NES_VIDEO_DATA)
+			&& (g_test.response.data.low == g_test.bus.video.data.low))) {
+		result = NES_ERR;
+		goto exit;
+	}
+
+exit:
+	TRACE_RESULT(result);
+
+	return result;
+}
+
+int
+nes_test_action_video_write(void)
+{
+	int result = NES_OK;
+
+	nes_test_initialize();
+	g_test.request.type = NES_ACTION_VIDEO_WRITE;
+	g_test.request.address.word = NES_VIDEO_CONTROL;
+	g_test.request.data.low = rand();
+	nes_bus()->loaded = false;
+
+	if(ASSERT(nes_action(&g_test.request, &g_test.response) != NES_OK)) {
+		result = NES_ERR;
+		goto exit;
+	}
+
+	nes_bus()->loaded = true;
+
+	if(ASSERT((nes_action(&g_test.request, NULL) == NES_OK)
+			&& (g_test.bus.video.control.raw == g_test.request.data.low))) {
+		result = NES_ERR;
+		goto exit;
+	}
+
+	nes_test_initialize();
+	g_test.request.type = NES_ACTION_VIDEO_WRITE;
+	g_test.request.address.word = NES_VIDEO_MASK;
+	g_test.request.data.low = rand();
+	nes_bus()->loaded = false;
+
+	if(ASSERT(nes_action(&g_test.request, &g_test.response) != NES_OK)) {
+		result = NES_ERR;
+		goto exit;
+	}
+
+	nes_bus()->loaded = true;
+
+	if(ASSERT((nes_action(&g_test.request, NULL) == NES_OK)
+			&& (g_test.bus.video.mask.raw == g_test.request.data.low))) {
+		result = NES_ERR;
+		goto exit;
+	}
+
+	nes_test_initialize();
+	g_test.request.type = NES_ACTION_VIDEO_WRITE;
+	g_test.request.address.word = NES_VIDEO_STATUS;
+	g_test.request.data.low = rand();
+	nes_bus()->loaded = false;
+
+	if(ASSERT(nes_action(&g_test.request, &g_test.response) != NES_OK)) {
+		result = NES_ERR;
+		goto exit;
+	}
+
+	nes_bus()->loaded = true;
+
+	if(ASSERT((nes_action(&g_test.request, NULL) == NES_OK)
+			&& (g_test.bus.video.status.raw == g_test.request.data.low))) {
+		result = NES_ERR;
+		goto exit;
+	}
+
+	nes_test_initialize();
+	g_test.request.type = NES_ACTION_VIDEO_WRITE;
+	g_test.request.address.word = NES_VIDEO_OBJECT_ADDRESS;
+	g_test.request.data.word = rand();
+	nes_bus()->loaded = false;
+
+	if(ASSERT(nes_action(&g_test.request, &g_test.response) != NES_OK)) {
+		result = NES_ERR;
+		goto exit;
+	}
+
+	nes_bus()->loaded = true;
+
+	if(ASSERT((nes_action(&g_test.request, NULL) == NES_OK)
+			&& (g_test.bus.video.object_address.word == g_test.request.data.word))) {
+		result = NES_ERR;
+		goto exit;
+	}
+
+	nes_test_initialize();
+	g_test.request.type = NES_ACTION_VIDEO_WRITE;
+	g_test.request.address.word = NES_VIDEO_OBJECT_DATA;
+	g_test.request.data.low = rand();
+	nes_bus()->loaded = false;
+
+	if(ASSERT(nes_action(&g_test.request, &g_test.response) != NES_OK)) {
+		result = NES_ERR;
+		goto exit;
+	}
+
+	nes_bus()->loaded = true;
+
+	if(ASSERT((nes_action(&g_test.request, NULL) == NES_OK)
+			&& (g_test.bus.video.object_data.low == g_test.request.data.low))) {
+		result = NES_ERR;
+		goto exit;
+	}
+
+	nes_test_initialize();
+	g_test.request.type = NES_ACTION_VIDEO_WRITE;
+	g_test.request.address.word = NES_VIDEO_SCROLL_X;
+	g_test.request.data.low = rand();
+	nes_bus()->loaded = false;
+
+	if(ASSERT(nes_action(&g_test.request, &g_test.response) != NES_OK)) {
+		result = NES_ERR;
+		goto exit;
+	}
+
+	nes_bus()->loaded = true;
+
+	if(ASSERT((nes_action(&g_test.request, NULL) == NES_OK)
+			&& (g_test.bus.video.scroll_x.low == g_test.request.data.low))) {
+		result = NES_ERR;
+		goto exit;
+	}
+
+	nes_test_initialize();
+	g_test.request.type = NES_ACTION_VIDEO_WRITE;
+	g_test.request.address.word = NES_VIDEO_SCROLL_Y;
+	g_test.request.data.low = rand();
+	nes_bus()->loaded = false;
+
+	if(ASSERT(nes_action(&g_test.request, &g_test.response) != NES_OK)) {
+		result = NES_ERR;
+		goto exit;
+	}
+
+	nes_bus()->loaded = true;
+
+	if(ASSERT((nes_action(&g_test.request, NULL) == NES_OK)
+			&& (g_test.bus.video.scroll_y.low == g_test.request.data.low))) {
+		result = NES_ERR;
+		goto exit;
+	}
+
+	nes_test_initialize();
+	g_test.request.type = NES_ACTION_VIDEO_WRITE;
+	g_test.request.address.word = NES_VIDEO_ADDRESS;
+	g_test.request.data.word = rand();
+	nes_bus()->loaded = false;
+
+	if(ASSERT(nes_action(&g_test.request, &g_test.response) != NES_OK)) {
+		result = NES_ERR;
+		goto exit;
+	}
+
+	nes_bus()->loaded = true;
+
+	if(ASSERT((nes_action(&g_test.request, NULL) == NES_OK)
+			&& (g_test.bus.video.address.word == g_test.request.data.word))) {
+		result = NES_ERR;
+		goto exit;
+	}
+
+	nes_test_initialize();
+	g_test.request.type = NES_ACTION_VIDEO_WRITE;
+	g_test.request.address.word = NES_VIDEO_DATA;
+	g_test.request.data.low = rand();
+	nes_bus()->loaded = false;
+
+	if(ASSERT(nes_action(&g_test.request, &g_test.response) != NES_OK)) {
+		result = NES_ERR;
+		goto exit;
+	}
+
+	nes_bus()->loaded = true;
+
+	if(ASSERT((nes_action(&g_test.request, NULL) == NES_OK)
+			&& (g_test.bus.video.data.low == g_test.request.data.low))) {
+		result = NES_ERR;
+		goto exit;
+	}
+
+exit:
+	TRACE_RESULT(result);
+
+	return result;
+}
+
 void
 nes_test_initialize(void)
 {

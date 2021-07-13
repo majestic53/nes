@@ -64,6 +64,8 @@ enum {
         NES_ACTION_BUS_WRITE, /* Write byte to bus */
         NES_ACTION_PROCESSOR_READ, /* Read processor register */
         NES_ACTION_PROCESSOR_WRITE, /* Write processor register */
+        NES_ACTION_VIDEO_READ, /* Read video register */
+        NES_ACTION_VIDEO_WRITE, /* Write video register */
         NES_ACTION_MAPPER_READ, /* Read mapper register */
         NES_ACTION_MAPPER_WRITE, /* Write mapper register */
         NES_ACTION_CARTRIDGE_HEADER, /* Read cartridge header */
@@ -94,6 +96,22 @@ enum {
         NES_PROCESSOR_INDEX_X, /* Processor index-x register (X) */
         NES_PROCESSOR_INDEX_Y, /* Processor index-y register (Y) */
         NES_PROCESSOR_MAX,
+};
+
+/**
+ * NES video enum
+ */
+enum {
+        NES_VIDEO_CONTROL = 0, /* Video control register (CONTROL) */
+        NES_VIDEO_MASK, /* Video mask register (MASK) */
+        NES_VIDEO_STATUS, /* Video status register (STATUS) */
+        NES_VIDEO_OBJECT_ADDRESS, /* Video object address (OAM-ADDR) */
+        NES_VIDEO_OBJECT_DATA, /* Video object data (OAM-DATA) */
+        NES_VIDEO_SCROLL_X, /* Video scroll-x register (SCROLL-X) */
+        NES_VIDEO_SCROLL_Y, /* Video scroll-y register (SCROLL-Y) */
+        NES_VIDEO_ADDRESS, /* Video address register (ADDRESS) */
+        NES_VIDEO_DATA, /* Video data register (DATA) */
+        NES_VIDEO_MAX,
 };
 
 /**

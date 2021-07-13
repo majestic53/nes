@@ -51,6 +51,10 @@ int nes_test_action_processor_read(void);
 
 int nes_test_action_processor_write(void);
 
+int nes_test_action_video_read(void);
+
+int nes_test_action_video_write(void);
+
 void nes_test_initialize(void);
 
 static const nes_test TEST[] = {
@@ -61,6 +65,8 @@ static const nes_test TEST[] = {
         nes_test_action_mapper_write,
         nes_test_action_processor_read,
         nes_test_action_processor_write,
+        nes_test_action_video_read,
+        nes_test_action_video_write,
 	};
 
 #ifdef __cplusplus

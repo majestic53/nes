@@ -387,6 +387,124 @@ exit:
         return result;
 }
 
+int
+nes_action_video_read(
+        __in nes_bus_t *bus,
+        __in const nes_action_t *request,
+        __inout nes_action_t *response
+        )
+{
+        int result = NES_OK;
+
+        if(!response) {
+                result = ERROR(NES_ERR, "invalid response -- %p", response);
+                goto exit;
+        }
+
+        response->type = request->type;
+        response->address.word = request->address.word;
+
+        switch(response->address.word) {
+                case NES_VIDEO_CONTROL:
+                        response->data.low = bus->video.control.raw;
+                        TRACE(LEVEL_VERBOSE, "Video read [CONTROL]->%02X", response->data.low);
+                        break;
+                case NES_VIDEO_MASK:
+                        response->data.low = bus->video.mask.raw;
+                        TRACE(LEVEL_VERBOSE, "Video read [MASK]->%02X", response->data.low);
+                        break;
+                case NES_VIDEO_STATUS:
+                        response->data.low = bus->video.status.raw;
+                        TRACE(LEVEL_VERBOSE, "Video read [STATUS]->%02X", response->data.low);
+                        break;
+                case NES_VIDEO_OBJECT_ADDRESS:
+                        response->data.word = bus->video.object_address.word;
+                        TRACE(LEVEL_VERBOSE, "Video read [OAM-ADDR]->%04X", response->data.word);
+                        break;
+                case NES_VIDEO_OBJECT_DATA:
+                        response->data.low = bus->video.object_data.low;
+                        TRACE(LEVEL_VERBOSE, "Video read [OAM-DATA]->%02X", response->data.low);
+                        break;
+                case NES_VIDEO_SCROLL_X:
+                        response->data.low = bus->video.scroll_x.low;
+                        TRACE(LEVEL_VERBOSE, "Video read [SCROLL-X]->%02X", response->data.low);
+                        break;
+                case NES_VIDEO_SCROLL_Y:
+                        response->data.low = bus->video.scroll_y.low;
+                        TRACE(LEVEL_VERBOSE, "Video read [SCROLL-Y]->%02X", response->data.low);
+                        break;
+                case NES_VIDEO_ADDRESS:
+                        response->data.word = bus->video.address.word;
+                        TRACE(LEVEL_VERBOSE, "Video read [ADDRESS]->%04X", response->data.word);
+                        break;
+                case NES_VIDEO_DATA:
+                        response->data.low = bus->video.data.low;
+                        TRACE(LEVEL_VERBOSE, "Video read [DATA]->%02X", response->data.low);
+                        break;
+                default:
+                        result = ERROR(NES_ERR, "invalid video register read -- %i", response->address.word);
+                        goto exit;
+        }
+
+exit:
+        return result;
+}
+
+int
+nes_action_video_write(
+        __in nes_bus_t *bus,
+        __in const nes_action_t *request,
+        __inout nes_action_t *response
+        )
+{
+        int result = NES_OK;
+
+        switch(request->address.word) {
+                case NES_VIDEO_CONTROL:
+                        bus->video.control.raw = request->data.low;
+                        TRACE(LEVEL_VERBOSE, "Video write [CONTROL]<-%02X", bus->video.control.raw);
+                        break;
+                case NES_VIDEO_MASK:
+                        bus->video.mask.raw = request->data.low;
+                        TRACE(LEVEL_VERBOSE, "Video write [MASK]<-%02X", bus->video.mask.raw);
+                        break;
+                case NES_VIDEO_STATUS:
+                        bus->video.status.raw = request->data.low;
+                        TRACE(LEVEL_VERBOSE, "Video write [STATUS]<-%02X", bus->video.status.raw);
+                        break;
+                case NES_VIDEO_OBJECT_ADDRESS:
+                        bus->video.object_address.word = request->data.word;
+                        TRACE(LEVEL_VERBOSE, "Video write [OAM-ADDR]<-%04X", bus->video.object_address.word);
+                        break;
+                case NES_VIDEO_OBJECT_DATA:
+                        bus->video.object_data.low = request->data.low;
+                        TRACE(LEVEL_VERBOSE, "Video write [OAM-DATA]<-%02X", bus->video.object_data.low);
+                        break;
+                case NES_VIDEO_SCROLL_X:
+                        bus->video.scroll_x.low = request->data.low;
+                        TRACE(LEVEL_VERBOSE, "Video write [SCROLL-X]<-%02X", bus->video.scroll_x.low);
+                        break;
+                case NES_VIDEO_SCROLL_Y:
+                        bus->video.scroll_y.low = request->data.low;
+                        TRACE(LEVEL_VERBOSE, "Video write [SCROLL-Y]<-%02X", bus->video.scroll_y.low);
+                        break;
+                case NES_VIDEO_ADDRESS:
+                        bus->video.address.word = request->data.word;
+                        TRACE(LEVEL_VERBOSE, "Video write [ADDRESS]<-%04X", bus->video.address.word);
+                        break;
+                case NES_VIDEO_DATA:
+                        bus->video.data.low = request->data.low;
+                        TRACE(LEVEL_VERBOSE, "Video write [DATA]<-%04X", bus->video.data.low);
+                        break;
+                default:
+                        result = ERROR(NES_ERR, "invalid video register write -- %i", request->address.word);
+                        goto exit;
+        }
+
+exit:
+        return result;
+}
+
 #ifdef __cplusplus
 extern }
 #endif /* __cplusplus */

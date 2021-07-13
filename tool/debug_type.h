@@ -26,6 +26,7 @@
 #include <readline/readline.h>
 #include "../src/common/cartridge_type.h"
 #include "../src/system/processor_type.h"
+#include "../src/system/video_type.h"
 #include "./common.h"
 
 #define ARGUMENT_MAX 10
@@ -47,6 +48,7 @@ enum {
         COMMAND_RUN,
         COMMAND_STEP,
         COMMAND_VERSION,
+        COMMAND_VIDEO,
         COMMAND_WRITE,
         COMMAND_MAX,
 };
@@ -74,6 +76,12 @@ enum {
 };
 
 enum {
+        VIDEO_SHOW = 0,
+        VIDEO_READ,
+        VIDEO_WRITE,
+};
+
+enum {
         WRITE_BYTE = 2,
 };
 
@@ -86,7 +94,8 @@ static const char COMMAND[] = {
         'r', /* COMMAND_READ */
         'c', /* COMMAND_RUN */
         's', /* COMMAND_STEP */
-        'v', /* COMMAND_VERSION */
+        'e', /* COMMAND_VERSION */
+        'v', /* COMMAND_VIDEO */
         'w', /* COMMAND_WRITE */
         };
 
@@ -94,13 +103,47 @@ static const char *COMMAND_DESC[] = {
         "Exit debug mode", /* COMMAND_EXIT */
         "Disassemble instructions", /* COMMAND_DISASSEMBLE */
         "Show help information", /* COMMAND_HELP */
-        "Read/write/Show mapper", /* COMMAND_MAPPER */
-        "Read/Write/Show processor", /* COMMAND_PROCESSOR */
-        "Read data from address", /* COMMAND_READ */
+        "Read/Write/Show mapper registers", /* COMMAND_MAPPER */
+        "Read/Write/Show processor registers", /* COMMAND_PROCESSOR */
+        "Read byte from address", /* COMMAND_READ */
         "Run processor", /* COMMAND_RUN */
         "Step processor", /* COMMAND_STEP */
         "Show version information", /* COMMAND_VERSION */
-        "Write data to address", /* COMMAND_WRITE */
+        "Read/Write/Show video registers", /* COMMAND_VIDEO */
+        "Write byte to address", /* COMMAND_WRITE */
+        };
+
+static const char *INCREMENT_FORMAT[] = {
+        "Across", /* VIDEO_INCREMENT_ACROSS */
+        "Down", /* VIDEO_INCREMENT_DOWN */
+        };
+
+#ifdef COLOR
+
+static const char *LEVEL_COL[] = {
+        "\x1b[0m", /* LEVEL_NONE */
+        "\x1b[91m", /* LEVEL_ERROR */
+        "\x1b[93m", /* LEVEL_WARNING */
+        "\x1b[94m", /* LEVEL_INFORMATION */
+        "\x1b[90m", /* LEVEL_VERBOSE */
+};
+
+#define LEVEL_COLOR(_LEVEL_) \
+        LEVEL_COL[((_LEVEL_) < LEVEL_MAX) ? (_LEVEL_) : LEVEL_NONE]
+#else
+#define LEVEL_COLOR(_LEVEL_) ""
+#endif /* COLOR */
+
+const char *MAPPER_NAME[] = {
+        "NROM", /* MAPPER_NROM */
+        };
+
+static const char *MAPPER_REGISTER[] = {
+        "prom0", /* NES_MAPPER_PROGRAM_ROM_0 */
+        "prom1", /* NES_MAPPER_PROGRAM_ROM_1 */
+        "pram", /* NES_MAPPER_PROGRAM_RAM */
+        "crom", /* NES_MAPPER_CHARACTER_ROM */
+        "cram", /* NES_MAPPER_CHARACTER_RAM */
         };
 
 static const char *MODE_FORMAT[] = {
@@ -116,6 +159,13 @@ static const char *MODE_FORMAT[] = {
         " %02X", /* MODE_ZEROPAGE */
         " %02X+X", /* MODE_ZEROPAGE_X */
         " %02X+Y", /* MODE_ZEROPAGE_Y */
+        };
+
+static const char *NAME_TABLE_FORMAT[] = {
+        "2000-23FF", /* VIDEO_NAME_TABLE_2000 */
+        "2400-27FF", /* VIDEO_NAME_TABLE_2400 */
+        "2800-2BFF", /* VIDEO_NAME_TABLE_2800 */
+        "2C00-2FFF", /* VIDEO_NAME_TABLE_2C00 */
         };
 
 static const char *OPCODE_FORMAT[] = {
@@ -178,42 +228,36 @@ static const char *OPCODE_FORMAT[] = {
         "XXX", /* OPCODE_XXX */
         };
 
-#ifdef COLOR
-
-static const char *LEVEL_COL[] = {
-        "\x1b[0m", /* LEVEL_NONE */
-        "\x1b[91m", /* LEVEL_ERROR */
-        "\x1b[93m", /* LEVEL_WARNING */
-        "\x1b[94m", /* LEVEL_INFORMATION */
-        "\x1b[90m", /* LEVEL_VERBOSE */
-};
-
-#define LEVEL_COLOR(_LEVEL_) \
-        LEVEL_COL[((_LEVEL_) < LEVEL_MAX) ? (_LEVEL_) : LEVEL_NONE]
-#else
-#define LEVEL_COLOR(_LEVEL_) ""
-#endif /* COLOR */
-
-const char *MAPPER_NAME[] = {
-        "NROM", /* MAPPER_NROM */
-        };
-
-static const char *MAPPER_REGISTER[] = {
-        "prom0", /* NES_MAPPER_PROGRAM_ROM_0 */
-        "prom1", /* NES_MAPPER_PROGRAM_ROM_1 */
-        "pram", /* NES_MAPPER_PROGRAM_RAM */
-        "crom", /* NES_MAPPER_CHARACTER_ROM */
-        "cram", /* NES_MAPPER_CHARACTER_RAM */
+static const char *PATTERN_TABLE_FORMAT[] = {
+        "0000-0FFF", /* VIDEO_PATTERN_TABLE_0000 */
+        "1000-1FFF", /* VIDEO_PATTERN_TABLE_1000 */
         };
 
 static const char *PROCESSOR_REGISTER[] = {
-        "pc", /* Processor program counter register */
-        "sp", /* Processor stack pointer register */
-        "s", /* Processor status register */
-        "p", /* Processor pending register */
-        "a", /* Processor accumulator register */
-        "x", /* Processor index-x register */
-        "y", /* Processor index-y register */
+        "pc", /* NES_PROCESSOR_PROGRAM_COUNTER */
+        "sp", /* NES_PROCESSOR_STACK_POINTER */
+        "s", /* NES_PROCESSOR_STATUS */
+        "p", /* NES_PROCESSOR_PENDING */
+        "a", /* NES_PROCESSOR_ACCUMULATOR */
+        "x", /* NES_PROCESSOR_INDEX_X */
+        "y", /* NES_PROCESSOR_INDEX_Y */
+        };
+
+static const char *SPRITE_SIZE_FORMAT[] = {
+        "8x8", /* VIDEO_SPRITE_SIZE_8_8 */
+        "8x16", /* VIDEO_SPRITE_SIZE_8_16 */
+        };
+
+static const char *VIDEO_REGISTER[] = {
+        "ctrl", /* NES_VIDEO_CONTROL */
+        "mask", /* NES_VIDEO_MASK */
+        "stat", /* NES_VIDEO_STATUS */
+        "oaddr", /* NES_VIDEO_OBJECT_ADDRESS */
+        "odata", /* NES_VIDEO_OBJECT_DATA */
+        "scrx", /* NES_VIDEO_SCROLL_X */
+        "scry", /* NES_VIDEO_SCROLL_Y */
+        "addr", /* NES_VIDEO_ADDRESS */
+        "data", /* NES_VIDEO_DATA */
         };
 
 typedef int (*nes_launcher_debug_hdlr)(
@@ -274,6 +318,12 @@ int nes_launcher_debug_version(
         __in uint32_t count
 	);
 
+int nes_launcher_debug_video(
+        __in const nes_launcher_t *launcher,
+        __in const char *argument[],
+        __in uint32_t count
+        );
+
 int nes_launcher_debug_write(
 	__in const nes_launcher_t *launcher,
         __in const char *argument[],
@@ -290,6 +340,7 @@ static const nes_launcher_debug_hdlr DEBUG_HDLR[] = {
         nes_launcher_debug_run, /* COMMAND_RUN */
         nes_launcher_debug_step, /* COMMAND_STEP */
         nes_launcher_debug_version, /* COMMAND_VERSION */
+        nes_launcher_debug_video, /* COMMAND_VIDEO */
         nes_launcher_debug_write, /* COMMAND_WRITE */
         };
 

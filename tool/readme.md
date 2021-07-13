@@ -62,24 +62,26 @@ The following commands are available in debug mode:
 q	Exit debug mode
 d	Disassemble instructions
 h	Show help information
-m	Read/write/Show mapper
-p	Read/Write/Show processor
-r	Read data from address
+m	Read/Write/Show mapper registers
+p	Read/Write/Show processor registers
+r	Read byte from address
 c	Run processor
 s	Step processor
-v	Show version information
-w	Write data to address
+e	Show version information
+v	Read/Write/Show video registers
+w	Write byte to address
 ```
 
 ### Debug command parameters
 
-|Name    |Description                              |Format                                                         |
-|:-------|:----------------------------------------|:--------------------------------------------------------------|
-|ADDRESS |Address to read from/write to            |```[0-9a-fA-F]{1-4}```                                         |
-|DATA    |Data to read/write                       |```[0-9a-fA-F]{1-2}```                                         |
-|COUNT   |Bytes to read/Instructions to disassemble|```[0-9]{1-6}```                                               |
-|REGISTER|Processor register to read from/write to |```pc```, ```sp```, ```s```, ```p```, ```a```, ```x```, ```y```|
-|        |Mapper register to read from/write to    |```prom0```, ```prom1```, ```pram```, ```crom```, ```cram```   |
+|Name    |Description                              |Format                                                                                                      |
+|:-------|:----------------------------------------|:-----------------------------------------------------------------------------------------------------------|
+|ADDRESS |Address to read from/write to            |```[0-9a-fA-F]{1-4}```                                                                                      |
+|DATA    |Data to read/write                       |```[0-9a-fA-F]{1-2}```                                                                                      |
+|COUNT   |Bytes to read/Instructions to disassemble|```[0-9]{1-6}```                                                                                            |
+|REGISTER|Mapper register to read from/write to    |```prom0```, ```prom1```, ```pram```, ```crom```, ```cram```                                                |
+|        |Processor register to read from/write to |```pc```, ```sp```, ```s```, ```p```, ```a```, ```x```, ```y```                                             |
+|        |Video register to read from/write to     |```ctrl```, ```mask```, ```stat```, ```oaddr```, ```odata```, ```scrx```, ```scry```, ```addr```, ```data```|
 
 #### Examples
 
@@ -141,6 +143,18 @@ To read/write processor data at some register, run the following command:
 
 ```
 [0000] $ p <REGISTER> [<DATA>]
+```
+
+To show video information, run the following command:
+
+```
+[0000] $ v
+```
+
+To read/write video data at some register, run the following command:
+
+```
+[0000] $ v <REGISTER> [<DATA>]
 ```
 
 To disassemble processor instructions at some address/register, run the following command:

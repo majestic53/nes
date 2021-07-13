@@ -637,6 +637,145 @@ exit:
 }
 
 int
+nes_launcher_debug_video(
+        __in const nes_launcher_t *launcher,
+        __in const char *argument[],
+        __in uint32_t count
+        )
+{
+        int result = NES_OK;
+        nes_video_mask_t mask = {};
+        nes_video_status_t status = {};
+        nes_video_control_t control = {};
+        nes_action_t request = { .type = NES_ACTION_VIDEO_READ }, response = {};
+
+        switch(count) {
+                case VIDEO_READ:
+
+                        for(request.address.word = 0; request.address.word < NES_VIDEO_MAX; ++request.address.word) {
+
+                                if(!strcmp(VIDEO_REGISTER[request.address.word], argument[0])) {
+                                        break;
+                                }
+                        }
+
+                        if(request.address.word == NES_VIDEO_MAX) {
+                                result = NES_ERR;
+                                goto exit;
+                        }
+
+                        if((result = nes_action(&request, &response)) != NES_OK) {
+                                goto exit;
+                        }
+
+                        switch(request.address.word) {
+                                case NES_VIDEO_ADDRESS:
+                                case NES_VIDEO_OBJECT_ADDRESS:
+                                        fprintf(stdout, "%04X\n", response.data.word);
+                                        break;
+                                case NES_VIDEO_DATA:
+                                case NES_VIDEO_OBJECT_DATA:
+                                case NES_VIDEO_SCROLL_X:
+                                case NES_VIDEO_SCROLL_Y:
+                                        fprintf(stdout, "%02X\n", response.data.low);
+                                        break;
+                                case NES_VIDEO_CONTROL:
+                                        control.raw = response.data.low;
+                                        fprintf(stdout, "%02X  [%s, %s, %s, %s, %s, %s]\n", control.raw, NAME_TABLE_FORMAT[control.name_table],
+                                                INCREMENT_FORMAT[control.increment], PATTERN_TABLE_FORMAT[control.sprite_pattern_table],
+                                                PATTERN_TABLE_FORMAT[control.background_pattern_table], SPRITE_SIZE_FORMAT[control.sprite_size],
+                                                control.interrupt ? "Vblank" : "None");
+                                        break;
+                                case NES_VIDEO_MASK:
+                                        mask.raw = response.data.low;
+                                        fprintf(stdout, "%02X  [%c%c%c%c%c%c%c%c]\n", mask.raw, mask.blue_emphasis ? 'B' : '-', mask.green_emphasis ? 'G' : '-',
+                                                mask.red_emphasis ? 'R' : '-', mask.sprite_show ? 'S' : '-', mask.background_show ? 'B' : '-',
+                                                mask.sprite_show_top ? 'S' : '-', mask.background_show_top ? 'B' : '-', mask.grayscale ? 'G' : '-');
+                                        break;
+                                case NES_VIDEO_STATUS:
+                                        status.raw = response.data.low;
+                                        fprintf(stdout, "%02X  [%c%c%c]\n", status.raw, status.vblank ? 'V' : '-', status.sprite_0_hit ? 'H' : '-',
+                                                status.sprite_overflow ? 'O' : '-');
+                                        break;
+                                default:
+                                        fprintf(stdout, "%02X\n", response.data.low);
+                                        break;
+                        }
+                        break;
+                case VIDEO_SHOW:
+
+                        for(request.address.word = 0; request.address.word < NES_VIDEO_MAX; ++request.address.word) {
+
+                                if((result = nes_action(&request, &response)) != NES_OK) {
+                                        goto exit;
+                                }
+
+                                switch(request.address.word) {
+                                        case NES_VIDEO_ADDRESS:
+                                        case NES_VIDEO_OBJECT_ADDRESS:
+                                                fprintf(stdout, "%s>\t%04X\n", VIDEO_REGISTER[request.address.word], response.data.word);
+                                                break;
+                                        case NES_VIDEO_DATA:
+                                        case NES_VIDEO_OBJECT_DATA:
+                                        case NES_VIDEO_SCROLL_X:
+                                        case NES_VIDEO_SCROLL_Y:
+                                                fprintf(stdout, "%s>\t%02X\n", VIDEO_REGISTER[request.address.word], response.data.low);
+                                                break;
+                                        case NES_VIDEO_CONTROL:
+                                                control.raw = response.data.low;
+                                                fprintf(stdout, "%s>\t%02X  [%s, %s, %s, %s, %s, %s]\n", VIDEO_REGISTER[request.address.word], control.raw,
+                                                        NAME_TABLE_FORMAT[control.name_table], INCREMENT_FORMAT[control.increment],
+                                                        PATTERN_TABLE_FORMAT[control.sprite_pattern_table], PATTERN_TABLE_FORMAT[control.background_pattern_table],
+                                                        SPRITE_SIZE_FORMAT[control.sprite_size], control.interrupt ? "Vblank" : "None");
+                                                break;
+                                        case NES_VIDEO_MASK:
+                                                mask.raw = response.data.low;
+                                                fprintf(stdout, "%s>\t%02X  [%c%c%c%c%c%c%c%c]\n", VIDEO_REGISTER[request.address.word], mask.raw,
+                                                        mask.blue_emphasis ? 'B' : '-', mask.green_emphasis ? 'G' : '-', mask.red_emphasis ? 'R' : '-',
+                                                        mask.sprite_show ? 'S' : '-', mask.background_show ? 'B' : '-', mask.sprite_show_top ? 'S' : '-',
+                                                        mask.background_show_top ? 'B' : '-', mask.grayscale ? 'G' : '-');
+                                                break;
+                                        case NES_VIDEO_STATUS:
+                                                status.raw = response.data.low;
+                                                fprintf(stdout, "%s>\t%02X  [%c%c%c]\n", VIDEO_REGISTER[request.address.word], status.raw, status.vblank ? 'V' : '-',
+                                                        status.sprite_0_hit ? 'H' : '-', status.sprite_overflow ? 'O' : '-');
+                                                break;
+                                        default:
+                                                fprintf(stdout, "%s>\t%02X\n", VIDEO_REGISTER[request.address.word], response.data.low);
+                                                break;
+                                }
+                        }
+                        break;
+                case VIDEO_WRITE:
+                        request.type = NES_ACTION_VIDEO_WRITE;
+                        request.data.word = strtol(argument[1], NULL, 16);
+
+                        for(request.address.word = 0; request.address.word < NES_VIDEO_MAX; ++request.address.word) {
+
+                                if(!strcmp(VIDEO_REGISTER[request.address.word], argument[0])) {
+                                        break;
+                                }
+                        }
+
+                        if(request.address.word == NES_VIDEO_MAX) {
+                                result = NES_ERR;
+                                goto exit;
+                        }
+
+                        if((result = nes_action(&request, &response)) != NES_OK) {
+                                goto exit;
+                        }
+                        break;
+                default:
+                        result = NES_ERR;
+                        goto exit;
+        }
+
+exit:
+        return result;
+}
+
+int
 nes_launcher_debug_write(
         __in const nes_launcher_t *launcher,
         __in const char *argument[],
